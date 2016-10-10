@@ -63,7 +63,7 @@ namespace AgoraClrLibrary {
 	public ref class AudioVolumeInfo
 	{
 	public:
-		unsigned int uid;
+		int uid;
 		unsigned int volume; // [0,255]
 	};
 
@@ -96,7 +96,7 @@ namespace AgoraClrLibrary {
 	public ref class RemoteVideoStats
 	{
 	public:
-		unsigned int uid;
+		int uid;
 		int delay;
 		int width;
 		int height;
@@ -106,35 +106,35 @@ namespace AgoraClrLibrary {
 
 
 	//RtcEngineEventHandler Part
-	public delegate void onJoinChannelSuccess(String ^channel, unsigned int uid, int elapsed);
-	public delegate void onRejoinChannelSuccess(String ^channel, unsigned int uid, int elapsed);
+	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
+	public delegate void onRejoinChannelSuccess(String ^channel, int uid, int elapsed);
 	public delegate void onWarning(int warn, String ^msg);
 	public delegate void onError(int err, String ^msg);
-	public delegate void onAudioQuality(unsigned int uid, int quality, unsigned short delay, unsigned short lost);
+	public delegate void onAudioQuality(int uid, int quality, unsigned short delay, unsigned short lost);
 	public delegate void onAudioVolumeIndication(List<AudioVolumeInfo^>^ speakers, int totalVolume);
 	public delegate void onLeaveChannel(RtcStats ^stat);
-	public delegate void onUserJoined(unsigned int uid, int elapsed);
-	public delegate void onUserOffline(unsigned int uid, UserOfflineType reason);
+	public delegate void onUserJoined(int uid, int elapsed);
+	public delegate void onUserOffline(int uid, UserOfflineType reason);
 	public delegate void onRtcStats(RtcStats ^stat);
 	public delegate void onLocalVideoStats(LocalVideoStats ^stats);
 	public delegate void onRemoteVideoStats(RemoteVideoStats ^stats);
 	public delegate void onFirstLocalVideoFrame(int width, int height, int elapsed);
-	public delegate void onFirstRemoteVideoDecoded(unsigned int uid, int width, int height, int elapsed);
-	public delegate void onFirstRemoteVideoFrame(unsigned int uid, int width, int height, int elapsed);
+	public delegate void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed);
+	public delegate void onFirstRemoteVideoFrame(int uid, int width, int height, int elapsed);
 	public delegate void onAudioDeviceStateChanged(String ^deviceid, int deviceType, int deviceState);
 	public delegate void onVideoDeviceStateChanged(String ^deviceid, int deviceType, int deviceState);
 	public delegate void onLastmileQuality(int quality);
-	public delegate void onUserMuteAudio(unsigned int uid, bool muted);
-	public delegate void onUserMuteVideo(unsigned int uid, bool muted);
-	public delegate void onUserEnableVideo(unsigned int uid, bool enabled);
+	public delegate void onUserMuteAudio(int uid, bool muted);
+	public delegate void onUserMuteVideo(int uid, bool muted);
+	public delegate void onUserEnableVideo(int uid, bool enabled);
 	public delegate void onCameraReady();
 	public delegate void onVideoStopped();
 	public delegate void onConnectionInterrupted();
 	public delegate void onConnectionLost();
 	public delegate void onRefreshRecordingServiceStatus(int status);
 	public delegate void onApiCallExecuted(String ^api, int error);
-	public delegate void onStreamMessage(unsigned int uid, int streamId, String ^data);
-	public delegate void onStreamMessageError(unsigned int uid, int streamId, int code, int missed, int cached);
+	public delegate void onStreamMessage(int uid, int streamId, String ^data);
+	public delegate void onStreamMessageError(int uid, int streamId, int code, int missed, int cached);
 
 
 
@@ -151,7 +151,7 @@ namespace AgoraClrLibrary {
 		int disableVideo();
 		int startPreview();
 		int stopPreview();
-		int joinChannel(String ^channelKey, String ^channelName, unsigned int uid);
+		int joinChannel(String ^channelKey, String ^channelName, int uid);
 		int leaveChannel();
 		int renewChannelKey(String ^channelKey);
 		int getCallId(String^ %callid);
@@ -162,8 +162,8 @@ namespace AgoraClrLibrary {
 		int enableLastmileTest();
 		int disableLastmileTest();
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
-		int setupLocalVideo(IntPtr view, int renderMode, unsigned int uid);
-		int setupRemoteVideo(IntPtr view, int renderMode, unsigned int uid);
+		int setupLocalVideo(IntPtr view, int renderMode, int uid);
+		int setupRemoteVideo(IntPtr view, int renderMode, int uid);
 		int setChannelProfile(ChannelProfile profile);
 		int createDataStream(int %id);
 		int sendStreamMessage(int id, String ^data);
@@ -171,14 +171,14 @@ namespace AgoraClrLibrary {
 		//RtcEngineParameters Part
 		int muteLocalAudioStream(bool mute);
 		int muteAllRemoteAudioStreams(bool mute);
-		int muteRemoteAudioStream(unsigned int uid, bool mute);
+		int muteRemoteAudioStream(int uid, bool mute);
 		int muteLocalVideoStream(bool mute);
 		int enableLocalVideo(bool enabled);
 		int muteAllRemoteVideoStream(bool mute);
-		int muteRemoteVideoStream(unsigned int uid, bool mute);
+		int muteRemoteVideoStream(int uid, bool mute);
 		int setPlaybackDeviceVolume(int volume);
 		int setLocalRenderMode(RenderMode mode);
-		int setRemoteRenderMode(unsigned int uid, RenderMode mode);
+		int setRemoteRenderMode(int uid, RenderMode mode);
 		int enableAudioVolumeIndication(int interval, int smooth);
 		int startAudioRecording(String ^path);
 		int stopAudioRecording();

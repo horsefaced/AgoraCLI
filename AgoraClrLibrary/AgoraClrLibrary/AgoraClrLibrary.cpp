@@ -77,7 +77,7 @@ int AgoraClr::stopPreview()
 	return rtcEngine->stopPreview();
 }
 
-int AgoraClr::joinChannel(String ^ channelKey, String ^ channelName, unsigned int uid)
+int AgoraClr::joinChannel(String ^ channelKey, String ^ channelName, int uid)
 {
 	std::string key = MarshalString(channelKey);
 	std::string name = MarshalString(channelName);
@@ -141,12 +141,12 @@ int AgoraClr::setVideoProfile(VideoProfile profile, bool swapWidthAndHeight)
 	return rtcEngine->setVideoProfile((agora::rtc::VIDEO_PROFILE_TYPE)profile, swapWidthAndHeight);
 }
 
-int AgoraClr::setupLocalVideo(IntPtr view, int renderMode, unsigned int uid)
+int AgoraClr::setupLocalVideo(IntPtr view, int renderMode, int uid)
 {
 	return rtcEngine->setupLocalVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid));
 }
 
-int AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, unsigned int uid)
+int AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, int uid)
 {
 	return rtcEngine->setupRemoteVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid));
 }
@@ -180,7 +180,7 @@ int AgoraClr::muteAllRemoteAudioStreams(bool mute)
 	return rtcEngineParameters->muteAllRemoteAudioStreams(mute);
 }
 
-int AgoraClr::muteRemoteAudioStream(unsigned int uid, bool mute)
+int AgoraClr::muteRemoteAudioStream(int uid, bool mute)
 {
 	return rtcEngineParameters->muteRemoteAudioStream(uid, mute);
 }
@@ -200,7 +200,7 @@ int AgoraClr::muteAllRemoteVideoStream(bool mute)
 	return rtcEngineParameters->muteAllRemoteVideoStreams(mute);
 }
 
-int AgoraClr::muteRemoteVideoStream(unsigned int uid, bool mute)
+int AgoraClr::muteRemoteVideoStream(int uid, bool mute)
 {
 	return rtcEngineParameters->muteRemoteVideoStream(uid, mute);
 }
@@ -215,7 +215,7 @@ int AgoraClr::setLocalRenderMode(RenderMode mode)
 	return rtcEngineParameters->setLocalRenderMode((agora::rtc::RENDER_MODE_TYPE)mode);
 }
 
-int AgoraClr::setRemoteRenderMode(unsigned int uid, RenderMode mode)
+int AgoraClr::setRemoteRenderMode(int uid, RenderMode mode)
 {
 	return rtcEngineParameters->setRemoteRenderMode(uid, (agora::rtc::RENDER_MODE_TYPE)mode);
 }
@@ -344,7 +344,7 @@ void AgoraClr::NativeOnAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* 
 {
 	if (onAudioVolumeIndication) {
 		List<AgoraClrLibrary::AudioVolumeInfo^> ^list = gcnew List<AgoraClrLibrary::AudioVolumeInfo^>();
-		for (int i = 0; i < speakerNumber; i++) {
+		for (unsigned int i = 0; i < speakerNumber; i++) {
 			AgoraClrLibrary::AudioVolumeInfo ^info = gcnew AgoraClrLibrary::AudioVolumeInfo();
 			info->uid = speakers[i].uid;
 			info->volume = speakers[i].volume;

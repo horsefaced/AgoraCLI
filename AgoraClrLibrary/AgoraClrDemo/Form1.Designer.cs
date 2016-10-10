@@ -38,6 +38,7 @@
             this.localVideo = new System.Windows.Forms.PictureBox();
             this.btnStartPreview = new System.Windows.Forms.Button();
             this.remoteVideo = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.localVideo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.remoteVideo)).BeginInit();
             this.SuspendLayout();
@@ -132,11 +133,22 @@
             this.remoteVideo.TabIndex = 11;
             this.remoteVideo.TabStop = false;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(174, 434);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "测试";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(520, 479);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.remoteVideo);
             this.Controls.Add(this.btnStartPreview);
             this.Controls.Add(this.localVideo);
@@ -168,6 +180,7 @@
         private System.Windows.Forms.PictureBox localVideo;
         private System.Windows.Forms.Button btnStartPreview;
         private System.Windows.Forms.PictureBox remoteVideo;
+        private System.Windows.Forms.Button button1;
     }
 }
 
