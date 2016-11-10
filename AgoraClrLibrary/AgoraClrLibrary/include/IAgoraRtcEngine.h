@@ -111,12 +111,19 @@ enum WARN_CODE_TYPE
     WARN_LOOKUP_CHANNEL_REJECTED = 105,
     WARN_OPEN_CHANNEL_TIMEOUT = 106,
     WARN_OPEN_CHANNEL_REJECTED = 107,
+
+    WARN_AUDIO_MIXING_OPEN_ERROR = 701,
     WARN_ADM_RUNTIME_PLAYOUT_WARNING = 1014,
     WARN_ADM_RUNTIME_RECORDING_WARNING = 1016,
     WARN_ADM_RECORD_AUDIO_SILENCE = 1019,
     WARN_ADM_PLAYOUT_MALFUNCTION = 1020,
     WARN_ADM_RECORD_MALFUNCTION = 1021,
     WARN_APM_HOWLING = 1051,
+
+    // sdk: 100~1000
+    WARN_SWITCH_LIVE_VIDEO_TIMEOUT = 111,
+	WARN_SET_CLIENT_ROLE_TIMEOUT = 118,
+    WARN_SET_CLIENT_ROLE_NOT_AUTHORIZED = 119,
 };
 
 enum ERROR_CODE_TYPE
@@ -181,6 +188,12 @@ enum ERROR_CODE_TYPE
   
     // VDM error code starts from 1500
     ERR_VDM_CAMERA_NOT_AUTHORIZED  = 1501,
+
+    // VCM error code starts from 1600
+    ERR_VCM_UNKNOWN_ERROR = 1600,
+    ERR_VCM_ENCODER_INIT_ERROR = 1601,
+    ERR_VCM_ENCODER_ENCODE_ERROR = 1602,
+    ERR_VCM_ENCODER_SET_ERROR = 1603,
 };
 
 enum LOG_FILTER_TYPE
@@ -210,7 +223,8 @@ enum MEDIA_ENGINE_EVENT_CODE_TYPE
     MEDIA_ENGINE_RECORDING_ERROR = 0,
     MEDIA_ENGINE_PLAYOUT_ERROR = 1,
     MEDIA_ENGINE_RECORDING_WARNING = 2,
-    MEDIA_ENGINE_PLAYOUT_WARNING = 3
+    MEDIA_ENGINE_PLAYOUT_WARNING = 3,
+    MEDIA_ENGINE_AUDIO_FILE_MIX_FINISH = 10
 };
 
 enum MEDIA_DEVICE_STATE_TYPE
@@ -264,6 +278,7 @@ enum VIDEO_PROFILE_TYPE
     VIDEO_PROFILE_360P_6 = 35,      // 360x360   30   400
     VIDEO_PROFILE_360P_7 = 36,      // 480x360   15   320
     VIDEO_PROFILE_360P_8 = 37,      // 480x360   30   490
+    VIDEO_PROFILE_360P_9 = 38,      // 640x360   15   800
     VIDEO_PROFILE_480P = 40,        // 640x480   15   500
     VIDEO_PROFILE_480P_3 = 42,      // 480x480   15   400
     VIDEO_PROFILE_480P_4 = 43,      // 640x480   30   750
@@ -272,29 +287,42 @@ enum VIDEO_PROFILE_TYPE
     VIDEO_PROFILE_480P_9 = 48,		// 848x480   30   930
     VIDEO_PROFILE_720P = 50,        // 1280x720  15   1130
     VIDEO_PROFILE_720P_3 = 52,      // 1280x720  30   1710
-    VIDEO_PROFILE_720P_5 = 54,      // 960x720  15    910
-    VIDEO_PROFILE_720P_6 = 55,      // 960x720  30    1380
+    VIDEO_PROFILE_720P_5 = 54,      // 960x720   15   910
+    VIDEO_PROFILE_720P_6 = 55,      // 960x720   30   1380
     VIDEO_PROFILE_1080P = 60,       // 1920x1080 15   2080
-    VIDEO_PROFILE_1080P_3 = 62,        // 1920x1080 30   3150
-    VIDEO_PROFILE_1080P_5 = 64,        // 1920x1080 60   4780
-    VIDEO_PROFILE_1440P = 66,        // 2560x1440 30   4850
-    VIDEO_PROFILE_1440P_2 = 67,        // 2560x1440 60   7350
-    VIDEO_PROFILE_4K = 70,            // 3840x2160 30   8910
+    VIDEO_PROFILE_1080P_3 = 62,     // 1920x1080 30   3150
+    VIDEO_PROFILE_1080P_5 = 64,     // 1920x1080 60   4780
+    VIDEO_PROFILE_1440P = 66,       // 2560x1440 30   4850
+    VIDEO_PROFILE_1440P_2 = 67,     // 2560x1440 60   7350
+    VIDEO_PROFILE_4K = 70,          // 3840x2160 30   8910
     VIDEO_PROFILE_4K_3 = 72,        // 3840x2160 60   13500
     VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_360P,
 };
 
 enum CHANNEL_PROFILE_TYPE
 {
-    CHANNEL_PROFILE_FREE = 0,
-    CHANNEL_PROFILE_BROADCASTER = 1,
-    CHANNEL_PROFILE_AUDIENCE = 2,
+	CHANNEL_PROFILE_COMMUNICATION = 0,
+	CHANNEL_PROFILE_LIVE_BROADCASTING = 1,
+};
+
+enum CLIENT_ROLE_TYPE
+{
+    CLIENT_ROLE_BROADCASTER = 1,
+    CLIENT_ROLE_AUDIENCE = 2,
 };
 
 enum USER_OFFLINE_REASON_TYPE
 {
     USER_OFFLINE_QUIT = 0,
     USER_OFFLINE_DROPPED = 1,
+};
+
+enum REMOTE_VIDEO_STREAM_TYPE
+{
+    REMOTE_VIDEO_STREAM_UNKNOWN = -1,
+    REMOTE_VIDEO_STREAM_HIGH = 0,
+    REMOTE_VIDEO_STREAM_LOW = 1,
+    REMOTE_VIDEO_STREAM_MEDIUM = 2,
 };
 
 struct AudioVolumeInfo
@@ -310,6 +338,12 @@ struct RtcStats
     unsigned int rxBytes;
     unsigned short txKBitRate;
     unsigned short rxKBitRate;
+
+    unsigned short rxAudioKBitRate;
+    unsigned short txAudioKBitRate;
+
+    unsigned short rxVideoKBitRate;
+    unsigned short txVideoKBitRate;
     unsigned int users;
     double cpuAppUsage;
     double cpuTotalUsage;
@@ -329,6 +363,7 @@ struct RemoteVideoStats
 	int height;
 	int receivedBitrate;
 	int receivedFrameRate;
+    REMOTE_VIDEO_STREAM_TYPE rxStreamType;
 };
 
 #if !defined(__ANDROID__)
@@ -530,6 +565,12 @@ public:
         (void)deviceId;
         (void)deviceType;
         (void)deviceState;
+    }
+
+    /**
+     * When audio mixing file playback finished, this function will be called
+     */
+    virtual void onAudioMixingFinished() {
     }
 
     /**
@@ -767,6 +808,11 @@ public:
         (void)code;
         (void)missed;
         (void)cached;
+    }
+
+    virtual void onMediaEngineLoadSuccess() {
+    }
+    virtual void onMediaEngineStartCallSuccess() {
     }
 };
 
@@ -1006,6 +1052,10 @@ struct RtcEngineContext
 {
     IRtcEngineEventHandler* eventHandler;
     const char* appId;
+    RtcEngineContext()
+    :eventHandler(NULL)
+    ,appId(NULL)
+    {}
 };
 
 
@@ -1084,6 +1134,7 @@ public:
     virtual int renewChannelKey(const char* channelKey) = 0;
 
     virtual int setChannelProfile(CHANNEL_PROFILE_TYPE profile) = 0;
+    virtual int setClientRole(CLIENT_ROLE_TYPE role, const char* permissionKey) = 0;
 
     /**
     * start the echo testing, if every thing goes well you can hear your echo from the server
@@ -1461,6 +1512,29 @@ public:
         return setObject("rtc.video.mute_peer", "{\"uid\":%u,\"mute\":%s}", uid, mute ? "true" : "false");
     }
 
+    int setRemoteVideoStreamType(uid_t uid, REMOTE_VIDEO_STREAM_TYPE streamType) {
+        return setObject("rtc.video.set_remote_video_stream", "{\"uid\":%u,\"stream\":%d}", uid, streamType);
+    }
+
+
+    /**
+     * play the video stream from network
+     * @param [in] uri, the link of video source
+     * @return return 0 if success or an error code
+     */
+    int startPlayingStream(const char* uri) {
+        return m_parameter->setString("rtc.api.video.start_play_stream", uri);
+    }
+
+    /**
+     *  stop playing the video stream from network
+     *
+     * @return return 0 if success or an error code
+     */
+    int stopPlayingStream() {
+        return m_parameter->setBool("rtc.api.video.stop_play_stream", true);
+    }
+
     /**
     * set play sound volume
     * @param [in] volume
@@ -1655,6 +1729,10 @@ public:
     
     int refreshRecordingServiceStatus() {
         return m_parameter->setBool("rtc.api.query_recording_service_status", true);
+    }
+
+    int enableDualStreamMode(bool enabled) {
+        return m_parameter->setBool("rtc.dual_stream_mode", enabled);
     }
 
 protected:
