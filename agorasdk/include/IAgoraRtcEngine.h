@@ -105,7 +105,9 @@ enum INTERFACE_ID_TYPE
 
 enum WARN_CODE_TYPE
 {
-	WARN_PENDING = 20,
+    WARN_INVALID_VIEW = 8,
+    WARN_INIT_VIDEO = 16,
+    WARN_PENDING = 20,
 	WARN_NO_AVAILABLE_CHANNEL = 103,
     WARN_LOOKUP_CHANNEL_TIMEOUT = 104,
     WARN_LOOKUP_CHANNEL_REJECTED = 105,
@@ -137,7 +139,6 @@ enum ERROR_CODE_TYPE
     ERR_REFUSED = 5,
     ERR_BUFFER_TOO_SMALL = 6,
     ERR_NOT_INITIALIZED = 7,
-    ERR_INVALID_VIEW = 8,
     ERR_NO_PERMISSION = 9,
     ERR_TIMEDOUT = 10,
     ERR_CANCELED = 11,
@@ -145,11 +146,11 @@ enum ERROR_CODE_TYPE
     ERR_BIND_SOCKET = 13,
     ERR_NET_DOWN = 14,
     ERR_NET_NOBUFS = 15,
-    ERR_INIT_VIDEO = 16,
     ERR_JOIN_CHANNEL_REJECTED = 17,
     ERR_LEAVE_CHANNEL_REJECTED = 18,
 	ERR_ALREADY_IN_USE = 19,
 	ERR_ABORTED = 20,
+    ERR_INIT_NET_ENGINE = 21,
     ERR_INVALID_APP_ID = 101,
     ERR_INVALID_CHANNEL_NAME = 102,
     ERR_CHANNEL_KEY_EXPIRED = 109,
@@ -224,7 +225,13 @@ enum MEDIA_ENGINE_EVENT_CODE_TYPE
     MEDIA_ENGINE_PLAYOUT_ERROR = 1,
     MEDIA_ENGINE_RECORDING_WARNING = 2,
     MEDIA_ENGINE_PLAYOUT_WARNING = 3,
-    MEDIA_ENGINE_AUDIO_FILE_MIX_FINISH = 10
+    MEDIA_ENGINE_AUDIO_FILE_MIX_FINISH = 10,
+    MEDIA_ENGINE_AUDIO_SAMPLE_RATE_RECONFIG_FINISH = 11,
+    // media engine role changed
+    MEDIA_ENGINE_ROLE_BROADCASTER_SOLO = 20,
+    MEDIA_ENGINE_ROLE_BROADCASTER_INTERACTIVE = 21,
+    MEDIA_ENGINE_ROLE_AUDIENCE = 22,
+    MEDIA_ENGINE_ROLE_COMM_PEER = 23
 };
 
 enum MEDIA_DEVICE_STATE_TYPE
@@ -279,6 +286,8 @@ enum VIDEO_PROFILE_TYPE
     VIDEO_PROFILE_360P_7 = 36,      // 480x360   15   320
     VIDEO_PROFILE_360P_8 = 37,      // 480x360   30   490
     VIDEO_PROFILE_360P_9 = 38,      // 640x360   15   800
+    VIDEO_PROFILE_360P_10 = 39,     // 640x360   24   800
+    VIDEO_PROFILE_360P_11 = 100,    // 640x360   24   1000
     VIDEO_PROFILE_480P = 40,        // 640x480   15   500
     VIDEO_PROFILE_480P_3 = 42,      // 480x480   15   400
     VIDEO_PROFILE_480P_4 = 43,      // 640x480   30   750
@@ -303,6 +312,7 @@ enum CHANNEL_PROFILE_TYPE
 {
 	CHANNEL_PROFILE_COMMUNICATION = 0,
 	CHANNEL_PROFILE_LIVE_BROADCASTING = 1,
+    CHANNEL_PROFILE_GAME = 2,
 };
 
 enum CLIENT_ROLE_TYPE
@@ -315,6 +325,7 @@ enum USER_OFFLINE_REASON_TYPE
 {
     USER_OFFLINE_QUIT = 0,
     USER_OFFLINE_DROPPED = 1,
+    USER_OFFLINE_BECOME_AUDIENCE = 2,
 };
 
 enum REMOTE_VIDEO_STREAM_TYPE
@@ -323,6 +334,13 @@ enum REMOTE_VIDEO_STREAM_TYPE
     REMOTE_VIDEO_STREAM_HIGH = 0,
     REMOTE_VIDEO_STREAM_LOW = 1,
     REMOTE_VIDEO_STREAM_MEDIUM = 2,
+};
+
+enum RAW_AUDIO_FRAME_OP_MODE_TYPE
+{
+    RAW_AUDIO_FRAME_OP_MODE_READ_ONLY = 0,
+    RAW_AUDIO_FRAME_OP_MODE_WRITE_ONLY = 1,
+    RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
 };
 
 struct AudioVolumeInfo
@@ -366,6 +384,51 @@ struct RemoteVideoStats
     REMOTE_VIDEO_STREAM_TYPE rxStreamType;
 };
 
+struct VideoCompositingLayout
+{
+    struct Region {
+        uid_t uid;
+        double x;//[0,1]
+        double y;//[0,1]
+        double width;//[0,1]
+        double height;//[0,1]
+        int zOrder; //optional, [0, 100] //0 (default): bottom most, 100: top most
+
+        //  Optional
+        //  [0, 1.0] where 0 denotes throughly transparent, 1.0 opaque
+        double alpha;
+
+        RENDER_MODE_TYPE renderMode;//RENDER_MODE_HIDDEN: Crop, RENDER_MODE_FIT: Zoom to fit
+        Region()
+            :uid(0)
+            , x(0)
+            , y(0)
+            , width(0)
+            , height(0)
+            , zOrder(0)
+            , alpha(1.0)
+            , renderMode(RENDER_MODE_HIDDEN)
+        {}
+
+    };
+    int canvasWidth;
+    int canvasHeight;
+    const char* backgroundColor;//e.g. "#C0C0C0" in RGB
+    const Region* regions;
+    int regionCount;
+    const char* appData;
+    int appDataLength;
+    VideoCompositingLayout()
+        :canvasWidth(0)
+        ,canvasHeight(0)
+        ,backgroundColor(NULL)
+        ,regions(NULL)
+        , regionCount(0)
+        , appData(NULL)
+        , appDataLength(0)
+    {}
+};
+
 #if !defined(__ANDROID__)
 struct VideoCanvas
 {
@@ -402,7 +465,7 @@ public:
 	};
 	/**
 	* called by sdk before the audio packet is sent to other participants
-	* @param [in,out] packet:
+	* @param [in,out] packet
 	*      buffer *buffer points the data to be sent
 	*      size of buffer data to be sent
 	* @return returns true to send out the packet, returns false to discard the packet
@@ -410,7 +473,7 @@ public:
 	virtual bool onSendAudioPacket(Packet& packet) = 0;
 	/**
 	* called by sdk before the video packet is sent to other participants
-	* @param [in,out] packet:
+	* @param [in,out] packet
 	*      buffer *buffer points the data to be sent
 	*      size of buffer data to be sent
 	* @return returns true to send out the packet, returns false to discard the packet
@@ -447,7 +510,7 @@ public:
     * when join channel success, the function will be called
     * @param [in] channel
     *        the channel name you have joined
-    * @param [in] uid_t
+    * @param [in] uid
     *        the UID of you in this channel
     * @param [in] elapsed
     *        the time elapsed in ms from the joinChannel been called to joining completed
@@ -462,7 +525,7 @@ public:
     * when join channel success, the function will be called
     * @param [in] channel
     *        the channel name you have joined
-    * @param [in] uid_t
+    * @param [in] uid
     *        the UID of you in this channel
     * @param [in] elapsed
     *        the time elapsed in ms elapsed
@@ -532,12 +595,8 @@ public:
 
     /**
     * when the audio volume information come, the function will be called
-    * @param [in] speakers
-    *        the array of the speakers' audio volume information
-    * @param [in] speakerNumber
-    *        the count of speakers in this array
-    * @param [in] totalVolume
-    *        the total volume of all users
+    * @param [in] stats
+    *        the statistics of the call
     */
     virtual void onLeaveChannel(const RtcStats& stats) {
         (void)stats;
@@ -545,7 +604,7 @@ public:
 
     /**
     * when the information of the RTC engine stats come, the function will be called
-    * @param [in] stat
+    * @param [in] stats
     *        the RTC engine stats
     */
     virtual void onRtcStats(const RtcStats& stats) {
@@ -668,10 +727,6 @@ public:
     * @param [in] uid
     *        the UID of the remote user
     * @param [in] elapsed
-    *        the time elapsed from the
-  *    @param [in] height
-    *        the height of the video frame
-    * @param [in] elapsed
     *        the time elapsed from remote used called joinChannel to joining completed in ms
     */
     virtual void onUserJoined(uid_t uid, int elapsed) {
@@ -784,7 +839,7 @@ public:
     * when stream message received, the function will be called
     * @param [in] uid
     *        UID of the peer who sends the message
-    * @param [in] stream ID
+    * @param [in] streamId
     *        APP can create multiple streams for sending messages of different purposes
     * @param [in] data
     *        the message data
@@ -814,6 +869,14 @@ public:
     }
     virtual void onMediaEngineStartCallSuccess() {
     }
+    /**
+    * when channel key is enabled, and specified channel key is invalid or expired, this function will be called.
+    * APP should generate a new channel key and call renewChannelKey() to refresh the key.
+    * NOTE: to be compatible with previous version, ERR_CHANNEL_KEY_EXPIRED and ERR_INVALID_CHANNEL_KEY are also reported via onError() callback.
+    * You should move renew of channel key logic into this callback.
+    */
+    virtual void onRequestChannelKey() {
+    }
 };
 
 /**
@@ -832,9 +895,9 @@ public:
     * get audio device information
     * @param [in] index
     *        the index of the device in the device list
-    * @param [in out] deviceName
+    * @param [in, out] deviceName
     *        the device name, UTF8 format
-    * @param [in out] deviceId
+    * @param [in, out] deviceId
     *        the device ID, UTF8 format
     * @return return 0 if success or an error code
     */
@@ -874,7 +937,7 @@ public:
 
     /**
     * get the current active video device
-    * @param [in out] deviceId
+    * @param [in, out] deviceId
     *        the device id of the current active video device
     * @return return 0 if success or an error code
     */
@@ -913,9 +976,9 @@ public:
     * get video device information
     * @param [in] index
     *        the index of the device in the device list
-    * @param [in out] deviceName
+    * @param [in, out] deviceName
     *        the device name, UTF8 format
-    * @param [in out] deviceId
+    * @param [in, out] deviceId
     *        the device ID, UTF8 format
     * @return return 0 if success or an error code
     */
@@ -960,7 +1023,7 @@ public:
 
     /**
     * get the current active playback device
-    * @param [in out] deviceId
+    * @param [in, out] deviceId
     *        the device id of the current active video device
     * @return return 0 if success or an error code
     */
@@ -976,7 +1039,7 @@ public:
 
     /**
     * get current playback device volume
-    * @param [in out] *volume
+    * @param [in, out] volume
     *        the current playback device volume 0-255
     * @return return 0 if success or an error code
     */
@@ -992,7 +1055,7 @@ public:
 
     /**
     * get the current active recording device
-    * @param [in out] deviceId
+    * @param [in, out] deviceId
     *        the device id of the current active recording audio device
     * @return return 0 if success or an error code
     */
@@ -1008,7 +1071,7 @@ public:
 
     /**
     * get current recording device volume
-    * @param [in out] *volume
+    * @param [in, out] volume
     *        the current recording device volume 0-255
     * @return return 0 if success or an error code
     */
@@ -1064,13 +1127,12 @@ class IRtcEngine
 public:
     /**
     * release the engine resource
+    * @param [in] sync
+    *        true: release the engine resources and return after all resources have been destroyed.
+    *              APP should try not to call release(true) in the engine's callbacks, call it this way in a separate thread instead.
+    *        false: notify engine to release its resources and returns without waiting for resources are really destroyed
     */
-    virtual void release() = 0;
-
-	/**
-	* release the engine resource and return after all resources have been destroyed
-	*/
-	virtual void sync_release() = 0;
+    virtual void release(bool sync=false) = 0;
 	
 	/**
     * initialize the engine
@@ -1084,7 +1146,7 @@ public:
     * get the pointer of the device manager object.
     * @param [in] iid
     *        the iid of the interface you want to get
-    * @param [in out] inter
+    * @param [in, out] inter
     *       the pointer of the pointer you want to point to DeviceManager object
     * @return return 0 if success or an error code
     */
@@ -1092,7 +1154,7 @@ public:
 
     /**
     * get the version information of the SDK
-    * @param [in out] build
+    * @param [in, out] build
     *        the build number
     * @return return the version number string in char format
     */
@@ -1100,7 +1162,7 @@ public:
 
     /**
     * get the version information of the SDK
-    * @param [in out] build
+    * @param [in, out] code
     *        the build number
     * @return return the version number string in char format
     */
@@ -1110,7 +1172,7 @@ public:
     * join the channel, if the channel have not been created, it will been created automatically
   * @param [in] channelKey
     *        the channel key, if you have initialized the engine with an available APP ID, it can be null here. If you enable channel key on the dashboard, specify channel key here
-    * @param [in] channel name
+    * @param [in] channelName
     *        the channel name
   * @param [in] info
     *        the additional information, it can be null here
@@ -1128,7 +1190,7 @@ public:
 
     /**
     * renew the channel key for the current channel
-    * @param [in] channelKey
+    * @param [in] channelKey the renewed channel key, if old channel key expired.
     * @return return 0 if success or an error code
     */
     virtual int renewChannelKey(const char* channelKey) = 0;
@@ -1161,13 +1223,13 @@ public:
     virtual int disableLastmileTest() = 0;
 
     /**
-    * enable local and remote video showing
+    * enable video function
     * @return return 0 if success or an error code
     */
     virtual int enableVideo() = 0;
 
     /**
-    * disable local and remote video showing
+    * disable video function
     * @return return 0 if success or an error code
     */
     virtual int disableVideo() = 0;
@@ -1202,8 +1264,20 @@ public:
     virtual int setupLocalVideo(const VideoCanvas& canvas) = 0;
 
     /**
+    * enable audio function, which is enabled by deault.
+    * @return return 0 if success or an error code
+    */
+    virtual int enableAudio() = 0;
+
+    /**
+    * disable audio function
+    * @return return 0 if success or an error code
+    */
+    virtual int disableAudio() = 0;
+
+    /**
     * get self call id in the current channel
-    * @param [in out] callId
+    * @param [in, out] callId
     *        the self call Id
     * @return return 0 if success or an error code
     */
@@ -1239,6 +1313,9 @@ public:
 
     virtual int createDataStream(int* streamId, bool reliable, bool ordered) = 0;
     virtual int sendStreamMessage(int streamId, const char* data, size_t length) = 0;
+
+    virtual int setVideoCompositingLayout(const VideoCompositingLayout& sei) = 0;
+    virtual int clearVideoCompositingLayout() = 0;
 };
 
 
@@ -1314,7 +1391,7 @@ public:
     * get bool value of the json
     * @param [in] key
     *        the key name
-    * @param [in out] value
+    * @param [in, out] value
     *        the value
     * @return return 0 if success or an error code
     */
@@ -1324,7 +1401,7 @@ public:
     * get int value of the json
     * @param [in] key
     *        the key name
-    * @param [in out] value
+    * @param [in, out] value
     *        the value
     * @return return 0 if success or an error code
     */
@@ -1334,7 +1411,7 @@ public:
     * get unsigned int value of the json
     * @param [in] key
     *        the key name
-    * @param [in out] value
+    * @param [in, out] value
     *        the value
     * @return return 0 if success or an error code
     */
@@ -1344,7 +1421,7 @@ public:
     * get double value of the json
     * @param [in] key
     *        the key name
-    * @param [in out] value
+    * @param [in, out] value
     *        the value
     * @return return 0 if success or an error code
     */
@@ -1354,7 +1431,7 @@ public:
     * get string value of the json
     * @param [in] key
     *        the key name
-    * @param [in out] value
+    * @param [in, out] value
     *        the value
     * @return return 0 if success or an error code
     */
@@ -1364,7 +1441,7 @@ public:
     * get a child object value of the json
     * @param [in] key
     *        the key name
-    * @param [in out] value
+    * @param [in, out] value
     *        the value
     * @return return 0 if success or an error code
     */
@@ -1374,7 +1451,7 @@ public:
     * get array value of the json
     * @param [in] key
     *        the key name
-    * @param [in out] value
+    * @param [in, out] value
     *        the value
     * @return return 0 if success or an error code
     */
@@ -1519,7 +1596,7 @@ public:
 
     /**
      * play the video stream from network
-     * @param [in] uri, the link of video source
+     * @param [in] uri the link of video source
      * @return return 0 if success or an error code
      */
     int startPlayingStream(const char* uri) {
@@ -1624,6 +1701,31 @@ public:
 		return m_parameter->setBool("che.audio.stop_file_as_playout", true);
 	}
 
+    int pauseAudioMixing() {
+        return m_parameter->setBool("che.audio.pause_file_as_playout", true);
+    }
+
+    int resumeAudioMixing() {
+        return m_parameter->setBool("che.audio.pause_file_as_playout", false);
+    }
+
+    int adjustAudioMixingVolume(int volume) {
+        return m_parameter->setInt("che.audio.set_file_as_playout_volume", volume);
+    }
+    int getAudioMixingDuration() {
+        int duration = 0;
+        int r = m_parameter->getInt("che.audio.get_mixing_file_length_ms", duration);
+        if (r == 0)
+            r = duration;
+        return r;
+    }
+    int getAudioMixingCurrentPosition() {
+        int pos = 0;
+        int r = m_parameter->getInt("che.audio.get_mixing_file_played_ms", pos);
+        if (r == 0)
+            r = pos;
+        return r;
+    }
 #if defined(__APPLE__)
 	/**
 	* start screen capture
@@ -1735,6 +1837,37 @@ public:
         return m_parameter->setBool("rtc.dual_stream_mode", enabled);
     }
 
+    int setRecordingAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) {
+        return setObject("che.audio.set_capture_raw_audio_format", "{\"sampleRate\":%d,\"channelCnt\":%d,\"mode\":%d,\"samplesPerCall\":%d}", sampleRate, channel, mode, samplesPerCall);
+    }
+    int setPlaybackAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) {
+        return setObject("che.audio.set_render_raw_audio_format", "{\"sampleRate\":%d,\"channelCnt\":%d,\"mode\":%d,\"samplesPerCall\":%d}", sampleRate, channel, mode, samplesPerCall);
+    }
+
+    int adjustRecordingSignalVolume(int volume) {//[0, 400]: e.g. 50~0.5x 100~1x 400~4x
+        if (volume < 0)
+            volume = 0;
+        else if (volume > 400)
+            volume = 400;
+        return m_parameter->setInt("che.audio.record.signal.volume", volume);
+    }
+    int adjustPlaybackSignalVolume(int volume) {//[0, 400]
+        if (volume < 0)
+            volume = 0;
+        else if (volume > 400)
+            volume = 400;
+        return m_parameter->setInt("che.audio.playout.signal.volume", volume);
+    }
+    int setHighQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate) {
+        return setObject("che.audio.codec.hq", "{\"fullband\":%s,\"stereo\":%s,\"fullBitrate\":%s}", fullband ? "true" : "false", stereo ? "true" : "false", fullBitrate ? "true" : "false");
+    }
+    int enableWebSdkInteroperability(bool enabled) {//enable interoperability with zero-plugin web sdk
+        return setParameters("{\"rtc.video.web_h264_interop_enable\":%s,\"che.video.web_h264_interop_enable\":%s}", enabled ? "true" : "false", enabled ? "true" : "false");
+    }
+    //only for live broadcasting
+    int setVideoQualityParameters(bool preferFrameRateOverImageQuality) {
+        return m_parameter->setBool("rtc.video.prefer_frame_rate", preferFrameRateOverImageQuality);
+    }
 protected:
     AParameter& parameter() {
         return m_parameter;
@@ -1776,7 +1909,7 @@ private:
 
 /**
 * to get the version number of the SDK
-* @param [in out] build
+* @param [in, out] build
 *        the build number of Agora SDK
 * @return returns the string of the version of the SDK
 */

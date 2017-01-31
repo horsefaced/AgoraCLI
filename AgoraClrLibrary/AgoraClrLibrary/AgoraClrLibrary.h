@@ -3,6 +3,7 @@
 #pragma once
 #include "include\IAgoraRtcEngine.h"
 #include "AgoraClrEventHandler.h"
+#include "AgoraClrPacketObserver.h"
 
 using namespace System::Runtime::InteropServices;
 using namespace System;
@@ -48,9 +49,9 @@ namespace AgoraClrLibrary {
 
 	public enum class ChannelProfile
 	{
-		CHANNEL_PROFILE_FREE = 0,
-		CHANNEL_PROFILE_BROADCASTER = 1,
-		CHANNEL_PROFILE_AUDIENCE = 2,
+		CHANNEL_PROFILE_COMMUNICATION = 0,
+		CHANNEL_PROFILE_LIVE_BROADCASTING = 1,
+		CHANNEL_PROFILE_GAME = 2,
 	};
 
 	public enum class RenderMode
@@ -86,6 +87,13 @@ namespace AgoraClrLibrary {
 		USER_OFFLINE_DROPPED = 1,
 	};
 
+	public enum class RawAudioFrameOPModeType
+	{
+		RAW_AUDIO_FRAME_OP_MODE_READ_ONLY = 0,
+		RAW_AUDIO_FRAME_OP_MODE_WRITE_ONLY = 1,
+		RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
+	};
+
 	public ref class LocalVideoStats
 	{
 	public:
@@ -104,6 +112,25 @@ namespace AgoraClrLibrary {
 		int receivedFrameRate;
 	};
 
+	public ref class ClrPacket {
+	public:
+		array<unsigned char>^ buffer;
+
+		ClrPacket() {}
+		ClrPacket(IPacketObserver::Packet& packet)
+		{
+			this->buffer = gcnew array<unsigned char>(packet.size);
+			Marshal::Copy(IntPtr(const_cast<void *>(static_cast<const void*>(packet.buffer))), this->buffer, 0, packet.size);
+		}
+		void writePacket(IPacketObserver::Packet& packet) {
+			int size = Marshal::SizeOf(buffer[0]) * buffer->Length;
+			IntPtr rawBuffer = Marshal::AllocHGlobal(size);
+			Marshal::Copy(buffer, 0, rawBuffer, buffer->Length);
+			packet.buffer = (unsigned char*)rawBuffer.ToPointer();
+			packet.size = buffer->Length;
+		}
+
+	};
 
 	//RtcEngineEventHandler Part
 	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
@@ -135,8 +162,11 @@ namespace AgoraClrLibrary {
 	public delegate void onApiCallExecuted(String ^api, int error);
 	public delegate void onStreamMessage(int uid, int streamId, String ^data);
 	public delegate void onStreamMessageError(int uid, int streamId, int code, int missed, int cached);
-
-
+	
+	public delegate bool onSendAudioPacket(ClrPacket ^packet);
+	public delegate bool onSendVideoPacket(ClrPacket ^packet);
+	public delegate bool onReceiveAudioPacket(ClrPacket ^packet);
+	public delegate bool onReceiveVideoPacket(ClrPacket ^packet);
 
 	public ref class AgoraClr
 	{
@@ -147,13 +177,29 @@ namespace AgoraClrLibrary {
 
 		int initialize(String ^vendorkey);
 		void release();
+
 		int enableVideo();
 		int disableVideo();
+
+		int enableAudio();
+		int disableAudio();
+
 		int startPreview();
 		int stopPreview();
-		int joinChannel(String ^channelKey, String ^channelName, int uid);
+
+		int joinChannel(String ^channelKey, String ^channelName, String ^channelInfo, int uid);
 		int leaveChannel();
+
+		int startScreenCapture(IntPtr windowId);
+		int setScreenCaptureWindow(IntPtr windowId);
+		int stopScreenCapture();
+
 		int renewChannelKey(String ^channelKey);
+
+		int setEncryptionSecret(String ^key);
+		int setEncryptionMode(String ^mode);
+
+
 		int getCallId(String^ %callid);
 		int rate(String ^callid, int rating, String ^desc);
 		int complain(String ^callid, String ^desc);
@@ -165,10 +211,15 @@ namespace AgoraClrLibrary {
 		int setupLocalVideo(IntPtr view, int renderMode, int uid);
 		int setupRemoteVideo(IntPtr view, int renderMode, int uid);
 		int setChannelProfile(ChannelProfile profile);
+
 		int createDataStream(int %id);
 		int sendStreamMessage(int id, String ^data);
 
+		//原始数据API
 		//RtcEngineParameters Part
+		int setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
+		int setPlaybackAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
+
 		int muteLocalAudioStream(bool mute);
 		int muteAllRemoteAudioStreams(bool mute);
 		int muteRemoteAudioStream(int uid, bool mute);
@@ -221,10 +272,16 @@ namespace AgoraClrLibrary {
 		onStreamMessage ^onStreamMessage;
 		onStreamMessageError ^onStreamMessageError;
 
+		onSendAudioPacket ^onSendAudioPacket;
+		onSendVideoPacket ^onSendVideoPacket;
+		onReceiveAudioPacket ^onReceiveAudioPacket;
+		onReceiveVideoPacket ^onReceiveVideoPacket;
+
 	private:
 		agora::rtc::IRtcEngine *rtcEngine;
 		agora::rtc::RtcEngineParameters *rtcEngineParameters;
 		AgoraClrEventHandler *agoraEventHandler;
+		AgoraClrPacketObserver *agoraPacketObserver;
 		List<GCHandle> ^gchs;
 
 		//Native Agora Event Handler
@@ -258,15 +315,23 @@ namespace AgoraClrLibrary {
 		void NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
 		void NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
 
+		bool NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
+		bool NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
+		bool NativeOnReceiveAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
+		bool NativeOnReceiveVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
+
 		void initailizeEventHandler();
+		void initializePacketObserver();
 		void* regEvent(Object^ obj);
 
 		static std::string MarshalString(String ^s) {
+			if (s == nullptr) return std::string();
 			IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
 			std::string result((char *)middleStr.ToPointer());
 			Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
 			return result;
 		}
+
 
 	};
 }

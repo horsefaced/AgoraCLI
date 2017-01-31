@@ -99,7 +99,7 @@ namespace AgoraClrDemo
 
         private void btnJoinChannel_Click(object sender, EventArgs e)
         {
-            log("join channel", agora.joinChannel("", txtChannelName.Text, 0));
+            log("join channel", agora.joinChannel("", txtChannelName.Text, null, 0));
         }
 
         private void button1_Click_1(object sender, EventArgs e)
