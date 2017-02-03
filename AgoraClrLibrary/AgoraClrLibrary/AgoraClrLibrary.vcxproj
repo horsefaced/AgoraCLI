@@ -135,7 +135,7 @@
     <ClInclude Include="AgoraClrEventHandler.h" />
     <ClInclude Include="AgoraClrLibrary.h" />
     <ClInclude Include="AgoraClrPacketObserver.h" />
-    <ClInclude Include="IRawFrameObserver.h" />
+    <ClInclude Include="AgoraClrRawFrameObserver.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
@@ -144,7 +144,7 @@
     <ClCompile Include="AgoraClrLibrary.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="AgoraClrPacketObserver.cpp" />
-    <ClCompile Include="IRawFrameObserver.cpp" />
+    <ClCompile Include="AgoraClrRawFrameObserver.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

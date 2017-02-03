@@ -30,7 +30,7 @@
     <ClInclude Include="AgoraClrPacketObserver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="IRawFrameObserver.h">
+    <ClInclude Include="AgoraClrRawFrameObserver.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -50,7 +50,7 @@
     <ClCompile Include="AgoraClrPacketObserver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="IRawFrameObserver.cpp">
+    <ClCompile Include="AgoraClrRawFrameObserver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

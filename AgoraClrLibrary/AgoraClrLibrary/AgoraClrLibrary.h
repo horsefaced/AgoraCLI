@@ -4,6 +4,7 @@
 #include "include\IAgoraRtcEngine.h"
 #include "AgoraClrEventHandler.h"
 #include "AgoraClrPacketObserver.h"
+#include "AgoraClrRawFrameObserver.h"
 
 using namespace System::Runtime::InteropServices;
 using namespace System;
@@ -122,6 +123,7 @@ namespace AgoraClrLibrary {
 			this->buffer = gcnew array<unsigned char>(packet.size);
 			Marshal::Copy(IntPtr(const_cast<void *>(static_cast<const void*>(packet.buffer))), this->buffer, 0, packet.size);
 		}
+
 		void writePacket(IPacketObserver::Packet& packet) {
 			int size = Marshal::SizeOf(buffer[0]) * buffer->Length;
 			IntPtr rawBuffer = Marshal::AllocHGlobal(size);
@@ -130,6 +132,84 @@ namespace AgoraClrLibrary {
 			packet.size = buffer->Length;
 		}
 
+	};
+
+	public enum class ClrAudioFrameType {
+		FRAME_TYPE_PCM16 = 0,  //PCM 16bit little endian
+	};
+
+	public ref struct ClrAudioFrame {
+		ClrAudioFrameType type;
+		int samples;  //number of samples in this frame
+		int bytesPerSample;  //number of bytes per sample: 2 for PCM16
+		int channels;  //声道数
+		int samplesPerSec;  //采样率
+		array<Byte>^ data;
+		int64_t renderTimeMs;
+
+		ClrAudioFrame(agora::media::IAudioFrameObserver::AudioFrame raw) {
+			type = (ClrAudioFrameType)raw.type, samples = raw.samples, bytesPerSample = raw.bytesPerSample, channels = raw.channels,
+				samplesPerSec = raw.samplesPerSec, renderTimeMs = raw.renderTimeMs;
+
+			data = gcnew array<Byte>(samples * bytesPerSample);
+			Marshal::Copy(IntPtr(raw.buffer), data, 0, samples * bytesPerSample);
+		}
+
+		void writeRaw(agora::media::IAudioFrameObserver::AudioFrame & raw) {
+			bool sizeModified = (samples * bytesPerSample) == (raw.samples * raw.bytesPerSample);
+			raw.type = (agora::media::IAudioFrameObserver::AUDIO_FRAME_TYPE)type, raw.samples = samples, raw.bytesPerSample = bytesPerSample,
+				raw.channels = channels, raw.samplesPerSec = samplesPerSec, raw.renderTimeMs = renderTimeMs;
+			if (sizeModified) raw.buffer = Marshal::AllocHGlobal(samples * bytesPerSample).ToPointer();
+			Marshal::Copy(data, 0, IntPtr(raw.buffer), samples * bytesPerSample);
+		}
+	};
+
+	public enum class ClrVideoFrameType {
+		FRAME_TYPE_YUV420 = 0,  //YUV 420 format
+	};
+
+	public ref struct ClrVideoFrame {
+		ClrVideoFrameType type;
+		int width;  //width of video frame
+		int height;  //height of video frame
+		int yStride;  //stride of Y data buffer
+		int uStride;  //stride of U data buffer
+		int vStride;  //stride of V data buffer
+		array<Byte>^ ybuffer;
+		array<Byte>^ ubuffer;
+		array<Byte>^ vbuffer;
+		int rotation; // rotation of this frame (0, 90, 180, 270)
+		int64_t renderTimeMs;
+
+		ClrVideoFrame(agora::media::IVideoFrameObserver::VideoFrame raw) {
+			type = (ClrVideoFrameType)raw.type;
+			width = raw.width, height = raw.height, yStride = raw.yStride, uStride = raw.uStride, vStride = raw.vStride;
+			rotation = raw.rotation, renderTimeMs = raw.renderTimeMs;
+
+			int size = width + height;
+			ybuffer = gcnew array<Byte>(size);
+			Marshal::Copy(IntPtr(raw.yBuffer), ybuffer, 0, size);
+			ubuffer = gcnew array<Byte>(size / 4);
+			Marshal::Copy(IntPtr(raw.uBuffer), ubuffer, 0, size / 4);
+			vbuffer = gcnew array<Byte>(size / 4);
+			Marshal::Copy(IntPtr(raw.vBuffer), vbuffer, 0, size / 4);
+		}
+
+		void writeRaw(agora::media::IVideoFrameObserver::VideoFrame & raw) {
+			int sizeModified = (raw.width + raw.height) == (width + height);
+			raw.type = (agora::media::IVideoFrameObserver::VIDEO_FRAME_TYPE)type, raw.width = width, raw.height = height;
+			raw.yStride = yStride, raw.uStride = uStride, raw.vStride = vStride, raw.rotation = rotation, raw.renderTimeMs = renderTimeMs;
+
+			int size = width + height;
+			if (sizeModified) {
+				raw.yBuffer = Marshal::AllocHGlobal(size).ToPointer();
+				raw.uBuffer = Marshal::AllocHGlobal(size / 4).ToPointer();
+				raw.vBuffer = Marshal::AllocHGlobal(size / 4).ToPointer();
+			}
+			Marshal::Copy(ybuffer, 0, IntPtr(raw.yBuffer), size);
+			Marshal::Copy(ubuffer, 0, IntPtr(raw.uBuffer), size / 4);
+			Marshal::Copy(vbuffer, 0, IntPtr(raw.vBuffer), size / 4);
+		}
 	};
 
 	//RtcEngineEventHandler Part
@@ -163,10 +243,18 @@ namespace AgoraClrLibrary {
 	public delegate void onStreamMessage(int uid, int streamId, String ^data);
 	public delegate void onStreamMessageError(int uid, int streamId, int code, int missed, int cached);
 	
-	public delegate bool onSendAudioPacket(ClrPacket ^packet);
-	public delegate bool onSendVideoPacket(ClrPacket ^packet);
-	public delegate bool onReceiveAudioPacket(ClrPacket ^packet);
-	public delegate bool onReceiveVideoPacket(ClrPacket ^packet);
+	//PacketObserver Part
+	public delegate bool onSendAudioPacket(ClrPacket^& packet);
+	public delegate bool onSendVideoPacket(ClrPacket^& packet);
+	public delegate bool onReceiveAudioPacket(ClrPacket^& packet);
+	public delegate bool onReceiveVideoPacket(ClrPacket^& packet);
+
+	//Raw Data Part
+	public delegate bool onRecodingAudioFrame(ClrAudioFrame^& frame);
+	public delegate bool onPlaybackAudioFrame(ClrAudioFrame^& frame);
+	public delegate bool onPlaybackAudioFrameBeforeMixing(int uid, ClrAudioFrame^& frame);
+	public delegate bool onCaptureVideoFrame(ClrVideoFrame^& frame);
+	public delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^& frame);
 
 	public ref class AgoraClr
 	{
@@ -233,6 +321,11 @@ namespace AgoraClrLibrary {
 		int enableAudioVolumeIndication(int interval, int smooth);
 		int startAudioRecording(String ^path);
 		int stopAudioRecording();
+		int pauseAudioMixing();
+		int resumeAudioMixing();
+		int adjustAudioMixingVolume(int volume);
+		int getAudioMixingDuration();
+		int getAudioMixingCurrentPosition();
 		int startAudioMixing(String ^path, bool loop, bool replace, int cycle);
 		int stopAudioMixing();
 		int setLogFile(String ^path);
@@ -240,6 +333,9 @@ namespace AgoraClrLibrary {
 		int startRecordingService(String ^key);
 		int stopRecordingService(String ^key);
 		int refreshRecordingServiceStatus();
+		int adjustRecodingSignalVolumne(int volume);
+		int adjustPlaybackSignalVolume(int volume);
+
 
 		//RtcEngineEventHandler Part
 		onJoinChannelSuccess ^onJoinChannelSuccess;
@@ -272,15 +368,26 @@ namespace AgoraClrLibrary {
 		onStreamMessage ^onStreamMessage;
 		onStreamMessageError ^onStreamMessageError;
 
+		//PacketObserver Part
 		onSendAudioPacket ^onSendAudioPacket;
 		onSendVideoPacket ^onSendVideoPacket;
 		onReceiveAudioPacket ^onReceiveAudioPacket;
 		onReceiveVideoPacket ^onReceiveVideoPacket;
 
+		//Raw data Part
+		onRecodingAudioFrame ^onRecodingAudioFrame;
+		onPlaybackAudioFrame ^onPlaybackAudioFrame;
+		onPlaybackAudioFrameBeforeMixing ^onPlaybackAudioFrameBeforeMixing;
+		onCaptureVideoFrame ^onCaptureVideoFrame;
+		onRenderVideoFrame ^onRenderVideoFrame;
+
 	private:
 		agora::rtc::IRtcEngine *rtcEngine;
+
 		AgoraClrEventHandler *agoraEventHandler;
 		AgoraClrPacketObserver *agoraPacketObserver;
+		AgoraClrRawFrameObserver *agoraRawObserver;
+
 		List<GCHandle> ^gchs;
 
 		//Native Agora Event Handler
@@ -319,8 +426,15 @@ namespace AgoraClrLibrary {
 		bool NativeOnReceiveAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnReceiveVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
 
-		void initailizeEventHandler();
+		bool NativeOnRecodingAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
+		bool NativeOnPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
+		bool NativeOnPlaybackAudioFrameBeforeMixing(unsigned int uid, agora::media::IAudioFrameObserver::AudioFrame& frame);
+		bool NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame);
+		bool NativeOnRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
+
+		void initializeEventHandler();
 		void initializePacketObserver();
+		void initializeRawFrameObserver();
 		void* regEvent(Object^ obj);
 
 		static std::string MarshalString(String ^s) {
