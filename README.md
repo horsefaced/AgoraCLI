@@ -4,11 +4,15 @@
 
 支持版本升级到1.8.1，正在把一些1.8.1新增的接口补充上来。
 
+原始数据API部分因为要在managed与unmanaged的内存之间拷贝数据，所以不推荐运算量大的应用使用，如果要使用，推荐直接用声网的Native DLL来实现。
+
 现在实现接口有:
 
 1. IRtcEngine
 2. RtcEngineParameters
 3. IRtcEngineEventHandler
+4. IAudioFrameObserver
+5. IVideoFrameObserver
 
 暂没有实现的接口有:
 
@@ -16,5 +20,3 @@
 2. IAudioDeviceCollection
 3. IVideoDeviceManager
 4. IVideoDeviceCollection
-5. IAudioFrameObserver
-6. IVideoFrameObserver
