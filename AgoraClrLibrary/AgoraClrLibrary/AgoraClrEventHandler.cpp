@@ -102,4 +102,3 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessage(uid_t uid, int strea
 void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) {
 	if (onStreamMessageErrorEvent) onStreamMessageErrorEvent(uid, streamId, code, missed, cached);
 }
-

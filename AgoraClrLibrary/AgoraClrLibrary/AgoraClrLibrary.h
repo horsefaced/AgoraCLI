@@ -279,7 +279,6 @@ namespace AgoraClrLibrary {
 
 	private:
 		agora::rtc::IRtcEngine *rtcEngine;
-		agora::rtc::RtcEngineParameters *rtcEngineParameters;
 		AgoraClrEventHandler *agoraEventHandler;
 		AgoraClrPacketObserver *agoraPacketObserver;
 		List<GCHandle> ^gchs;

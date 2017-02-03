@@ -13,7 +13,6 @@ AgoraClr::AgoraClr()
 {
 	gchs = gcnew List<GCHandle>();
 	rtcEngine = NULL;
-	rtcEngineParameters = NULL;
 	agoraEventHandler = new AgoraClrEventHandler;
 	agoraPacketObserver = new AgoraClrPacketObserver;
 	initailizeEventHandler();
@@ -44,8 +43,10 @@ int AgoraClr::initialize(String ^vendorkey)
 	context.appId = middlestr.c_str();
 	context.eventHandler = agoraEventHandler;
 	int result = rtcEngine->initialize(context);
-	rtcEngineParameters = new agora::rtc::RtcEngineParameters(*rtcEngine);
-	rtcEngine->registerPacketObserver(agoraPacketObserver);
+	if (result) {
+		rtcEngine->registerPacketObserver(agoraPacketObserver);
+
+	}
 	return result;
 }
 
@@ -54,7 +55,6 @@ void AgoraClr::release()
 	if (rtcEngine != NULL) {
 		rtcEngine->release();
 		rtcEngine = NULL;
-		delete rtcEngineParameters;
 	}
 
 }
@@ -104,17 +104,20 @@ int AgoraClr::leaveChannel()
 
 int AgoraClrLibrary::AgoraClr::startScreenCapture(IntPtr windowId)
 {
-	return rtcEngineParameters->startScreenCapture((HWND)windowId.ToPointer());
+	RtcEngineParameters params(*rtcEngine);
+	return params.startScreenCapture((HWND)windowId.ToPointer());
 }
 
 int AgoraClrLibrary::AgoraClr::setScreenCaptureWindow(IntPtr windowId)
 {
-	return rtcEngineParameters->setScreenCaptureWindow((HWND)windowId.ToPointer());
+	RtcEngineParameters params(*rtcEngine);
+	return params.setScreenCaptureWindow((HWND)windowId.ToPointer());
 }
 
 int AgoraClrLibrary::AgoraClr::stopScreenCapture()
 {
-	return rtcEngineParameters->stopScreenCapture();
+	RtcEngineParameters params(*rtcEngine);
+	return params.stopScreenCapture();
 }
 
 int AgoraClr::renewChannelKey(String ^ channelKey)
@@ -211,112 +214,134 @@ int AgoraClr::sendStreamMessage(int id, String ^ data)
 
 int AgoraClrLibrary::AgoraClr::setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall)
 {
-	return rtcEngineParameters->setRecordingAudioFrameParameters(sampleRate, channel, (RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
+	RtcEngineParameters params(*rtcEngine);
+	return params.setRecordingAudioFrameParameters(sampleRate, channel, (RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
 }
 
 int AgoraClrLibrary::AgoraClr::setPlaybackAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall)
 {
-	return rtcEngineParameters->setPlaybackAudioFrameParameters(sampleRate, channel, (RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
+	RtcEngineParameters params(*rtcEngine);
+	return params.setPlaybackAudioFrameParameters(sampleRate, channel, (RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
 }
 
 int AgoraClr::muteLocalAudioStream(bool mute)
 {
-	return rtcEngineParameters->muteLocalAudioStream(mute);
+	RtcEngineParameters params(*rtcEngine);
+	return params.muteLocalAudioStream(mute);
 }
 
 int AgoraClr::muteAllRemoteAudioStreams(bool mute)
 {
-	return rtcEngineParameters->muteAllRemoteAudioStreams(mute);
+	RtcEngineParameters params(*rtcEngine);
+	return params.muteAllRemoteAudioStreams(mute);
 }
 
 int AgoraClr::muteRemoteAudioStream(int uid, bool mute)
 {
-	return rtcEngineParameters->muteRemoteAudioStream(uid, mute);
+	RtcEngineParameters params(*rtcEngine);
+	return params.muteRemoteAudioStream(uid, mute);
 }
 
 int AgoraClr::muteLocalVideoStream(bool mute)
 {
-	return rtcEngineParameters->muteLocalVideoStream(mute);
+	RtcEngineParameters params(*rtcEngine);
+	return params.muteLocalVideoStream(mute);
 }
 
 int AgoraClr::enableLocalVideo(bool enabled)
 {
-	return rtcEngineParameters->enableLocalVideo(enabled);
+	RtcEngineParameters params(*rtcEngine);
+	return params.enableLocalVideo(enabled);
 }
 
 int AgoraClr::muteAllRemoteVideoStream(bool mute)
 {
-	return rtcEngineParameters->muteAllRemoteVideoStreams(mute);
+	RtcEngineParameters params(*rtcEngine);
+	return params.muteAllRemoteVideoStreams(mute);
 }
 
 int AgoraClr::muteRemoteVideoStream(int uid, bool mute)
 {
-	return rtcEngineParameters->muteRemoteVideoStream(uid, mute);
+	RtcEngineParameters params(*rtcEngine);
+	return params.muteRemoteVideoStream(uid, mute);
 }
 
 int AgoraClr::setPlaybackDeviceVolume(int volume)
 {
-	return rtcEngineParameters->setPlaybackDeviceVolume(volume);
+	RtcEngineParameters params(*rtcEngine);
+	return params.setPlaybackDeviceVolume(volume);
 }
 
 int AgoraClr::setLocalRenderMode(RenderMode mode)
 {
-	return rtcEngineParameters->setLocalRenderMode((agora::rtc::RENDER_MODE_TYPE)mode);
+	RtcEngineParameters params(*rtcEngine);
+	return params.setLocalRenderMode((agora::rtc::RENDER_MODE_TYPE)mode);
 }
 
 int AgoraClr::setRemoteRenderMode(int uid, RenderMode mode)
 {
-	return rtcEngineParameters->setRemoteRenderMode(uid, (agora::rtc::RENDER_MODE_TYPE)mode);
+	RtcEngineParameters params(*rtcEngine);
+	return params.setRemoteRenderMode(uid, (agora::rtc::RENDER_MODE_TYPE)mode);
 }
 
 int AgoraClr::enableAudioVolumeIndication(int interval, int smooth)
 {
-	return rtcEngineParameters->enableAudioVolumeIndication(interval, smooth);
+	RtcEngineParameters params(*rtcEngine);
+	return params.enableAudioVolumeIndication(interval, smooth);
 }
 
 int AgoraClr::startAudioRecording(String ^ path)
 {
-	return rtcEngineParameters->startAudioRecording(MarshalString(path).c_str());
+	agora::rtc::RtcEngineParameters param(*rtcEngine);
+	return param.startAudioRecording(MarshalString(path).c_str());
 }
 
 int AgoraClr::stopAudioRecording()
 {
-	return rtcEngineParameters->stopAudioRecording();
+	RtcEngineParameters params(*rtcEngine);
+	return params.stopAudioRecording();
 }
 
 int AgoraClr::startAudioMixing(String ^ path, bool loop, bool replace, int cycle)
 {
-	return rtcEngineParameters->startAudioMixing(MarshalString(path).c_str(), loop, replace, cycle);
+	RtcEngineParameters params(*rtcEngine);
+	return params.startAudioMixing(MarshalString(path).c_str(), loop, replace, cycle);
 }
 
 int AgoraClr::stopAudioMixing()
 {
-	return rtcEngineParameters->stopAudioMixing();
+	RtcEngineParameters params(*rtcEngine);
+	return params.stopAudioMixing();
 }
 
 int AgoraClr::setLogFile(String ^ path)
 {
-	return rtcEngineParameters->setLogFile(MarshalString(path).c_str());
+	RtcEngineParameters params(*rtcEngine);
+	return params.setLogFile(MarshalString(path).c_str());
 }
 
 int AgoraClr::setLogFilter(unsigned int filter)
 {
-	return rtcEngineParameters->setLogFilter(filter);
+	RtcEngineParameters params(*rtcEngine);
+	return params.setLogFilter(filter);
 }
 
 int AgoraClr::startRecordingService(String ^ key)
 {
-	return rtcEngineParameters->startRecordingService(MarshalString(key).c_str());
+	RtcEngineParameters params(*rtcEngine);
+	return params.startRecordingService(MarshalString(key).c_str());
 }
 
 int AgoraClr::stopRecordingService(String ^ key)
 {
-	return rtcEngineParameters->stopRecordingService(MarshalString(key).c_str());
+	RtcEngineParameters params(*rtcEngine);
+	return params.stopRecordingService(MarshalString(key).c_str());
 }
 
 int AgoraClr::refreshRecordingServiceStatus()
 {
-	return rtcEngineParameters->refreshRecordingServiceStatus();
+	RtcEngineParameters params(*rtcEngine);
+	return params.refreshRecordingServiceStatus();
 }
 
 void* AgoraClr::regEvent(Object^ obj)
