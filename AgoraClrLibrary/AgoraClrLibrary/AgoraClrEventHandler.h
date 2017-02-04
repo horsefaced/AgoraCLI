@@ -16,6 +16,7 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnAudioDeviceStateChanged)(const char* deviceId, int deviceType, int deviceState);
 	typedef void(__stdcall * PFOnVideoDeviceStateChanged)(const char* deviceId, int deviceType, int deviceState);
 	typedef void(__stdcall * PFOnLastmileQuality)(int quality);
+	typedef void(__stdcall * PFOnNetworkQuality)(uid_t uid, int txQuality, int rxQuality);
 	typedef void(__stdcall * PFOnFirstLocalVideoFrame)(int width, int height, int elapsed);
 	typedef void(__stdcall * PFOnFirstRemoteVideoDecoded)(uid_t uid, int width, int height, int elapsed);
 	typedef void(__stdcall * PFOnFirstRemoteVideoFrame)(uid_t uid, int width, int height, int elapsed);
@@ -34,6 +35,7 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnRefreshRecordingServiceStatus)(int status);
 	typedef void(__stdcall * PFOnStreamMessage)(uid_t uid, int streamId, const char* data, size_t length);
 	typedef void(__stdcall * PFOnStreamMessageError)(uid_t uid, int streamId, int code, int missed, int cached);
+	typedef void(__stdcall * PFOnRequestChannelKey)();
 
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -47,6 +49,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnAudioDeviceStateChangedDelegate(const char* deviceId, int deviceType, int deviceState);
 	delegate void NativeOnVideoDeviceStateChangedDelegate(const char* deviceId, int deviceType, int deviceState);
 	delegate void NativeOnLastmileQualityDelegate(int quality);
+	delegate void NativeOnNetworkQualityDelegate(uid_t uid, int txQuality, int rxQuality);
 	delegate void NativeOnFirstLocalVideoFrameDelegate(int width, int height, int elapsed);
 	delegate void NativeOnFirstRemoteVideoDecodedDelegate(uid_t uid, int width, int height, int elapsed);
 	delegate void NativeOnFirstRemoteVideoFrameDelegate(uid_t uid, int width, int height, int elapsed);
@@ -65,6 +68,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnRefreshRecordingServiceStatusDelegate(int status);
 	delegate void NativeOnStreamMessageDelegate(uid_t uid, int streamId, const char* data, size_t length);
 	delegate void NativeOnStreamMessageErrorDelegate(uid_t uid, int streamId, int code, int missed, int cached);
+	delegate void NativeOnRequestChannelKeyDelegate();
 
 	public class AgoraClrEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
@@ -83,6 +87,7 @@ namespace AgoraClrLibrary {
 		PFOnAudioDeviceStateChanged onAudioDeviceStateChangedEvent = 0;
 		PFOnVideoDeviceStateChanged onVideoDeviceStateChangedEvent = 0;
 		PFOnLastmileQuality onLastmileQualityEvent = 0;
+		PFOnNetworkQuality onNetworkQualityEvent = 0;
 		PFOnFirstLocalVideoFrame onFirstLocalVideoFrameEvent = 0;
 		PFOnFirstRemoteVideoDecoded onFirstRemoteVideoDecodedEvent = 0;
 		PFOnFirstRemoteVideoFrame onFirstRemoteVideoFrameEvent = 0;
@@ -101,6 +106,7 @@ namespace AgoraClrLibrary {
 		PFOnRefreshRecordingServiceStatus onRefreshRecordingServiceStatusEvent = 0;
 		PFOnStreamMessage onStreamMessageEvent = 0;
 		PFOnStreamMessageError onStreamMessageErrorEvent = 0;
+		PFOnRequestChannelKey onRequestChannelKeyEvent = 0;
 
 		virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
@@ -113,6 +119,7 @@ namespace AgoraClrLibrary {
 		virtual void onAudioDeviceStateChanged(const char* deviceId, int deviceType, int deviceState);
 		virtual void onVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState);
 		virtual void onLastmileQuality(int quality);
+		virtual void onNetworkQuality(uid_t uid, int txQuality, int rxQuality);
 		virtual void onFirstLocalVideoFrame(int width, int height, int elapsed);
 		virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed);
 		virtual void onFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed);
@@ -131,7 +138,7 @@ namespace AgoraClrLibrary {
 		virtual void onRefreshRecordingServiceStatus(int status);
 		virtual void onStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
 		virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
-
+		virtual void onRequestChannelKey();
 	};
 
 }

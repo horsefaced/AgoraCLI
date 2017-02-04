@@ -48,6 +48,10 @@ void AgoraClrLibrary::AgoraClrEventHandler::onVideoDeviceStateChanged(const char
 void AgoraClrLibrary::AgoraClrEventHandler::onLastmileQuality(int quality) {
 	if (onLastmileQualityEvent) onLastmileQualityEvent(quality);
 }
+void AgoraClrLibrary::AgoraClrEventHandler::onNetworkQuality(uid_t uid, int txQuality, int rxQuality)
+{
+	if (onNetworkQualityEvent) onNetworkQualityEvent(uid, txQuality, rxQuality);
+}
 void AgoraClrLibrary::AgoraClrEventHandler::onFirstLocalVideoFrame(int width, int height, int elapsed) {
 	if (onFirstLocalVideoFrameEvent) onFirstLocalVideoFrameEvent(width, height, elapsed);
 }
@@ -101,4 +105,9 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessage(uid_t uid, int strea
 }
 void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) {
 	if (onStreamMessageErrorEvent) onStreamMessageErrorEvent(uid, streamId, code, missed, cached);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRequestChannelKey()
+{
+	if (onRequestChannelKeyEvent) onRequestChannelKeyEvent();
 }

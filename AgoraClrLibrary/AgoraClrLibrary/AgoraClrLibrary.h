@@ -5,12 +5,24 @@
 #include "AgoraClrEventHandler.h"
 #include "AgoraClrPacketObserver.h"
 #include "AgoraClrRawFrameObserver.h"
+#include "AgoraClrAudioDeviceManager.h"
+#include "AgoraClrVideoDeviceManager.h"
 
-using namespace System::Runtime::InteropServices;
+#include <string>
+
 using namespace System;
+using namespace System::Runtime::InteropServices;
 using namespace System::Collections::Generic;
 
 namespace AgoraClrLibrary {
+   
+	static std::string MarshalString(String ^s) {
+		if (s == nullptr) return std::string();
+		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
+		std::string result((char *)middleStr.ToPointer());
+		Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
+		return result;
+	}
 
 	public enum class VideoProfile
 	{                                   // res       fps  kbps
@@ -77,15 +89,38 @@ namespace AgoraClrLibrary {
 		unsigned int rxBytes;
 		unsigned short txKBitRate;
 		unsigned short rxKBitRate;
+
+		unsigned short rxAudioKBitRate;
+		unsigned short txAudioKBitRate;
+
+		unsigned short rxVideoKBitRate;
+		unsigned short txVideoKBitRate;
+
 		unsigned int users;
 		double cpuAppUsage;
 		double cpuTotalUsage;
+
+		RtcStats(agora::rtc::RtcStats raw) {
+			cpuAppUsage = raw.cpuAppUsage;
+			cpuTotalUsage = raw.cpuTotalUsage;
+			duration = raw.duration;
+			rxBytes = raw.rxBytes;
+			txBytes = raw.txBytes;
+			txKBitRate = raw.txKBitRate;
+			rxKBitRate = raw.rxKBitRate;
+			rxAudioKBitRate = raw.rxAudioKBitRate;
+			txAudioKBitRate = raw.txAudioKBitRate;
+			rxVideoKBitRate = raw.rxVideoKBitRate;
+			txVideoKBitRate = raw.txVideoKBitRate;
+			users = raw.users;
+		}
 	};
 
 	public enum class UserOfflineType
 	{
 		USER_OFFLINE_QUIT = 0,
 		USER_OFFLINE_DROPPED = 1,
+		USER_OFFLINE_BECOME_AUDIENCE = 2,
 	};
 
 	public enum class RawAudioFrameOPModeType
@@ -102,6 +137,14 @@ namespace AgoraClrLibrary {
 		int sentFrameRate;
 	};
 
+	public enum class RemoteVideoStreamType
+	{
+		REMOTE_VIDEO_STREAM_UNKNOWN = -1,
+		REMOTE_VIDEO_STREAM_HIGH = 0,
+		REMOTE_VIDEO_STREAM_LOW = 1,
+		REMOTE_VIDEO_STREAM_MEDIUM = 2,
+	};
+
 	public ref class RemoteVideoStats
 	{
 	public:
@@ -111,6 +154,17 @@ namespace AgoraClrLibrary {
 		int height;
 		int receivedBitrate;
 		int receivedFrameRate;
+		RemoteVideoStreamType rxStreamType;
+
+		RemoteVideoStats(agora::rtc::RemoteVideoStats stats) {
+			uid = stats.uid;
+			delay = stats.delay;
+			width = stats.width;
+			height = stats.height;
+			receivedBitrate = stats.receivedBitrate;
+			receivedFrameRate = stats.receivedFrameRate;
+			rxStreamType = (RemoteVideoStreamType)stats.rxStreamType;
+		}
 	};
 
 	public ref class ClrPacket {
@@ -138,7 +192,8 @@ namespace AgoraClrLibrary {
 		FRAME_TYPE_PCM16 = 0,  //PCM 16bit little endian
 	};
 
-	public ref struct ClrAudioFrame {
+	public ref class ClrAudioFrame {
+	public:
 		ClrAudioFrameType type;
 		int samples;  //number of samples in this frame
 		int bytesPerSample;  //number of bytes per sample: 2 for PCM16
@@ -147,7 +202,7 @@ namespace AgoraClrLibrary {
 		array<Byte>^ data;
 		int64_t renderTimeMs;
 
-		ClrAudioFrame(agora::media::IAudioFrameObserver::AudioFrame raw) {
+		ClrAudioFrame(agora::media::IAudioFrameObserver::AudioFrame & raw) {
 			type = (ClrAudioFrameType)raw.type, samples = raw.samples, bytesPerSample = raw.bytesPerSample, channels = raw.channels,
 				samplesPerSec = raw.samplesPerSec, renderTimeMs = raw.renderTimeMs;
 
@@ -168,7 +223,8 @@ namespace AgoraClrLibrary {
 		FRAME_TYPE_YUV420 = 0,  //YUV 420 format
 	};
 
-	public ref struct ClrVideoFrame {
+	public ref class ClrVideoFrame {
+	public:
 		ClrVideoFrameType type;
 		int width;  //width of video frame
 		int height;  //height of video frame
@@ -181,7 +237,7 @@ namespace AgoraClrLibrary {
 		int rotation; // rotation of this frame (0, 90, 180, 270)
 		int64_t renderTimeMs;
 
-		ClrVideoFrame(agora::media::IVideoFrameObserver::VideoFrame raw) {
+		ClrVideoFrame(agora::media::IVideoFrameObserver::VideoFrame & raw) {
 			type = (ClrVideoFrameType)raw.type;
 			width = raw.width, height = raw.height, yStride = raw.yStride, uStride = raw.uStride, vStride = raw.vStride;
 			rotation = raw.rotation, renderTimeMs = raw.renderTimeMs;
@@ -228,9 +284,13 @@ namespace AgoraClrLibrary {
 	public delegate void onFirstLocalVideoFrame(int width, int height, int elapsed);
 	public delegate void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed);
 	public delegate void onFirstRemoteVideoFrame(int uid, int width, int height, int elapsed);
+
 	public delegate void onAudioDeviceStateChanged(String ^deviceid, int deviceType, int deviceState);
 	public delegate void onVideoDeviceStateChanged(String ^deviceid, int deviceType, int deviceState);
+
 	public delegate void onLastmileQuality(int quality);
+	public delegate void onNetworkQuality(int uid, int txQuality, int rxQuality);
+
 	public delegate void onUserMuteAudio(int uid, bool muted);
 	public delegate void onUserMuteVideo(int uid, bool muted);
 	public delegate void onUserEnableVideo(int uid, bool enabled);
@@ -242,19 +302,20 @@ namespace AgoraClrLibrary {
 	public delegate void onApiCallExecuted(String ^api, int error);
 	public delegate void onStreamMessage(int uid, int streamId, String ^data);
 	public delegate void onStreamMessageError(int uid, int streamId, int code, int missed, int cached);
+	public delegate void onRequestChannelKey();
 	
 	//PacketObserver Part
-	public delegate bool onSendAudioPacket(ClrPacket^& packet);
-	public delegate bool onSendVideoPacket(ClrPacket^& packet);
-	public delegate bool onReceiveAudioPacket(ClrPacket^& packet);
-	public delegate bool onReceiveVideoPacket(ClrPacket^& packet);
+	public delegate bool onSendAudioPacket(ClrPacket^ packet);
+	public delegate bool onSendVideoPacket(ClrPacket^ packet);
+	public delegate bool onReceiveAudioPacket(ClrPacket^ packet);
+	public delegate bool onReceiveVideoPacket(ClrPacket^ packet);
 
 	//Raw Data Part
-	public delegate bool onRecodingAudioFrame(ClrAudioFrame^& frame);
-	public delegate bool onPlaybackAudioFrame(ClrAudioFrame^& frame);
-	public delegate bool onPlaybackAudioFrameBeforeMixing(int uid, ClrAudioFrame^& frame);
-	public delegate bool onCaptureVideoFrame(ClrVideoFrame^& frame);
-	public delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^& frame);
+	public delegate bool onRecodingAudioFrame(ClrAudioFrame^ frame);
+	public delegate bool onPlaybackAudioFrame(ClrAudioFrame^ frame);
+	public delegate bool onPlaybackAudioFrameBeforeMixing(int uid, ClrAudioFrame^ frame);
+	public delegate bool onCaptureVideoFrame(ClrVideoFrame^ frame);
+	public delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^ frame);
 
 	public ref class AgoraClr
 	{
@@ -336,6 +397,9 @@ namespace AgoraClrLibrary {
 		int adjustRecodingSignalVolumne(int volume);
 		int adjustPlaybackSignalVolume(int volume);
 
+		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
+		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
+		IRtcEngine* getEngine();
 
 		//RtcEngineEventHandler Part
 		onJoinChannelSuccess ^onJoinChannelSuccess;
@@ -356,6 +420,7 @@ namespace AgoraClrLibrary {
 		onAudioDeviceStateChanged ^onAudioDeviceStateChanged;
 		onVideoDeviceStateChanged ^onVideoDeviceStateChanged;
 		onLastmileQuality ^onLastmileQuality;
+		onNetworkQuality^ onNetworkQuality;
 		onUserMuteAudio ^onUserMuteAudio;
 		onUserMuteVideo ^onUserMuteVideo;
 		onUserEnableVideo ^onUserEnableVideo;
@@ -367,6 +432,7 @@ namespace AgoraClrLibrary {
 		onApiCallExecuted ^onApiCallExecuted;
 		onStreamMessage ^onStreamMessage;
 		onStreamMessageError ^onStreamMessageError;
+		onRequestChannelKey^ onRequestChannelKey;
 
 		//PacketObserver Part
 		onSendAudioPacket ^onSendAudioPacket;
@@ -402,6 +468,7 @@ namespace AgoraClrLibrary {
 		void NativeOnAudioDeviceStateChanged(const char* deviceId, int deviceType, int deviceState);
 		void NativeOnVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState);
 		void NativeOnLastmileQuality(int quality);
+		void NativeOnNetworkQuality(uid_t uid, int txQuality, int rxQuality);
 		void NativeOnFirstLocalVideoFrame(int width, int height, int elapsed);
 		void NativeOnFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed);
 		void NativeOnFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed);
@@ -420,6 +487,7 @@ namespace AgoraClrLibrary {
 		void NativeOnRefreshRecordingServiceStatus(int status);
 		void NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
 		void NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
+		void NativeOnRequestChannelKey();
 
 		bool NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
@@ -437,13 +505,6 @@ namespace AgoraClrLibrary {
 		void initializeRawFrameObserver();
 		void* regEvent(Object^ obj);
 
-		static std::string MarshalString(String ^s) {
-			if (s == nullptr) return std::string();
-			IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
-			std::string result((char *)middleStr.ToPointer());
-			Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
-			return result;
-		}
 
 
 	};

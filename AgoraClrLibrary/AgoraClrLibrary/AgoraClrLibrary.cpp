@@ -46,7 +46,7 @@ int AgoraClr::initialize(String ^vendorkey)
 	context.appId = middlestr.c_str();
 	context.eventHandler = agoraEventHandler;
 	int result = rtcEngine->initialize(context);
-	if (result) {
+	if (result == 0) {
 		rtcEngine->registerPacketObserver(agoraPacketObserver);
 		agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
 		mediaEngine.queryInterface(*rtcEngine, agora::rtc::AGORA_IID_MEDIA_ENGINE);
@@ -419,6 +419,7 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onAudioDeviceStateChangedEvent = PFOnAudioDeviceStateChanged(regEvent(gcnew NativeOnAudioDeviceStateChangedDelegate(this, &AgoraClr::NativeOnAudioDeviceStateChanged)));
 	agoraEventHandler->onVideoDeviceStateChangedEvent = PFOnVideoDeviceStateChanged(regEvent(gcnew NativeOnVideoDeviceStateChangedDelegate(this, &AgoraClr::NativeOnVideoDeviceStateChanged)));
 	agoraEventHandler->onLastmileQualityEvent = PFOnLastmileQuality(regEvent(gcnew NativeOnLastmileQualityDelegate(this, &AgoraClr::NativeOnLastmileQuality)));
+	agoraEventHandler->onNetworkQualityEvent = PFOnNetworkQuality(regEvent(gcnew NativeOnNetworkQualityDelegate(this, &AgoraClr::NativeOnNetworkQuality)));
 	agoraEventHandler->onFirstLocalVideoFrameEvent = PFOnFirstLocalVideoFrame(regEvent(gcnew NativeOnFirstLocalVideoFrameDelegate(this, &AgoraClr::NativeOnFirstLocalVideoFrame)));
 	agoraEventHandler->onFirstRemoteVideoDecodedEvent = PFOnFirstRemoteVideoDecoded(regEvent(gcnew NativeOnFirstRemoteVideoDecodedDelegate(this, &AgoraClr::NativeOnFirstRemoteVideoDecoded)));
 	agoraEventHandler->onFirstRemoteVideoFrameEvent = PFOnFirstRemoteVideoFrame(regEvent(gcnew NativeOnFirstRemoteVideoFrameDelegate(this, &AgoraClr::NativeOnFirstRemoteVideoFrame)));
@@ -437,6 +438,7 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onRefreshRecordingServiceStatusEvent = PFOnRefreshRecordingServiceStatus(regEvent(gcnew NativeOnRefreshRecordingServiceStatusDelegate(this, &AgoraClr::NativeOnRefreshRecordingServiceStatus)));
 	agoraEventHandler->onStreamMessageEvent = PFOnStreamMessage(regEvent(gcnew NativeOnStreamMessageDelegate(this, &AgoraClr::NativeOnStreamMessage)));
 	agoraEventHandler->onStreamMessageErrorEvent = PFOnStreamMessageError(regEvent(gcnew NativeOnStreamMessageErrorDelegate(this, &AgoraClr::NativeOnStreamMessageError)));
+	agoraEventHandler->onRequestChannelKeyEvent = PFOnRequestChannelKey(regEvent(gcnew NativeOnRequestChannelKeyDelegate(this, &AgoraClr::NativeOnRequestChannelKey)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -457,7 +459,22 @@ void AgoraClr::initializeRawFrameObserver()
 	agoraRawObserver->onRenderVideoFrameEvent = PFOnRenderVideoFrame(regEvent(gcnew NativeOnRenderVideoFrameDelegate(this, &AgoraClr::NativeOnRenderVideoFrame)));
 }
 
-void AgoraClr::NativeOnJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) 
+AgoraClrAudioDeviceManager ^ AgoraClrLibrary::AgoraClr::getAudioDeviceManager()
+{
+	return gcnew AgoraClrAudioDeviceManager(this);
+}
+
+AgoraClrVideoDeviceManager ^ AgoraClrLibrary::AgoraClr::getVideoDeviceManager()
+{
+	return gcnew AgoraClrVideoDeviceManager(this);
+}
+
+IRtcEngine * AgoraClrLibrary::AgoraClr::getEngine()
+{
+	return this->rtcEngine;
+}
+
+void AgoraClr::NativeOnJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
 {
 	if (onJoinChannelSuccess) {
 		onJoinChannelSuccess(gcnew String(channel), uid, elapsed);
@@ -505,15 +522,7 @@ void AgoraClr::NativeOnAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* 
 void AgoraClr::NativeOnLeaveChannel(const agora::rtc::RtcStats& stats) 
 {
 	if (onLeaveChannel) {
-		AgoraClrLibrary::RtcStats ^rtc = gcnew AgoraClrLibrary::RtcStats();
-		rtc->cpuAppUsage = stats.cpuAppUsage;
-		rtc->cpuTotalUsage = stats.cpuTotalUsage;
-		rtc->duration = stats.duration;
-		rtc->rxBytes = stats.rxBytes;
-		rtc->txBytes = stats.txBytes;
-		rtc->txKBitRate = stats.txKBitRate;
-		rtc->rxKBitRate = stats.rxKBitRate;
-		rtc->users = stats.users;
+		AgoraClrLibrary::RtcStats ^rtc = gcnew AgoraClrLibrary::RtcStats(stats);
 		onLeaveChannel(rtc);
 	}
 }
@@ -521,15 +530,7 @@ void AgoraClr::NativeOnLeaveChannel(const agora::rtc::RtcStats& stats)
 void AgoraClr::NativeOnRtcStats(const agora::rtc::RtcStats& stats)
 {
 	if (onRtcStats) {
-		AgoraClrLibrary::RtcStats ^rtc = gcnew AgoraClrLibrary::RtcStats();
-		rtc->cpuAppUsage = stats.cpuAppUsage;
-		rtc->cpuTotalUsage = stats.cpuTotalUsage;
-		rtc->duration = stats.duration;
-		rtc->rxBytes = stats.rxBytes;
-		rtc->txBytes = stats.txBytes;
-		rtc->txKBitRate = stats.txKBitRate;
-		rtc->rxKBitRate = stats.rxKBitRate;
-		rtc->users = stats.users;
+		AgoraClrLibrary::RtcStats ^rtc = gcnew AgoraClrLibrary::RtcStats(stats);
 		onRtcStats(rtc);
 	}
 }
@@ -547,6 +548,11 @@ void AgoraClr::NativeOnVideoDeviceStateChanged(const char* deviceId, int deviceT
 void AgoraClr::NativeOnLastmileQuality(int quality) 
 {
 	if (onLastmileQuality) onLastmileQuality(quality);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnNetworkQuality(uid_t uid, int txQuality, int rxQuality)
+{
+	if (onNetworkQuality) onNetworkQuality(uid, txQuality, rxQuality);
 }
 
 void AgoraClr::NativeOnFirstLocalVideoFrame(int width, int height, int elapsed) 
@@ -607,13 +613,8 @@ void AgoraClr::NativeOnLocalVideoStats(const agora::rtc::LocalVideoStats& stats)
 void AgoraClr::NativeOnRemoteVideoStats(const agora::rtc::RemoteVideoStats& stats)
 {
 	if (onRemoteVideoStats) {
-		AgoraClrLibrary::RemoteVideoStats ^s = gcnew AgoraClrLibrary::RemoteVideoStats();
-		s->uid = stats.uid;
-		s->delay = stats.delay;
-		s->width = stats.width;
-		s->height = stats.height;
-		s->receivedBitrate = stats.receivedBitrate;
-		s->receivedFrameRate = stats.receivedFrameRate;
+		AgoraClrLibrary::RemoteVideoStats ^s = gcnew AgoraClrLibrary::RemoteVideoStats(stats);
+
 		onRemoteVideoStats(s);
 	}
 }
@@ -651,6 +652,11 @@ void AgoraClr::NativeOnStreamMessage(uid_t uid, int streamId, const char* data, 
 void AgoraClr::NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached)
 {
 	if (onStreamMessageError) onStreamMessageError(uid, streamId, code, missed, cached);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnRequestChannelKey()
+{
+	if (onRequestChannelKey) onRequestChannelKey();
 }
 
 bool AgoraClrLibrary::AgoraClr::NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet & packet)

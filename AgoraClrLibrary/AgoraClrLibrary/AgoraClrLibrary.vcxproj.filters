@@ -33,6 +33,12 @@
     <ClInclude Include="AgoraClrRawFrameObserver.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AgoraClrVideoDeviceManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraClrAudioDeviceManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AgoraClrLibrary.cpp">
@@ -51,6 +57,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AgoraClrRawFrameObserver.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraClrVideoDeviceManager.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraClrAudioDeviceManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

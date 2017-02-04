@@ -24,6 +24,12 @@ namespace AgoraClrDemo
             agora.onCameraReady += new AgoraClrLibrary.onCameraReady(onCameraReady);
             agora.onJoinChannelSuccess += new AgoraClrLibrary.onJoinChannelSuccess(onJoinChannelSuccess);
             agora.onFirstRemoteVideoDecoded += new AgoraClrLibrary.onFirstRemoteVideoDecoded(onFirstRemoteVideoDecoded);
+            agora.onCaptureVideoFrame += new AgoraClrLibrary.onCaptureVideoFrame(onCaptureVideoFrame);
+        }
+
+        private bool onCaptureVideoFrame(AgoraClrLibrary.ClrVideoFrame frame)
+        {
+            return true;
         }
 
         private void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed)

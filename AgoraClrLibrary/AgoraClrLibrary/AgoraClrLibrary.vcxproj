@@ -132,16 +132,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AgoraClrAudioDeviceManager.h" />
     <ClInclude Include="AgoraClrEventHandler.h" />
     <ClInclude Include="AgoraClrLibrary.h" />
     <ClInclude Include="AgoraClrPacketObserver.h" />
     <ClInclude Include="AgoraClrRawFrameObserver.h" />
+    <ClInclude Include="AgoraClrVideoDeviceManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AgoraClrAudioDeviceManager.cpp" />
     <ClCompile Include="AgoraClrEventHandler.cpp" />
     <ClCompile Include="AgoraClrLibrary.cpp" />
+    <ClCompile Include="AgoraClrVideoDeviceManager.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="AgoraClrPacketObserver.cpp" />
     <ClCompile Include="AgoraClrRawFrameObserver.cpp" />
