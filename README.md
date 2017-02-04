@@ -6,9 +6,7 @@
 
 原始数据API部分因为要在managed与unmanaged的内存之间拷贝数据，所以不推荐运算量大的应用使用，如果要使用，推荐直接用声网的Native DLL来实现。
 
-现在实现接口有:
-
-通信接口下的这些接口已实现
+通信与直播功能下的这些接口已实现
 - IRtcEngine
 - RtcEngineParameters
 - IRtcEngineEventHandler
@@ -20,6 +18,5 @@
 - IVideoDeviceCollection
 
 暂没有实现的接口有:
-- 直播接口
 - 信令接口
 

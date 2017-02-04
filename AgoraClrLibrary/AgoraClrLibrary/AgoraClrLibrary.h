@@ -67,6 +67,12 @@ namespace AgoraClrLibrary {
 		CHANNEL_PROFILE_GAME = 2,
 	};
 
+	public enum class ClientRoleType
+	{
+		CLIENT_ROLE_BROADCASTER = 1,
+		CLIENT_ROLE_AUDIENCE = 2,
+	};
+
 	public enum class RenderMode
 	{
 		RENDER_MODE_HIDDEN = 1,
@@ -268,6 +274,75 @@ namespace AgoraClrLibrary {
 		}
 	};
 
+	public ref class ClrRegion {
+	public:
+		int uid;
+		double x;//[0,1]
+		double y;//[0,1]
+		double width;//[0,1]
+		double height;//[0,1]
+		int zOrder; //optional, [0, 100] //0 (default): bottom most, 100: top most
+
+		//  Optional
+		//  [0, 1.0] where 0 denotes throughly transparent, 1.0 opaque
+		double alpha;
+
+		RenderMode renderMode;//RENDER_MODE_HIDDEN: Crop, RENDER_MODE_FIT: Zoom to fit
+
+		ClrRegion()
+			:uid(0)
+			, x(0)
+			, y(0)
+			, width(0)
+			, height(0)
+			, zOrder(0)
+			, alpha(1.0)
+			, renderMode(RenderMode::RENDER_MODE_HIDDEN)
+		{}
+
+		agora::rtc::VideoCompositingLayout::Region* toRaw() {
+			VideoCompositingLayout::Region* result = new VideoCompositingLayout::Region();
+			result->uid = uid, result->x = x, result->y = y, result->width = width, result->height = height;
+			result->zOrder = zOrder, result->alpha = alpha;
+			return result;
+		}
+
+		static agora::rtc::VideoCompositingLayout::Region* toRaws(List<ClrRegion^>^ region) {
+			int size = sizeof(VideoCompositingLayout::Region) * region->Count;
+			VideoCompositingLayout::Region* result =  static_cast<VideoCompositingLayout::Region*>(Marshal::AllocHGlobal(size).ToPointer());
+			for (int i = 0; i < region->Count; i++) {
+				result[i] = *region[i]->toRaw();
+			}
+			return result;
+		}
+	};
+
+	public ref class ClrVideoCompositingLayout
+	{
+	public:
+		int canvasWidth;
+		int canvasHeight;
+		String^ backgroundColor;//e.g. "#C0C0C0" in RGB
+		List<ClrRegion^>^ regions;
+		String^ appData;
+		ClrVideoCompositingLayout()
+			:canvasWidth(0)
+			, canvasHeight(0)
+			, backgroundColor(nullptr)
+			, regions(nullptr)
+			, appData(nullptr)
+		{}
+
+		agora::rtc::VideoCompositingLayout* toRaw() {
+			VideoCompositingLayout* result = new VideoCompositingLayout();
+			result->canvasHeight = canvasHeight, result->canvasWidth = canvasWidth;
+			result->backgroundColor = MarshalString(backgroundColor).c_str();
+			result->regions = ClrRegion::toRaws(regions), result->regionCount = regions->Count;
+			result->appData = MarshalString(appData).c_str(), result->appDataLength = appData->Length;
+			return result;
+		}
+	};
+	
 	//RtcEngineEventHandler Part
 	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
 	public delegate void onRejoinChannelSuccess(String ^channel, int uid, int elapsed);
@@ -332,9 +407,12 @@ namespace AgoraClrLibrary {
 
 		int enableAudio();
 		int disableAudio();
+		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
 
 		int startPreview();
 		int stopPreview();
+
+		int enableWebSdkInteroperability(bool enabled);
 
 		int joinChannel(String ^channelKey, String ^channelName, String ^channelInfo, int uid);
 		int leaveChannel();
@@ -356,10 +434,18 @@ namespace AgoraClrLibrary {
 		int stopEchoTest();
 		int enableLastmileTest();
 		int disableLastmileTest();
+
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
 		int setupLocalVideo(IntPtr view, int renderMode, int uid);
 		int setupRemoteVideo(IntPtr view, int renderMode, int uid);
+		int enableDualStreamMode(bool enabled);
+		int setRemoteVideoStreamType(int uid, RemoteVideoStreamType type);
+		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
+		int setVideoCompositingLayout(ClrVideoCompositingLayout^ sei);
+		int clearVideoCompositingLayout();
+
 		int setChannelProfile(ChannelProfile profile);
+		int setClientRole(ClientRoleType role, String^ permissionKey);
 
 		int createDataStream(int %id);
 		int sendStreamMessage(int id, String ^data);

@@ -93,6 +93,12 @@ int AgoraClrLibrary::AgoraClr::disableAudio()
 	return rtcEngine->disableAudio();
 }
 
+int AgoraClrLibrary::AgoraClr::setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
+}
+
 int AgoraClr::startPreview()
 {
 	return rtcEngine->startPreview();
@@ -101,6 +107,12 @@ int AgoraClr::startPreview()
 int AgoraClr::stopPreview()
 {
 	return rtcEngine->stopPreview();
+}
+
+int AgoraClrLibrary::AgoraClr::enableWebSdkInteroperability(bool enabled)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.enableWebSdkInteroperability(enabled);
 }
 
 int AgoraClr::joinChannel(String ^ channelKey, String ^ channelName, String ^channelInfo, int uid)
@@ -207,9 +219,43 @@ int AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, int uid)
 	return rtcEngine->setupRemoteVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid));
 }
 
+int AgoraClrLibrary::AgoraClr::enableDualStreamMode(bool enabled)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.enableDualStreamMode(enabled);
+}
+
+int AgoraClrLibrary::AgoraClr::setRemoteVideoStreamType(int uid, RemoteVideoStreamType type)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setRemoteVideoStreamType(uid, (REMOTE_VIDEO_STREAM_TYPE)type);
+}
+
+int AgoraClrLibrary::AgoraClr::setVideoQualityParameters(bool preferFrameRateOverImageQuality)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setVideoQualityParameters(preferFrameRateOverImageQuality);
+}
+
+int AgoraClrLibrary::AgoraClr::setVideoCompositingLayout(ClrVideoCompositingLayout ^ sei)
+{
+	if (sei == nullptr) return rtcEngine->setVideoCompositingLayout(VideoCompositingLayout());
+	else return rtcEngine->setVideoCompositingLayout(*sei->toRaw());
+}
+
+int AgoraClrLibrary::AgoraClr::clearVideoCompositingLayout()
+{
+	return rtcEngine->clearVideoCompositingLayout();
+}
+
 int AgoraClr::setChannelProfile(ChannelProfile profile)
 {
 	return rtcEngine->setChannelProfile((agora::rtc::CHANNEL_PROFILE_TYPE)profile);
+}
+
+int AgoraClrLibrary::AgoraClr::setClientRole(ClientRoleType role, String ^ permissionKey)
+{
+	return rtcEngine->setClientRole((CLIENT_ROLE_TYPE)role, MarshalString(permissionKey).c_str());
 }
 
 int AgoraClr::createDataStream(int % id)
