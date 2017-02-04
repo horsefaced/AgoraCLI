@@ -9,17 +9,17 @@
 现在实现接口有:
 
 通信接口下的这些接口已实现
-1. IRtcEngine
-2. RtcEngineParameters
-3. IRtcEngineEventHandler
-4. IAudioFrameObserver
-5. IVideoFrameObserver
-1. IAudioDeviceManager
-2. IAudioDeviceCollection
-3. IVideoDeviceManager
-4. IVideoDeviceCollection
+- IRtcEngine
+- RtcEngineParameters
+- IRtcEngineEventHandler
+- IAudioFrameObserver
+- IVideoFrameObserver
+- IAudioDeviceManager
+- IAudioDeviceCollection
+- IVideoDeviceManager
+- IVideoDeviceCollection
 
 暂没有实现的接口有:
-直播接口
-信令接口
+- 直播接口
+- 信令接口
 
