@@ -137,6 +137,8 @@
     <ClInclude Include="AgoraClrLibrary.h" />
     <ClInclude Include="AgoraClrPacketObserver.h" />
     <ClInclude Include="AgoraClrRawFrameObserver.h" />
+    <ClInclude Include="AgoraClrSignal.h" />
+    <ClInclude Include="AgoraClrSignalCallback.h" />
     <ClInclude Include="AgoraClrVideoDeviceManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
@@ -145,6 +147,8 @@
     <ClCompile Include="AgoraClrAudioDeviceManager.cpp" />
     <ClCompile Include="AgoraClrEventHandler.cpp" />
     <ClCompile Include="AgoraClrLibrary.cpp" />
+    <ClCompile Include="AgoraClrSignal.cpp" />
+    <ClCompile Include="AgoraClrSignalCallback.cpp" />
     <ClCompile Include="AgoraClrVideoDeviceManager.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="AgoraClrPacketObserver.cpp" />
