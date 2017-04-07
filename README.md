@@ -23,3 +23,4 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+因为要用到Visual C++，所以在安装.net运行时后，还需要安装Visual C++ Redistributable for Visual Studio 才可以运行。
