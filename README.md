@@ -1,5 +1,7 @@
 # AgoraCLI项目
 
+** 因为要用到Visual C++，所以在安装.net运行时后，还需要安装Visual C++ Redistributable for Visual Studio 才可以运行 **。
+
 [Agora声网](http://cn.agora.io)的Windows端SDK只提供了C++的实现, 用在.NET平台上对开发者要求很高. 所以用CLI将其做了一个桥接, 使其可以使用C#进行开发.
 
 支持版本升级到1.9，编译能通过，如果使用时发发现有什么新增接口或者参数没有，请提交issue。
@@ -23,4 +25,4 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
-因为要用到Visual C++，所以在安装.net运行时后，还需要安装Visual C++ Redistributable for Visual Studio 才可以运行。
+
