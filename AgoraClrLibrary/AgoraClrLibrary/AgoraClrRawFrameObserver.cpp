@@ -20,6 +20,12 @@ bool AgoraClrRawFrameObserver::onPlaybackAudioFrame(AudioFrame & audioFrame)
 	else return true;
 }
 
+bool AgoraClrLibrary::AgoraClrRawFrameObserver::onMixedAudioFrame(AudioFrame & audioFrame)
+{
+	if (onMixedAudioFrameEvent) return onMixedAudioFrameEvent(audioFrame);
+	else return false;
+}
+
 bool AgoraClrRawFrameObserver::onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame & audioFrame)
 {
 	if (onPlaybackAudioFrameBeforeMixingEvent) return onPlaybackAudioFrameBeforeMixingEvent(uid, audioFrame);

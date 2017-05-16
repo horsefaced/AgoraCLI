@@ -95,7 +95,7 @@ void AgoraClrLibrary::AgoraClrSignal::channelInviteAccept(String ^ channelID, St
 void AgoraClrLibrary::AgoraClrSignal::channelInviteRefuse(String ^ channelID, String ^ account)
 {
 	std::string channel = MarshalString(channelID), accountStr = MarshalString(account);
-	signal->channelInviteRefuse(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length(), 0);
+	signal->channelInviteRefuse(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length(), 0, NULL, 0);
 }
 
 void AgoraClrLibrary::AgoraClrSignal::channelInviteEnd(String ^ channelID, String ^ account)

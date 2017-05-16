@@ -74,10 +74,10 @@ namespace agora_sdk_win
     virtual void onChannelAttrUpdated(char const * channelID, size_t channelID_size,char const * name, size_t name_size,char const * value, size_t value_size,char const * type, size_t type_size) {}
     virtual void onInviteReceived(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid,char const * extra, size_t extra_size) {}
     virtual void onInviteReceivedByPeer(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid) {}
-    virtual void onInviteAcceptedByPeer(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid) {}
-    virtual void onInviteRefusedByPeer(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid) {}
-    virtual void onInviteFailed(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid,int ecode) {}
-    virtual void onInviteEndByPeer(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid) {}
+    virtual void onInviteAcceptedByPeer(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid,char const * extra, size_t extra_size) {}
+    virtual void onInviteRefusedByPeer(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid,char const * extra, size_t extra_size) {}
+    virtual void onInviteFailed(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid,int ecode,char const * extra, size_t extra_size) {}
+    virtual void onInviteEndByPeer(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid,char const * extra, size_t extra_size) {}
     virtual void onInviteEndByMyself(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid) {}
     virtual void onInviteMsg(char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid,char const * msgType, size_t msgType_size,char const * msgData, size_t msgData_size,char const * extra, size_t extra_size) {}
     virtual void onMessageSendError(char const * messageID, size_t messageID_size,int ecode) {}
@@ -92,6 +92,7 @@ namespace agora_sdk_win
     virtual void onUserAttrAllResult(char const * account, size_t account_size,char const * value, size_t value_size) {}
     virtual void onError(char const * name, size_t name_size,int ecode,char const * desc, size_t desc_size) {}
     virtual void onQueryUserStatusResult(char const * name, size_t name_size,char const * status, size_t status_size) {}
+    virtual void onDbg(char const * a, size_t a_size,char const * b, size_t b_size) {}
   };
 
   class IAgoraAPI
@@ -115,7 +116,7 @@ namespace agora_sdk_win
     virtual void channelInvitePhone3 (char const * channelID, size_t channelID_size,char const * phoneNum, size_t phoneNum_size,char const * sourcesNum, size_t sourcesNum_size,char const * extra, size_t extra_size) = 0;
     virtual void channelInviteDTMF (char const * channelID, size_t channelID_size,char const * phoneNum, size_t phoneNum_size,char const * dtmf, size_t dtmf_size) = 0;
     virtual void channelInviteAccept (char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid) = 0;
-    virtual void channelInviteRefuse (char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid) = 0;
+    virtual void channelInviteRefuse (char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid,char const * extra, size_t extra_size) = 0;
     virtual void channelInviteEnd (char const * channelID, size_t channelID_size,char const * account, size_t account_size,uint32_t uid) = 0;
     virtual void messageAppSend (char const * msg, size_t msg_size,char const * msgID, size_t msgID_size) = 0;
     virtual void messageInstantSend (char const * account, size_t account_size,uint32_t uid,char const * msg, size_t msg_size,char const * msgID, size_t msgID_size) = 0;
@@ -138,6 +139,7 @@ namespace agora_sdk_win
     virtual void stop () = 0;
     virtual bool isOnline () = 0;
     virtual int getStatus () = 0;
+    virtual int getSdkVersion () = 0;
     virtual void dbg (char const * a, size_t a_size,char const * b, size_t b_size) = 0;
     
 
