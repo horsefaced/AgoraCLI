@@ -35,6 +35,7 @@ int setAudioMixingPosition(int pos /*in ms*/)
 伴奏播放已结束回调(onAudioMixingFinished)
 virtual void onAudioMixingFinished()
 
+旁路这个API在声网的实现上规定是win32的, 所以你编译成win64的话, 这个接口献认返回0, 而不会有实际效果
 配置旁路直播推流(configPublisher)
 virtual int configPublisher(const PublisherConfiguration& config);
 
