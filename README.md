@@ -30,20 +30,26 @@
 ## 2017-07-17 更新通信与直播接口实现至 1.11.1, 实现如下接口与事件
 
 拖动语音进度条(setAudioMixingPosition)
+```c++
 int setAudioMixingPosition(int pos /*in ms*/)
-
+```
 伴奏播放已结束回调(onAudioMixingFinished)
+```c++
 virtual void onAudioMixingFinished()
-
+```
 旁路这个API在声网的实现上规定是win32的, 所以你编译成win64的话, 这个接口献认返回0, 而不会有实际效果
 配置旁路直播推流(configPublisher)
-virtual int configPublisher(const PublisherConfiguration& config);
-
-注册数据包观测器(registerPacketObserver)
-int registerPacketObserver(IPacketObserver* observer)
-这个方法已经通过代理的形式把内部的实现实现到了AgoraClr上了, 例如
-//PacketObserver Part
 ```c++
+virtual int configPublisher(const PublisherConfiguration& config);
+```
+注册数据包观测器(registerPacketObserver)
+```c++
+int registerPacketObserver(IPacketObserver* observer)
+```
+这个方法已经通过代理的形式把内部的实现实现到了AgoraClr上了, 例如
+```c++
+//PacketObserver Part
+
 public delegate bool onSendAudioPacket(ClrPacket^ packet);
 public delegate bool onSendVideoPacket(ClrPacket^ packet);
 public delegate bool onReceiveAudioPacket(ClrPacket^ packet);
