@@ -342,6 +342,47 @@ namespace AgoraClrLibrary {
 			return result;
 		}
 	};
+
+	public enum class RtmpStreamLifeCycleType 
+	{
+		RTMP_STREAM_LIFE_CYCLE_BIND2CHANNEL = 1,
+		RTMP_STREAM_LIFE_CYCLE_BIND2OWNER = 2,
+	};
+
+	public ref class ClrPublisherConfiguration {
+	public:
+		int width;
+		int height;
+		int framerate;
+		int bitrate;
+		int defaultLayout;
+		RtmpStreamLifeCycleType lifecycle;
+		bool owner;
+		String^ publishUrl = nullptr;
+		String^ rawStreamUrl = nullptr;
+		String^ extraInfo = nullptr;
+
+		ClrPublisherConfiguration()
+			: width(640)
+			, height(360)
+			, framerate(15)
+			, bitrate(500)
+			, defaultLayout(1)
+			, lifecycle(RtmpStreamLifeCycleType::RTMP_STREAM_LIFE_CYCLE_BIND2CHANNEL)
+			, owner(true)
+		{}
+
+		agora::rtc::PublisherConfiguration* toRaw() {
+			PublisherConfiguration* result = new PublisherConfiguration();
+			result->width = width; result->height = height;
+			result->framerate = framerate; result->defaultLayout = defaultLayout;
+			result->lifecycle = (RTMP_STREAM_LIFE_CYCLE_TYPE)lifecycle;
+			result->owner = owner; result->publishUrl = MarshalString(publishUrl).c_str();
+			result->rawStreamUrl = MarshalString(rawStreamUrl).c_str();
+			result->extraInfo = MarshalString(extraInfo).c_str();
+			return result;
+		}
+	};
 	
 	//RtcEngineEventHandler Part
 	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
@@ -378,6 +419,7 @@ namespace AgoraClrLibrary {
 	public delegate void onStreamMessage(int uid, int streamId, String ^data);
 	public delegate void onStreamMessageError(int uid, int streamId, int code, int missed, int cached);
 	public delegate void onRequestChannelKey();
+	public delegate void onAudioMixingFinished();
 	
 	//PacketObserver Part
 	public delegate bool onSendAudioPacket(ClrPacket^ packet);
@@ -443,7 +485,7 @@ namespace AgoraClrLibrary {
 		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
 		int setVideoCompositingLayout(ClrVideoCompositingLayout^ sei);
 		int clearVideoCompositingLayout();
-
+		int configPublisher(ClrPublisherConfiguration^ config);
 		int setChannelProfile(ChannelProfile profile);
 		int setClientRole(ClientRoleType role, String^ permissionKey);
 
@@ -473,6 +515,7 @@ namespace AgoraClrLibrary {
 		int adjustAudioMixingVolume(int volume);
 		int getAudioMixingDuration();
 		int getAudioMixingCurrentPosition();
+		int setAudioMixingPosition(int pos);
 		int startAudioMixing(String ^path, bool loop, bool replace, int cycle);
 		int stopAudioMixing();
 		int setLogFile(String ^path);
@@ -519,6 +562,7 @@ namespace AgoraClrLibrary {
 		onStreamMessage ^onStreamMessage;
 		onStreamMessageError ^onStreamMessageError;
 		onRequestChannelKey^ onRequestChannelKey;
+		onAudioMixingFinished^ onAudioMixingFinished;
 
 		//PacketObserver Part
 		onSendAudioPacket ^onSendAudioPacket;
@@ -574,6 +618,7 @@ namespace AgoraClrLibrary {
 		void NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
 		void NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
 		void NativeOnRequestChannelKey();
+		void NativeOnAudioMixingFinished();
 
 		bool NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet);

@@ -26,3 +26,24 @@
 同时，信令接口现在实现只处于能编译通过，是否可以正常使用还没有测试，请使用的朋友自己考虑。
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
+
+2017-07-17 更新通信与直播接口实现至 1.11.1, 实现如下接口与事件
+
+拖动语音进度条(setAudioMixingPosition)
+int setAudioMixingPosition(int pos /*in ms*/)
+
+伴奏播放已结束回调(onAudioMixingFinished)
+virtual void onAudioMixingFinished()
+
+配置旁路直播推流(configPublisher)
+virtual int configPublisher(const PublisherConfiguration& config);
+
+注册数据包观测器(registerPacketObserver)
+int registerPacketObserver(IPacketObserver* observer)
+这个方法已经通过代理的形式把内部的实现实现到了AgoraClr上了, 例如
+//PacketObserver Part
+	public delegate bool onSendAudioPacket(ClrPacket^ packet);
+	public delegate bool onSendVideoPacket(ClrPacket^ packet);
+	public delegate bool onReceiveAudioPacket(ClrPacket^ packet);
+	public delegate bool onReceiveVideoPacket(ClrPacket^ packet);
+这一系统方法

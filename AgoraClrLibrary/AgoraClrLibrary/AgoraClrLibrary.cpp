@@ -248,6 +248,15 @@ int AgoraClrLibrary::AgoraClr::clearVideoCompositingLayout()
 	return rtcEngine->clearVideoCompositingLayout();
 }
 
+int AgoraClrLibrary::AgoraClr::configPublisher(ClrPublisherConfiguration ^ config)
+{
+#if WIN32
+	return rtcEngine->configPublisher(*config->toRaw());
+#else
+	return 0;
+#endif
+}
+
 int AgoraClr::setChannelProfile(ChannelProfile profile)
 {
 	return rtcEngine->setChannelProfile((agora::rtc::CHANNEL_PROFILE_TYPE)profile);
@@ -392,6 +401,12 @@ int AgoraClrLibrary::AgoraClr::getAudioMixingCurrentPosition()
 	return params.getAudioMixingCurrentPosition();
 }
 
+int AgoraClrLibrary::AgoraClr::setAudioMixingPosition(int pos)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setAudioMixingPosition(pos);
+}
+
 int AgoraClr::startAudioMixing(String ^ path, bool loop, bool replace, int cycle)
 {
 	RtcEngineParameters params(*rtcEngine);
@@ -485,6 +500,7 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onStreamMessageEvent = PFOnStreamMessage(regEvent(gcnew NativeOnStreamMessageDelegate(this, &AgoraClr::NativeOnStreamMessage)));
 	agoraEventHandler->onStreamMessageErrorEvent = PFOnStreamMessageError(regEvent(gcnew NativeOnStreamMessageErrorDelegate(this, &AgoraClr::NativeOnStreamMessageError)));
 	agoraEventHandler->onRequestChannelKeyEvent = PFOnRequestChannelKey(regEvent(gcnew NativeOnRequestChannelKeyDelegate(this, &AgoraClr::NativeOnRequestChannelKey)));
+	agoraEventHandler->onAudioMixingFinishedEvent = PFOnAudioMixingFinished(regEvent(gcnew NativeOnAudioMixingFinishedDelegate(this, &AgoraClr::NativeOnAudioMixingFinished)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -589,6 +605,11 @@ void AgoraClr::NativeOnAudioDeviceStateChanged(const char* deviceId, int deviceT
 void AgoraClr::NativeOnVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState)
 {
 	if (onVideoDeviceStateChanged) onVideoDeviceStateChanged(gcnew String(deviceId), deviceType, deviceState);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnAudioMixingFinished()
+{
+	if (onAudioMixingFinished) onAudioMixingFinished();
 }
 
 void AgoraClr::NativeOnLastmileQuality(int quality) 

@@ -111,3 +111,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onRequestChannelKey()
 {
 	if (onRequestChannelKeyEvent) onRequestChannelKeyEvent();
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingFinished()
+{
+	if (onAudioMixingFinishedEvent) onAudioMixingFinishedEvent();
+}

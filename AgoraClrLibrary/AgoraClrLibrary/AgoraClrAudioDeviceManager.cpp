@@ -94,3 +94,4 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::stopRecordingDeviceTest()
 	return manager->stopRecordingDeviceTest();
 }
 
+
