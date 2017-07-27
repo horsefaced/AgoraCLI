@@ -135,6 +135,12 @@ namespace AgoraClrLibrary {
 		RAW_AUDIO_FRAME_OP_MODE_WRITE_ONLY = 1,
 		RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
 	};
+	public enum class AudioRecordingQualityType
+{
+    AUDIO_RECORDING_QUALITY_LOW = 0,
+    AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+    AUDIO_RECORDING_QUALITY_HIGH = 2,
+};
 
 	public ref class LocalVideoStats
 	{
@@ -358,6 +364,9 @@ namespace AgoraClrLibrary {
 		int defaultLayout;
 		RtmpStreamLifeCycleType lifecycle;
 		bool owner;
+		int injectStreamWidth = 0;
+		int injectStreamHeight = 0;
+		String^ injectStreamUrl = nullptr;
 		String^ publishUrl = nullptr;
 		String^ rawStreamUrl = nullptr;
 		String^ extraInfo = nullptr;
@@ -378,11 +387,36 @@ namespace AgoraClrLibrary {
 			result->framerate = framerate; result->defaultLayout = defaultLayout;
 			result->lifecycle = (RTMP_STREAM_LIFE_CYCLE_TYPE)lifecycle;
 			result->owner = owner; result->publishUrl = MarshalString(publishUrl).c_str();
+			result->injectStreamHeight = injectStreamHeight;
+			result->injectStreamWidth = injectStreamWidth;
+			result->injectStreamUrl = MarshalString(injectStreamUrl).c_str();
+			result->publishUrl = MarshalString(publishUrl).c_str();
 			result->rawStreamUrl = MarshalString(rawStreamUrl).c_str();
 			result->extraInfo = MarshalString(extraInfo).c_str();
 			return result;
 		}
 	};
+
+	public ref class ClrRect {
+	public:
+		int top;
+		int left;
+		int bottom;
+		int right;
+
+		ClrRect() : top(0), left(0), bottom(0), right(0) {}
+		ClrRect(int t, int l, int b, int r) : top(t), left(l), bottom(b), right(r) {}
+
+		agora::rtc::Rect* toRaw() {
+			agora::rtc::Rect* result = new agora::rtc::Rect();
+			result->top = top;
+			result->left = left;
+			result->bottom = bottom;
+			result->right = right;
+			return result;
+		}
+	};
+
 	
 	//RtcEngineEventHandler Part
 	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
@@ -420,6 +454,8 @@ namespace AgoraClrLibrary {
 	public delegate void onStreamMessageError(int uid, int streamId, int code, int missed, int cached);
 	public delegate void onRequestChannelKey();
 	public delegate void onAudioMixingFinished();
+
+	public delegate void onActiveSpeaker(int uid);
 	
 	//PacketObserver Part
 	public delegate bool onSendAudioPacket(ClrPacket^ packet);
@@ -459,8 +495,7 @@ namespace AgoraClrLibrary {
 		int joinChannel(String ^channelKey, String ^channelName, String ^channelInfo, int uid);
 		int leaveChannel();
 
-		int startScreenCapture(IntPtr windowId);
-		int setScreenCaptureWindow(IntPtr windowId);
+		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect);
 		int stopScreenCapture();
 
 		int renewChannelKey(String ^channelKey);
@@ -508,7 +543,7 @@ namespace AgoraClrLibrary {
 		int setLocalRenderMode(RenderMode mode);
 		int setRemoteRenderMode(int uid, RenderMode mode);
 		int enableAudioVolumeIndication(int interval, int smooth);
-		int startAudioRecording(String ^path);
+		int startAudioRecording(String ^path, AudioRecordingQualityType quality);
 		int stopAudioRecording();
 		int pauseAudioMixing();
 		int resumeAudioMixing();
@@ -563,6 +598,8 @@ namespace AgoraClrLibrary {
 		onStreamMessageError ^onStreamMessageError;
 		onRequestChannelKey^ onRequestChannelKey;
 		onAudioMixingFinished^ onAudioMixingFinished;
+		
+		onActiveSpeaker^ onActiveSpeaker;
 
 		//PacketObserver Part
 		onSendAudioPacket ^onSendAudioPacket;
@@ -619,6 +656,8 @@ namespace AgoraClrLibrary {
 		void NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
 		void NativeOnRequestChannelKey();
 		void NativeOnAudioMixingFinished();
+
+		void NativeOnActiveSpeaker(uid_t uid);
 
 		bool NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet);

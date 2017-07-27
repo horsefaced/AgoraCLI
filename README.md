@@ -27,6 +27,33 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2017-07-28 更新通信与直播接口实现至 1.12.0, 修改如下接口与事件
+
+**因声网在1.12.0修改内部多个实现参数, 所以本版本无法与1.11.1兼容, 请测试后使用**
+
+配置旁路直播推流(configPublisher), 修改PublishConfiguration内容, 添加injectStream的部分.
+```c++
+virtual int configPublisher(ClrPublisherConfiguration config);
+```
+
+添加监测到活跃用户回调(onActiveSpeaker)事件
+```c++
+virtual void onActiveSpeaker(int uid);
+```
+
+修改开启屏幕共享(startScreenCapture)
+```C++
+int startScreenCapture(IntPtr windowsId, int captureFreq, ClrRect rect);
+```
+
+修改开始客户端录音 (startAudioRecording), 添加AudioRecordingQualityType参数
+```c++
+int startAudioRecording (const char* filePath, AudioRecordingQuality quality)
+```
+
+删除 int setScreenCaptureWindow(IntPtr windowId); 方法
+
+
 ## 2017-07-17 更新通信与直播接口实现至 1.11.1, 实现如下接口与事件
 
 拖动语音进度条(setAudioMixingPosition)

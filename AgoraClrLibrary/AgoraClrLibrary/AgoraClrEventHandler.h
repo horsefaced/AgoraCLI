@@ -37,6 +37,7 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnStreamMessageError)(uid_t uid, int streamId, int code, int missed, int cached);
 	typedef void(__stdcall * PFOnRequestChannelKey)();
 	typedef void(__stdcall * PFOnAudioMixingFinished)();
+	typedef void(__stdcall * PFOnActiveSpeaker)(uid_t uid);
 
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -71,6 +72,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnStreamMessageErrorDelegate(uid_t uid, int streamId, int code, int missed, int cached);
 	delegate void NativeOnRequestChannelKeyDelegate();
 	delegate void NativeOnAudioMixingFinishedDelegate();
+	delegate void NativeOnActiveSpeakerDelegate(uid_t uid);
 
 	public class AgoraClrEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
@@ -110,6 +112,7 @@ namespace AgoraClrLibrary {
 		PFOnStreamMessageError onStreamMessageErrorEvent = 0;
 		PFOnRequestChannelKey onRequestChannelKeyEvent = 0;
 		PFOnAudioMixingFinished onAudioMixingFinishedEvent = 0;
+		PFOnActiveSpeaker onActiveSpeakerEvent = 0;
 
 		virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
@@ -143,6 +146,7 @@ namespace AgoraClrLibrary {
 		virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
 		virtual void onRequestChannelKey();
 		virtual void onAudioMixingFinished();
+		virtual void onActiveSpeaker(uid_t uid);
 	};
 
 }

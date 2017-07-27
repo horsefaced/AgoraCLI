@@ -49,7 +49,7 @@ int AgoraClr::initialize(String ^vendorkey)
 	if (result == 0) {
 		rtcEngine->registerPacketObserver(agoraPacketObserver);
 		agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
-		mediaEngine.queryInterface(*rtcEngine, agora::rtc::AGORA_IID_MEDIA_ENGINE);
+		mediaEngine.queryInterface(rtcEngine, agora::rtc::AGORA_IID_MEDIA_ENGINE);
 		if (mediaEngine) {
 			mediaEngine->registerAudioFrameObserver(agoraRawObserver);
 			mediaEngine->registerVideoFrameObserver(agoraRawObserver);
@@ -62,7 +62,7 @@ void AgoraClr::release()
 {
 	if (rtcEngine != NULL) {
 		agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
-		mediaEngine.queryInterface(*rtcEngine, agora::rtc::AGORA_IID_MEDIA_ENGINE);
+		mediaEngine.queryInterface(rtcEngine, agora::rtc::AGORA_IID_MEDIA_ENGINE);
 		if (mediaEngine) {
 			mediaEngine->registerAudioFrameObserver(NULL);
 			mediaEngine->registerVideoFrameObserver(NULL);
@@ -128,16 +128,10 @@ int AgoraClr::leaveChannel()
 	return rtcEngine->leaveChannel();
 }
 
-int AgoraClrLibrary::AgoraClr::startScreenCapture(IntPtr windowId)
+int AgoraClrLibrary::AgoraClr::startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect)
 {
 	RtcEngineParameters params(*rtcEngine);
-	return params.startScreenCapture((HWND)windowId.ToPointer());
-}
-
-int AgoraClrLibrary::AgoraClr::setScreenCaptureWindow(IntPtr windowId)
-{
-	RtcEngineParameters params(*rtcEngine);
-	return params.setScreenCaptureWindow((HWND)windowId.ToPointer());
+	return params.startScreenCapture((HWND)windowId.ToPointer(), captureFreq, rect->toRaw());
 }
 
 int AgoraClrLibrary::AgoraClr::stopScreenCapture()
@@ -359,10 +353,10 @@ int AgoraClr::enableAudioVolumeIndication(int interval, int smooth)
 	return params.enableAudioVolumeIndication(interval, smooth);
 }
 
-int AgoraClr::startAudioRecording(String ^ path)
+int AgoraClr::startAudioRecording(String ^ path, AudioRecordingQualityType quality)
 {
 	agora::rtc::RtcEngineParameters param(*rtcEngine);
-	return param.startAudioRecording(MarshalString(path).c_str());
+	return param.startAudioRecording(MarshalString(path).c_str(), (agora::rtc::AUDIO_RECORDING_QUALITY_TYPE)quality);
 }
 
 int AgoraClr::stopAudioRecording()
@@ -501,6 +495,7 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onStreamMessageErrorEvent = PFOnStreamMessageError(regEvent(gcnew NativeOnStreamMessageErrorDelegate(this, &AgoraClr::NativeOnStreamMessageError)));
 	agoraEventHandler->onRequestChannelKeyEvent = PFOnRequestChannelKey(regEvent(gcnew NativeOnRequestChannelKeyDelegate(this, &AgoraClr::NativeOnRequestChannelKey)));
 	agoraEventHandler->onAudioMixingFinishedEvent = PFOnAudioMixingFinished(regEvent(gcnew NativeOnAudioMixingFinishedDelegate(this, &AgoraClr::NativeOnAudioMixingFinished)));
+	agoraEventHandler->onActiveSpeakerEvent = PFOnActiveSpeaker(regEvent(gcnew NativeOnActiveSpeakerDelegate(this, &AgoraClr::NativeOnActiveSpeaker)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -610,6 +605,11 @@ void AgoraClr::NativeOnVideoDeviceStateChanged(const char* deviceId, int deviceT
 void AgoraClrLibrary::AgoraClr::NativeOnAudioMixingFinished()
 {
 	if (onAudioMixingFinished) onAudioMixingFinished();
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnActiveSpeaker(uid_t uid)
+{
+	if (onActiveSpeaker) onActiveSpeaker(uid);
 }
 
 void AgoraClr::NativeOnLastmileQuality(int quality) 

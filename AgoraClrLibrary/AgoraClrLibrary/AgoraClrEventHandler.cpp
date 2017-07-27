@@ -116,3 +116,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingFinished()
 {
 	if (onAudioMixingFinishedEvent) onAudioMixingFinishedEvent();
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onActiveSpeaker(uid_t uid)
+{
+	if (onActiveSpeakerEvent) onActiveSpeakerEvent(uid);
+}

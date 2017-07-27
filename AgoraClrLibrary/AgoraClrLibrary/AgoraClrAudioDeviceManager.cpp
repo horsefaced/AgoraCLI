@@ -48,49 +48,49 @@ AgoraClrLibrary::AgoraClrAudioDeviceManager::AgoraClrAudioDeviceManager(AgoraClr
 
 ClrAudioDeviceCollection ^ AgoraClrLibrary::AgoraClrAudioDeviceManager::enumeratePlaybackDevices()
 {
-	AAudioDeviceManager manager(*(engine->getEngine()));
+	AAudioDeviceManager manager(engine->getEngine());
 	return gcnew ClrAudioDeviceCollection(manager->enumeratePlaybackDevices());
 }
 
 ClrAudioDeviceCollection ^ AgoraClrLibrary::AgoraClrAudioDeviceManager::enumerateRecordingDevices()
 {
-	AAudioDeviceManager manager(*(engine->getEngine()));
+	AAudioDeviceManager manager(engine->getEngine());
 	return gcnew ClrAudioDeviceCollection(manager->enumerateRecordingDevices());
 }
 
 int AgoraClrLibrary::AgoraClrAudioDeviceManager::setPlaybackDevice(String ^ deviceId)
 {
-	AAudioDeviceManager manager(*(engine->getEngine()));
+	AAudioDeviceManager manager(engine->getEngine());
 	return manager->setPlaybackDevice(MarshalString(deviceId).c_str());
 }
 
 int AgoraClrLibrary::AgoraClrAudioDeviceManager::setRecordingDevice(String ^ deviceId)
 {
-	AAudioDeviceManager manager(*(engine->getEngine()));
+	AAudioDeviceManager manager(engine->getEngine());
 	return manager->setRecordingDevice(MarshalString(deviceId).c_str());
 }
 
 int AgoraClrLibrary::AgoraClrAudioDeviceManager::startPlaybackDeviceTest(String ^ path)
 {
-	AAudioDeviceManager manager(*(engine->getEngine()));
+	AAudioDeviceManager manager(engine->getEngine());
 	return manager->startPlaybackDeviceTest(MarshalString(path).c_str());
 }
 
 int AgoraClrLibrary::AgoraClrAudioDeviceManager::stopPlaybackDeviceTest()
 {
-	AAudioDeviceManager manager(*(engine->getEngine()));
+	AAudioDeviceManager manager(engine->getEngine());
 	return manager->stopPlaybackDeviceTest();
 }
 
 int AgoraClrLibrary::AgoraClrAudioDeviceManager::startRecordingDeviceTest(int indicationInterval)
 {
-	AAudioDeviceManager manager(*(engine->getEngine()));
+	AAudioDeviceManager manager(engine->getEngine());
 	return manager->startRecordingDeviceTest(indicationInterval);
 }
 
 int AgoraClrLibrary::AgoraClrAudioDeviceManager::stopRecordingDeviceTest()
 {
-	AAudioDeviceManager manager(*(engine->getEngine()));
+	AAudioDeviceManager manager(engine->getEngine());
 	return manager->stopRecordingDeviceTest();
 }
 
