@@ -15,7 +15,7 @@ using namespace System::Runtime::InteropServices;
 using namespace System::Collections::Generic;
 
 namespace AgoraClrLibrary {
-   
+
 	static std::string MarshalString(String ^s) {
 		if (s == nullptr) return std::string();
 		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
@@ -254,7 +254,7 @@ namespace AgoraClrLibrary {
 			width = raw.width, height = raw.height, yStride = raw.yStride, uStride = raw.uStride, vStride = raw.vStride;
 			rotation = raw.rotation, renderTimeMs = raw.renderTimeMs;
 
-			int size = width + height;
+			int size = width * height;
 			ybuffer = gcnew array<Byte>(size);
 			Marshal::Copy(IntPtr(raw.yBuffer), ybuffer, 0, size);
 			ubuffer = gcnew array<Byte>(size / 4);
@@ -264,11 +264,11 @@ namespace AgoraClrLibrary {
 		}
 
 		void writeRaw(agora::media::IVideoFrameObserver::VideoFrame & raw) {
-			int sizeModified = (raw.width + raw.height) == (width + height);
+			int sizeModified = (raw.width * raw.height) == (width * height);
 			raw.type = (agora::media::IVideoFrameObserver::VIDEO_FRAME_TYPE)type, raw.width = width, raw.height = height;
 			raw.yStride = yStride, raw.uStride = uStride, raw.vStride = vStride, raw.rotation = rotation, raw.renderTimeMs = renderTimeMs;
 
-			int size = width + height;
+			int size = width * height;
 			if (sizeModified) {
 				raw.yBuffer = Marshal::AllocHGlobal(size).ToPointer();
 				raw.uBuffer = Marshal::AllocHGlobal(size / 4).ToPointer();
@@ -349,7 +349,7 @@ namespace AgoraClrLibrary {
 		}
 	};
 
-	public enum class RtmpStreamLifeCycleType 
+	public enum class RtmpStreamLifeCycleType
 	{
 		RTMP_STREAM_LIFE_CYCLE_BIND2CHANNEL = 1,
 		RTMP_STREAM_LIFE_CYCLE_BIND2OWNER = 2,
@@ -417,7 +417,7 @@ namespace AgoraClrLibrary {
 		}
 	};
 
-	
+
 	//RtcEngineEventHandler Part
 	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
 	public delegate void onRejoinChannelSuccess(String ^channel, int uid, int elapsed);
@@ -456,7 +456,7 @@ namespace AgoraClrLibrary {
 	public delegate void onAudioMixingFinished();
 
 	public delegate void onActiveSpeaker(int uid);
-	
+
 	//PacketObserver Part
 	public delegate bool onSendAudioPacket(ClrPacket^ packet);
 	public delegate bool onSendVideoPacket(ClrPacket^ packet);
@@ -598,7 +598,7 @@ namespace AgoraClrLibrary {
 		onStreamMessageError ^onStreamMessageError;
 		onRequestChannelKey^ onRequestChannelKey;
 		onAudioMixingFinished^ onAudioMixingFinished;
-		
+
 		onActiveSpeaker^ onActiveSpeaker;
 
 		//PacketObserver Part
