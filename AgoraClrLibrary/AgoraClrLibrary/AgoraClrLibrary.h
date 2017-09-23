@@ -497,6 +497,7 @@ namespace AgoraClrLibrary {
 
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect);
 		int stopScreenCapture();
+		int updateScreenCaptureRegion(ClrRect^ rect);
 
 		int renewChannelKey(String ^channelKey);
 

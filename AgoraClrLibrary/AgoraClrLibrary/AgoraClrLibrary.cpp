@@ -140,6 +140,12 @@ int AgoraClrLibrary::AgoraClr::stopScreenCapture()
 	return params.stopScreenCapture();
 }
 
+int AgoraClrLibrary::AgoraClr::updateScreenCaptureRegion(ClrRect ^ rect)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.updateScreenCaptureRegion(rect->toRaw());
+}
+
 int AgoraClr::renewChannelKey(String ^ channelKey)
 {
 	return rtcEngine->renewChannelKey(MarshalString(channelKey).c_str());
