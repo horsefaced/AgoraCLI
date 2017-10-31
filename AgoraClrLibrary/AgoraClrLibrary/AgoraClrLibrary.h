@@ -223,7 +223,7 @@ namespace AgoraClrLibrary {
 		}
 
 		void writeRaw(agora::media::IAudioFrameObserver::AudioFrame & raw) {
-			bool sizeModified = (samples * bytesPerSample) == (raw.samples * raw.bytesPerSample);
+			bool sizeModified = (samples * bytesPerSample) != (raw.samples * raw.bytesPerSample);
 			raw.type = (agora::media::IAudioFrameObserver::AUDIO_FRAME_TYPE)type, raw.samples = samples, raw.bytesPerSample = bytesPerSample,
 				raw.channels = channels, raw.samplesPerSec = samplesPerSec, raw.renderTimeMs = renderTimeMs;
 			if (sizeModified) raw.buffer = Marshal::AllocHGlobal(samples * bytesPerSample).ToPointer();
@@ -264,7 +264,8 @@ namespace AgoraClrLibrary {
 		}
 
 		void writeRaw(agora::media::IVideoFrameObserver::VideoFrame & raw) {
-			int sizeModified = (raw.width * raw.height) == (width * height);
+			int sizeModified = (raw.width * raw.height) != (width * height);
+
 			raw.type = (agora::media::IVideoFrameObserver::VIDEO_FRAME_TYPE)type, raw.width = width, raw.height = height;
 			raw.yStride = yStride, raw.uStride = uStride, raw.vStride = vStride, raw.rotation = rotation, raw.renderTimeMs = renderTimeMs;
 
