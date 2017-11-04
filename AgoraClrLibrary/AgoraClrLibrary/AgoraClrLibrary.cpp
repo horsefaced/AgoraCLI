@@ -419,6 +419,11 @@ int AgoraClr::stopAudioMixing()
 	return params.stopAudioMixing();
 }
 
+int AgoraClrLibrary::AgoraClr::setAudioProfile(AudioProfileType profile, AudioScenarioType scenario)
+{
+	return rtcEngine->setAudioProfile((agora::rtc::AUDIO_PROFILE_TYPE)profile, (agora::rtc::AUDIO_SCENARIO_TYPE)scenario);
+}
+
 int AgoraClr::setLogFile(String ^ path)
 {
 	RtcEngineParameters params(*rtcEngine);
@@ -459,6 +464,18 @@ int AgoraClrLibrary::AgoraClr::adjustPlaybackSignalVolume(int volume)
 {
 	RtcEngineParameters params(*rtcEngine);
 	return params.adjustPlaybackSignalVolume(volume);
+}
+
+int AgoraClrLibrary::AgoraClr::setLocalVoicePitch(double pitch)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setLocalVoicePitch(pitch);
+}
+
+int AgoraClrLibrary::AgoraClr::setInEarMonitoringVolume(int volume)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setInEarMonitoringVolume(volume);
 }
 
 void* AgoraClr::regEvent(Object^ obj)

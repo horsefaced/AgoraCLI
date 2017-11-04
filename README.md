@@ -27,6 +27,22 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2017-11-04 更新通信与直播接口实现至 1.14.0, 新增接口
+
+新增 API setAudioProfile() 设置音频参数和应用场景
+```c++
+int setAudioProfile(AudioProfileType profile, AudioScenarioType scenario)
+```
+新增 API setLocalVoicePitch() 提供基础变声功能
+```c++
+int setLocalVoicePicth(double pitch)
+```
+
+直播场景: 新增 API setInEarMonitoringVolume() 提供调节耳返音量功能
+```c++
+int setInEarMonitoringVolumne(int volumne)
+```
+
 ## 2017-09-23 更新通信与直播接口实现至 1.13.0, 修改如下接口与事件
 
 添加更新屏幕截图区域(updateScreenCaptureRegion)接口

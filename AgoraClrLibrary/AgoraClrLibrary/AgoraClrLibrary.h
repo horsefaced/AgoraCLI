@@ -136,11 +136,11 @@ namespace AgoraClrLibrary {
 		RAW_AUDIO_FRAME_OP_MODE_READ_WRITE = 2,
 	};
 	public enum class AudioRecordingQualityType
-{
-    AUDIO_RECORDING_QUALITY_LOW = 0,
-    AUDIO_RECORDING_QUALITY_MEDIUM = 1,
-    AUDIO_RECORDING_QUALITY_HIGH = 2,
-};
+	{
+		AUDIO_RECORDING_QUALITY_LOW = 0,
+		AUDIO_RECORDING_QUALITY_MEDIUM = 1,
+		AUDIO_RECORDING_QUALITY_HIGH = 2,
+	};
 
 	public ref class LocalVideoStats
 	{
@@ -316,7 +316,7 @@ namespace AgoraClrLibrary {
 
 		static agora::rtc::VideoCompositingLayout::Region* toRaws(List<ClrRegion^>^ region) {
 			int size = sizeof(VideoCompositingLayout::Region) * region->Count;
-			VideoCompositingLayout::Region* result =  static_cast<VideoCompositingLayout::Region*>(Marshal::AllocHGlobal(size).ToPointer());
+			VideoCompositingLayout::Region* result = static_cast<VideoCompositingLayout::Region*>(Marshal::AllocHGlobal(size).ToPointer());
 			for (int i = 0; i < region->Count; i++) {
 				result[i] = *region[i]->toRaw();
 			}
@@ -417,6 +417,28 @@ namespace AgoraClrLibrary {
 			return result;
 		}
 	};
+
+	public enum class AudioProfileType// sample rate, bit rate, mono/stereo, speech/music codec
+	{
+		AUDIO_PROFILE_DEFAULT = 0, // use default settings
+		AUDIO_PROFILE_SPEECH_STANDARD = 1, // 32Khz, 18kbps, mono, speech
+		AUDIO_PROFILE_MUSIC_STANDARD = 2, // 48Khz, 50kbps, mono, music
+		AUDIO_PROFILE_MUSIC_STANDARD_STEREO = 3, // 48Khz, 50kbps, stereo, music
+		AUDIO_PROFILE_MUSIC_HIGH_QUALITY = 4, // 48Khz, 128kbps, mono, music
+		AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO = 5, // 48Khz, 128kbps, stereo, music
+		AUDIO_PROFILE_NUM = 6,
+	};
+
+	public enum class AudioScenarioType// set a suitable scenario for your app type
+	{
+		AUDIO_SCENARIO_DEFAULT = 0,
+		AUDIO_SCENARIO_CHATROOM = 1,
+		AUDIO_SCENARIO_EDUCATION = 2,
+		AUDIO_SCENARIO_GAME_STREAMING = 3,
+		AUDIO_SCENARIO_SHOWROOM = 4,
+		AUDIO_SCENARIO_NUM = 5,
+	};
+
 
 
 	//RtcEngineEventHandler Part
@@ -555,6 +577,7 @@ namespace AgoraClrLibrary {
 		int setAudioMixingPosition(int pos);
 		int startAudioMixing(String ^path, bool loop, bool replace, int cycle);
 		int stopAudioMixing();
+		int setAudioProfile(AudioProfileType profile, AudioScenarioType scenario);
 		int setLogFile(String ^path);
 		int setLogFilter(unsigned int filter);
 		int startRecordingService(String ^key);
@@ -562,6 +585,9 @@ namespace AgoraClrLibrary {
 		int refreshRecordingServiceStatus();
 		int adjustRecodingSignalVolumne(int volume);
 		int adjustPlaybackSignalVolume(int volume);
+
+		int setLocalVoicePitch(double pitch);
+		int setInEarMonitoringVolume(int volume);
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
