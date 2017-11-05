@@ -26,7 +26,13 @@ AgoraClrLibrary::AgoraClrSignal::!AgoraClrSignal()
 {
 }
 
-void AgoraClrLibrary::AgoraClrSignal::login(String ^ vendorId, String ^ account, String ^ token, Nullable<int> retry_time, Nullable<int> retry_count, String ^ device)
+void AgoraClrLibrary::AgoraClrSignal::login(String ^ appId, String ^ account, String ^ token, String ^ device)
+{
+	std::string appStr = MarshalString(appId), accountStr = MarshalString(account), tokenStr = MarshalString(token);
+	signal->login(appStr.c_str(), appStr.length(), accountStr.c_str(), accountStr.length(), tokenStr.c_str(), tokenStr.length(), 0, NULL, 0);
+}
+
+void AgoraClrLibrary::AgoraClrSignal::login2(String ^ vendorId, String ^ account, String ^ token, Nullable<int> retry_time, Nullable<int> retry_count, String ^ device)
 {
 	std::string vendorStr = MarshalString(vendorId), accountStr = MarshalString(account), tokenStr = MarshalString(token);
 	int time = retry_time.HasValue ? retry_time.Value : 30, count = retry_count.HasValue ? retry_count.Value : 3;
@@ -74,7 +80,13 @@ void AgoraClrLibrary::AgoraClrSignal::channelClearAttr(String ^ channelID)
 	signal->channelClearAttr(channel.c_str(), channel.length());
 }
 
-void AgoraClrLibrary::AgoraClrSignal::channelInviteUser(String ^ channelID, String ^ account, String ^ extra)
+void AgoraClrLibrary::AgoraClrSignal::channelInviteUser(String ^ channelID, String ^ account)
+{
+	std::string channel = MarshalString(channelID), accountStr = MarshalString(account);
+	signal->channelInviteUser(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length());
+}
+
+void AgoraClrLibrary::AgoraClrSignal::channelInviteUser2(String ^ channelID, String ^ account, String ^ extra)
 {
 	std::string channel = MarshalString(channelID), accountStr = MarshalString(account), extraStr = MarshalString(extra);
 	signal->channelInviteUser2(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length(), extraStr.c_str(), extraStr.length());
@@ -92,10 +104,10 @@ void AgoraClrLibrary::AgoraClrSignal::channelInviteAccept(String ^ channelID, St
 	signal->channelInviteAccept(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length(), 0);
 }
 
-void AgoraClrLibrary::AgoraClrSignal::channelInviteRefuse(String ^ channelID, String ^ account)
+void AgoraClrLibrary::AgoraClrSignal::channelInviteRefuse(String ^ channelID, String ^ account, String^ extra)
 {
-	std::string channel = MarshalString(channelID), accountStr = MarshalString(account);
-	signal->channelInviteRefuse(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length(), 0, NULL, 0);
+	std::string channel = MarshalString(channelID), accountStr = MarshalString(account), extraStr = MarshalString(extra);
+	signal->channelInviteRefuse(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length(), 0, extraStr.c_str(), extraStr.length());
 }
 
 void AgoraClrLibrary::AgoraClrSignal::channelInviteEnd(String ^ channelID, String ^ account)
@@ -145,42 +157,48 @@ void AgoraClrLibrary::AgoraClrSignal::getUserAttrAll(String ^ account)
 	signal->getUserAttrAll(accountStr.c_str(), accountStr.length());
 }
 
-void AgoraClrLibrary::AgoraClrSignal::queryUserStatus(String ^ account)
-{
-	std::string accountStr = MarshalString(account);
-	signal->queryUserStatus(accountStr.c_str(), accountStr.length());
-}
-
-void AgoraClrLibrary::AgoraClrSignal::invoke(String ^ name, String ^ req)
-{
-	std::string nameStr = MarshalString(name), reqStr = MarshalString(req);
-	signal->invoke(nameStr.c_str(), nameStr.length(), reqStr.c_str(), reqStr.length());
-}
-
-void AgoraClrLibrary::AgoraClrSignal::start()
-{
-	signal->start();
-}
-
-void AgoraClrLibrary::AgoraClrSignal::stop()
-{
-	signal->stop();
-}
-
 bool AgoraClrLibrary::AgoraClrSignal::isOnline()
 {
 	return signal->isOnline();
 }
 
-int AgoraClrLibrary::AgoraClrSignal::getStatus()
+void AgoraClrLibrary::AgoraClrSignal::messageAppSend(String ^ message, String ^ messageID)
 {
-	return signal->getStatus();
+	std::string msg = MarshalString(message), id = MarshalString(messageID);
+	signal->messageAppSend(msg.c_str(), msg.length(), id.c_str(), id.length());
 }
 
-void AgoraClrLibrary::AgoraClrSignal::dbg(String ^ a, String ^ b)
+void AgoraClrLibrary::AgoraClrSignal::messageChannelSendForce(String ^ channelID, String ^ message, String ^ messageID)
 {
-	std::string aStr = MarshalString(a), bStr = MarshalString(b);
-	signal->dbg(aStr.c_str(), aStr.length(), bStr.c_str(), bStr.length());
+	std::string channel = MarshalString(channelID), msg = MarshalString(message), id = MarshalString(messageID);
+	signal->messageChannelSendForce(channel.c_str(), channel.length(), msg.c_str(), msg.length(), id.c_str(), id.length());
+}
+
+void AgoraClrLibrary::AgoraClrSignal::messagePushSend(String ^ account, String ^ message, String ^ messageID)
+{
+	std::string accountStr = MarshalString(account), msg = MarshalString(message), id = MarshalString(messageID);
+	signal->messagePushSend(accountStr.c_str(), accountStr.length(), 0, msg.c_str(), msg.length(), id.c_str(), id.length());
+}
+
+void AgoraClrLibrary::AgoraClrSignal::messageChatSend(String ^ account, String ^ message, String ^ messageID)
+{
+	std::string a = MarshalString(account), msg = MarshalString(message), mid = MarshalString(messageID);
+	signal->messageChatSend(a.c_str(), a.length(), 0, msg.c_str(), msg.length(), mid.c_str(), mid.length());
+}
+
+void AgoraClrLibrary::AgoraClrSignal::setBackground(int Out)
+{
+	signal->setBackground(Out);
+}
+
+void AgoraClrLibrary::AgoraClrSignal::setNetworkStatus(int Out)
+{
+	signal->setNetworkStatus(Out);
+}
+
+void AgoraClrLibrary::AgoraClrSignal::ping()
+{
+	signal->ping();
 }
 
 void * AgoraClrLibrary::AgoraClrSignal::regEvent(Object ^ obj)
@@ -312,24 +330,24 @@ void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteReceivedByPeer(char const * 
 	if (onInviteReceivedByPeer) onInviteReceivedByPeer(gcnew String(channelID), gcnew String(account), uid);
 }
 
-void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteAcceptedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid)
+void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteAcceptedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, char const * extra, size_t extra_size)
 {
-	if (onInviteAcceptedByPeer) onInviteAcceptedByPeer(gcnew String(channelID), gcnew String(account), uid);
+	if (onInviteAcceptedByPeer) onInviteAcceptedByPeer(gcnew String(channelID), gcnew String(account), uid, gcnew String(extra));
 }
 
-void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteRefusedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid)
+void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteRefusedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, char const * extra, size_t extra_size)
 {
-	if (onInviteRefusedByPeer) onInviteRefusedByPeer(gcnew String(channelID), gcnew String(account), uid);
+	if (onInviteRefusedByPeer) onInviteRefusedByPeer(gcnew String(channelID), gcnew String(account), uid, gcnew String(extra));
 }
 
-void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteFailed(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, int ecode)
+void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteFailed(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, int ecode, char const * extra, size_t extra_size)
 {
-	if (onInviteFailed) onInviteFailed(gcnew String(channelID), gcnew String(account), uid, ecode);
+	if (onInviteFailed) onInviteFailed(gcnew String(channelID), gcnew String(account), uid, ecode, gcnew String(extra));
 }
 
-void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteEndByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid)
+void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteEndByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, char const * extra, size_t extra_size)
 {
-	if (onInviteEndByPeer) onInviteEndByPeer(gcnew String(channelID), gcnew String(account), uid);
+	if (onInviteEndByPeer) onInviteEndByPeer(gcnew String(channelID), gcnew String(account), uid, gcnew String(extra));
 }
 
 void AgoraClrLibrary::AgoraClrSignal::NativeOnInviteEndByMyself(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid)

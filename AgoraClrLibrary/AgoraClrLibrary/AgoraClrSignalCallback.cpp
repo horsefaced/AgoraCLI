@@ -81,24 +81,24 @@ void AgoraClrLibrary::AgoraClrSignalCallback::onInviteReceivedByPeer(char const 
 	if (onInviteReceivedByPeerEvent) onInviteReceivedByPeerEvent(channelID, channelID_size, account, account_size, uid);
 }
 
-void AgoraClrLibrary::AgoraClrSignalCallback::onInviteAcceptedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid)
+void AgoraClrLibrary::AgoraClrSignalCallback::onInviteAcceptedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, char const * extra, size_t extra_size)
 {
-	if (onInviteAcceptedByPeerEvent) onInviteAcceptedByPeer(channelID, channelID_size, account, account_size, uid);
+	if (onInviteAcceptedByPeerEvent) onInviteAcceptedByPeer(channelID, channelID_size, account, account_size, uid, extra, extra_size);
 }
 
-void AgoraClrLibrary::AgoraClrSignalCallback::onInviteRefusedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid)
+void AgoraClrLibrary::AgoraClrSignalCallback::onInviteRefusedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, char const * extra, size_t extra_size)
 {
-	if (onInviteRefusedByPeerEvent) onInviteRefusedByPeerEvent(channelID, channelID_size, account, account_size, uid);
+	if (onInviteRefusedByPeerEvent) onInviteRefusedByPeerEvent(channelID, channelID_size, account, account_size, uid, extra, extra_size);
 }
 
-void AgoraClrLibrary::AgoraClrSignalCallback::onInviteFailed(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, int ecode)
+void AgoraClrLibrary::AgoraClrSignalCallback::onInviteFailed(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, int ecode, char const * extra, size_t extra_size)
 {
-	if (onInviteFailedEvent) onInviteFailedEvent(channelID, channelID_size, account, account_size, uid, ecode);
+	if (onInviteFailedEvent) onInviteFailedEvent(channelID, channelID_size, account, account_size, uid, ecode, extra, extra_size);
 }
 
-void AgoraClrLibrary::AgoraClrSignalCallback::onInviteEndByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid)
+void AgoraClrLibrary::AgoraClrSignalCallback::onInviteEndByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, char const * extra, size_t extra_size)
 {
-	if (onInviteEndByPeerEvent) onInviteEndByPeerEvent(channelID, channelID_size, account, account_size, uid);
+	if (onInviteEndByPeerEvent) onInviteEndByPeerEvent(channelID, channelID_size, account, account_size, uid, extra, extra_size);
 }
 
 void AgoraClrLibrary::AgoraClrSignalCallback::onInviteEndByMyself(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid)
