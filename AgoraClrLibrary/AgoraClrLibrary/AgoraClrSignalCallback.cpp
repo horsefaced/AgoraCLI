@@ -83,7 +83,7 @@ void AgoraClrLibrary::AgoraClrSignalCallback::onInviteReceivedByPeer(char const 
 
 void AgoraClrLibrary::AgoraClrSignalCallback::onInviteAcceptedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, char const * extra, size_t extra_size)
 {
-	if (onInviteAcceptedByPeerEvent) onInviteAcceptedByPeer(channelID, channelID_size, account, account_size, uid, extra, extra_size);
+	if (onInviteAcceptedByPeerEvent) onInviteAcceptedByPeerEvent(channelID, channelID_size, account, account_size, uid, extra, extra_size);
 }
 
 void AgoraClrLibrary::AgoraClrSignalCallback::onInviteRefusedByPeer(char const * channelID, size_t channelID_size, char const * account, size_t account_size, uint32_t uid, char const * extra, size_t extra_size)

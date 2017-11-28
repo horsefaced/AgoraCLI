@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>AgoraClrLibrary</id>
+    <version>1.0.0</version>
+    <title>AgoraCLI</title>
+    <authors>horsefaced</authors>
+    <owners>horsefaced</owners>
+    <licenseUrl>https://raw.githubusercontent.com/horsefaced/AgoraCLI/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/horsefaced/AgoraCLI</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/horsefaced/AgoraCLI/master/icon.jpg</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Agora声网的Windows端SDK只提供了C++的实现, 用在.NET平台上对开发者要求很高. 所以用CLI将其做了一个桥接, 使其可以使用C#进行开发.</description>
+    <releaseNotes></releaseNotes>
+    <copyright>Copyright 2017</copyright>
+    <tags>Agora C++ Clr</tags>
+  </metadata>
+</package>
