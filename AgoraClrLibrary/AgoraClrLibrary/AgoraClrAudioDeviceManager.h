@@ -13,6 +13,7 @@ namespace AgoraClrLibrary {
 		ClrAudioDeviceCollection(IAudioDeviceCollection* rawCollection);
 		~ClrAudioDeviceCollection();
 		!ClrAudioDeviceCollection();
+
 		int getCount();
 		int getDevice(int index, String^ deviceName, String^ deviceId);
 		int setDevice(String^ deviceId);
@@ -28,8 +29,22 @@ namespace AgoraClrLibrary {
 
 		ClrAudioDeviceCollection^ enumeratePlaybackDevices();
 		ClrAudioDeviceCollection^ enumerateRecordingDevices();
+
 		int setPlaybackDevice(String^ deviceId);
 		int setRecordingDevice(String^ deviceId);
+
+		int setPlaybackDeviceVolume(int volume);
+		int getPlaybackDeviceVolume(int %volume);
+
+		int setRecordingDeviceVolume(int volume);
+		int getRecordingDeviceVolume(int %volume);
+
+		int setPlaybackDeviceMute(bool mute);
+		int getPlaybackDeviceMute(bool %mute);
+
+		int setRecordingDeviceMute(bool mute);
+		int getRecordingDeviceMute(bool &mute);
+
 		int startPlaybackDeviceTest(String^ path);
 		int stopPlaybackDeviceTest();
 		int startRecordingDeviceTest(int indicationInterval);

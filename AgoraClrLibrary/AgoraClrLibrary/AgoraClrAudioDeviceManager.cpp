@@ -70,6 +70,66 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::setRecordingDevice(String ^ dev
 	return manager->setRecordingDevice(MarshalString(deviceId).c_str());
 }
 
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::setPlaybackDeviceVolume(int volume)
+{
+	AAudioDeviceManager manager(engine->getEngine());
+	return manager->setPlaybackDeviceVolume(volume);
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDeviceVolume(int % volume)
+{
+	int v;
+	AAudioDeviceManager manager(engine->getEngine());
+	int result = manager->getPlaybackDeviceVolume(&v);
+	volume = v;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::setRecordingDeviceVolume(int volume)
+{
+	AAudioDeviceManager manager(engine->getEngine());
+	return manager->setRecordingDeviceVolume(volume);
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDeviceVolume(int % volume)
+{
+	int v, result;
+	AAudioDeviceManager manager(engine->getEngine());
+	result = manager->getRecordingDeviceVolume(&v);
+	volume = v;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::setPlaybackDeviceMute(bool mute)
+{
+	AAudioDeviceManager manager(engine->getEngine());
+	return manager->setPlaybackDeviceMute(mute);
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDeviceMute(bool % mute)
+{
+	bool m;
+	AAudioDeviceManager manager(engine->getEngine());
+	int result = manager->getPlaybackDeviceMute(&m);
+	mute = m;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::setRecordingDeviceMute(bool mute)
+{
+	AAudioDeviceManager manager(engine->getEngine());
+	return manager->setRecordingDeviceMute(mute);
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDeviceMute(bool & mute)
+{
+	bool m;
+	AAudioDeviceManager manager(engine->getEngine());
+	int result = manager->getRecordingDeviceMute(&m);
+	mute = m;
+	return result;
+}
+
 int AgoraClrLibrary::AgoraClrAudioDeviceManager::startPlaybackDeviceTest(String ^ path)
 {
 	AAudioDeviceManager manager(engine->getEngine());

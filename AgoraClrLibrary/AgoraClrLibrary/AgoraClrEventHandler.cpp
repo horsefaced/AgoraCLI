@@ -121,3 +121,13 @@ void AgoraClrLibrary::AgoraClrEventHandler::onActiveSpeaker(uid_t uid)
 {
 	if (onActiveSpeakerEvent) onActiveSpeakerEvent(uid);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+{
+	if (onClientRoleChangedEvent) onClientRoleChangedEvent(oldRole, newRole);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
+{
+	if (onAudioDeviceVolumeChangedEvent) onAudioDeviceVolumeChangedEvent(deviceType, volume, muted);
+}

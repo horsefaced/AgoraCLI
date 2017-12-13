@@ -123,6 +123,8 @@ enum WARN_CODE_TYPE
     // sdk: 100~1000
     WARN_SWITCH_LIVE_VIDEO_TIMEOUT = 111,
     WARN_SET_CLIENT_ROLE_TIMEOUT = 118,
+    WARN_OPEN_CHANNEL_INVALID_TICKET = 121,
+    WARN_OPEN_CHANNEL_TRY_NEXT_VOS = 122,
     WARN_AUDIO_MIXING_OPEN_ERROR = 701,
 
     WARN_ADM_RUNTIME_PLAYOUT_WARNING = 1014,
@@ -175,6 +177,7 @@ enum ERROR_CODE_TYPE
 	ERR_TOO_MANY_DATA_STREAMS = 116,
 	ERR_STREAM_MESSAGE_TIMEOUT = 117,
     ERR_SET_CLIENT_ROLE_NOT_AUTHORIZED = 119,
+    ERR_CLIENT_IS_BANNED_BY_SERVER = 123,
 
     //1001~2000
     ERR_LOAD_MEDIA_ENGINE = 1001,
@@ -239,6 +242,8 @@ enum MEDIA_ENGINE_EVENT_CODE_TYPE
     MEDIA_ENGINE_RECORDING_WARNING = 2,
     MEDIA_ENGINE_PLAYOUT_WARNING = 3,
     MEDIA_ENGINE_AUDIO_FILE_MIX_FINISH = 10,
+    MEDIA_ENGINE_AUDIO_FAREND_MUSIC_BEGINS = 12,
+    MEDIA_ENGINE_AUDIO_FAREND_MUSIC_ENDS = 13,
     // media engine role changed
     MEDIA_ENGINE_ROLE_BROADCASTER_SOLO = 20,
     MEDIA_ENGINE_ROLE_BROADCASTER_INTERACTIVE = 21,
@@ -267,6 +272,7 @@ enum MEDIA_DEVICE_TYPE
     AUDIO_RECORDING_DEVICE = 1,
     VIDEO_RENDER_DEVICE = 2,
     VIDEO_CAPTURE_DEVICE = 3,
+    AUDIO_APPLICATION_PLAYOUT_DEVICE = 4,
 };
 
 enum AUDIO_RECORDING_QUALITY_TYPE
@@ -737,6 +743,14 @@ public:
     }
 
     /**
+     * When far-end rhythm begins/ends, these functions will be called
+     */
+    virtual void onRemoteAudioMixingBegin() {
+    }
+    virtual void onRemoteAudioMixingEnd() {
+    }
+
+    /**
     * When audio effect playback finished, this function will be called
     */
     virtual void onAudioEffectFinished(int soundId) {
@@ -908,7 +922,19 @@ public:
 		(void)enabled;
 	}
 	
-	/**
+    /**
+    * when remote user enable local video function, the function will be called
+    * @param [in] uid
+    *        the UID of the remote user
+    * @param [in] enabled
+    *        true: the remote user has enabled local video function, false: the remote user has disabled local video function
+    */
+    virtual void onUserEnableLocalVideo(uid_t uid, bool enabled) {
+        (void)uid;
+        (void)enabled;
+    }
+    
+    /**
     * when api call executed completely, the function will be called
     * @param [in] api
     *        the api name
@@ -957,6 +983,11 @@ public:
     * when local user disconnected by accident, the function will be called(then SDK will try to reconnect itself)
     */
     virtual void onConnectionInterrupted() {}
+
+    /**
+     * when local user is banned by the server, the function will be called
+     */
+    virtual void onConnectionBanned() {}
     
     virtual void onRefreshRecordingServiceStatus(int status) {
         (void)status;
@@ -1037,6 +1068,12 @@ public:
     * when client role is successfully changed, the function will be called
     */
     virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole) {
+    }
+
+    virtual void onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted) {
+        (void)deviceType;
+        (void)volume;
+        (void)muted;
     }
 };
 
@@ -1153,6 +1190,10 @@ public:
     */
     virtual int setDevice(const char deviceId[MAX_DEVICE_ID_LENGTH]) = 0;
 
+    virtual int setApplicationVolume(int volume) = 0;
+    virtual int getApplicationVolume(int& volume) = 0;
+    virtual int setApplicationMute(bool mute) = 0;
+    virtual int isApplicationMute(bool& mute) = 0;
     /**
     * release the resource
     */
@@ -1237,6 +1278,11 @@ public:
     * @return return 0 if success or an error code
     */
     virtual int getRecordingDeviceVolume(int *volume) = 0;
+  
+    virtual int setPlaybackDeviceMute(bool mute) = 0;
+    virtual int getPlaybackDeviceMute(bool *mute) = 0;
+    virtual int setRecordingDeviceMute(bool mute) = 0;
+    virtual int getRecordingDeviceMute(bool *mute) = 0;
 
     /**
     * test the playback audio device to know whether it can worked well
@@ -1761,7 +1807,12 @@ public:
     }
 
     int setRemoteVideoStreamType(uid_t uid, REMOTE_VIDEO_STREAM_TYPE streamType) {
-        return setObject("rtc.video.set_remote_video_stream", "{\"uid\":%u,\"stream\":%d}", uid, streamType);
+        return setParameters("{\"rtc.video.set_remote_video_stream\":{\"uid\":%u,\"stream\":%d}, \"che.video.setstream\":{\"uid\":%u,\"stream\":%d}}", uid, streamType, uid, streamType);
+//        return setObject("rtc.video.set_remote_video_stream", "{\"uid\":%u,\"stream\":%d}", uid, streamType);
+    }
+
+    int setRemoteDefaultVideoStreamType(REMOTE_VIDEO_STREAM_TYPE streamType) {
+        return m_parameter ? m_parameter->setInt("rtc.video.set_remote_default_video_stream_type", streamType) : -ERR_NOT_INITIALIZED;
     }
 
     /**
@@ -1923,6 +1974,29 @@ public:
             "{\"config\":%d,\"scenario\":%d}",
             static_cast<int>(profile), static_cast<int>(scenario));
     }
+
+    /**
+     * disable audio function in channel, which will be recovered when leave channel.
+     * @return return 0 if success or an error code
+     */
+    int pauseAudio() {
+        return m_parameter ? m_parameter->setBool("che.pause.audio", true) : -ERR_NOT_INITIALIZED;
+    }
+
+    /**
+     * resume audio function in channel.
+     * @return return 0 if success or an error code
+     */
+    int resumeAudio() {
+        return m_parameter ? m_parameter->setBool("che.pause.audio", false) : -ERR_NOT_INITIALIZED;
+    }
+
+    int setExternalAudioSource(bool enabled, int sampleRate, int channels) {
+        if (enabled)
+            return setParameters("{\"che.audio.external_capture\":true,\"che.audio.external_capture.push\":true,\"che.audio.set_capture_raw_audio_format\":{\"sampleRate\":%d,\"channelCnt\":%d,\"mode\":%d}}", sampleRate, channels, RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_WRITE);
+        else
+            return setParameters("{\"che.audio.external_capture\":false,\"che.audio.external_capture.push\":false}");
+    }
 #if defined(__APPLE__)
     /**
      * start screen/windows capture
@@ -2078,7 +2152,7 @@ public:
     }
 
     int enableDualStreamMode(bool enabled) {
-        return setParameters("{\"rtc.dual_stream_mode\":%s,\"che.video.enableLowBitRateStream\":%s}", enabled ? "true" : "false", enabled ? "true" : "false");
+        return setParameters("{\"rtc.dual_stream_mode\":%s,\"che.video.enableLowBitRateStream\":%d}", enabled ? "true" : "false", enabled ? 1 : 0);
     }
 
     int setRecordingAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) {

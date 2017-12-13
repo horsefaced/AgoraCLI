@@ -128,6 +128,12 @@ void AgoraClrLibrary::AgoraClrSignal::messageChannelSend(String^ channel, String
 	signal->messageChannelSend(channelStr.c_str(), channelStr.length(), msgStr.c_str(), msgStr.length(), msgidStr.c_str(), msgidStr.length());
 }
 
+void AgoraClrLibrary::AgoraClrSignal::queryUserStatus(String ^ account)
+{
+	std::string accountStr = MarshalString(account);
+	signal->queryUserStatus(accountStr.c_str(), accountStr.length());
+}
+
 void AgoraClrLibrary::AgoraClrSignal::setAttr(String ^ name, String ^ value)
 {
 	std::string nameStr = MarshalString(name), valueStr = MarshalString(value);
@@ -155,6 +161,16 @@ void AgoraClrLibrary::AgoraClrSignal::getUserAttrAll(String ^ account)
 {
 	std::string accountStr = MarshalString(account);
 	signal->getUserAttrAll(accountStr.c_str(), accountStr.length());
+}
+
+int AgoraClrLibrary::AgoraClrSignal::getStatus()
+{
+	return signal->getStatus();
+}
+
+int AgoraClrLibrary::AgoraClrSignal::getSDKVersion()
+{
+	return signal->getSdkVersion();
 }
 
 bool AgoraClrLibrary::AgoraClrSignal::isOnline()

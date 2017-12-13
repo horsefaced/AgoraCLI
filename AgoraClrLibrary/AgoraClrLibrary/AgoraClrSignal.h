@@ -107,6 +107,9 @@ namespace AgoraClrLibrary {
 
 		void messageInstantSend(String^ account, String^ msg, String^ msgID);
 		void messageChannelSend(String^ channel, String^ msg, String^ msgID);
+		void messageChannelSendForce(String^ channelID, String^ message, String^ messageID);
+
+		void queryUserStatus(String^ account);
 
 		void setAttr(String^ name, String^ value);
 		void getAttr(String^ name);
@@ -114,11 +117,15 @@ namespace AgoraClrLibrary {
 		void getUserAttr(String^ account, String^ name);
 		void getUserAttrAll(String^ account);
 
+		int getStatus();
+
+		int getSDKVersion();
+		
+		[ObsoleteAttribute]
 		bool isOnline();
 
 		//过渡接口
 		void messageAppSend(String^ message, String^ messageID);
-		void messageChannelSendForce(String^ channelID, String^ message, String^ messageID);
 		void messagePushSend(String^ account, String^ message, String^ messageID);
 		void messageChatSend(String^ account, String^ message, String^ messageID);
 		//void messageDTMFSend 这个接口用到了uid，但在大部分接口中 uid 已经被废弃， 所以这个接口暂时不实现

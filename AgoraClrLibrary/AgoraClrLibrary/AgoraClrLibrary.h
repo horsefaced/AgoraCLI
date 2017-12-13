@@ -157,6 +157,16 @@ namespace AgoraClrLibrary {
 		REMOTE_VIDEO_STREAM_MEDIUM = 2,
 	};
 
+	public enum class MediaDeviceType
+	{
+		UNKNOWN_AUDIO_DEVICE = -1,
+		AUDIO_PLAYOUT_DEVICE = 0,
+		AUDIO_RECORDING_DEVICE = 1,
+		VIDEO_RENDER_DEVICE = 2,
+		VIDEO_CAPTURE_DEVICE = 3,
+		AUDIO_APPLICATION_PLAYOUT_DEVICE = 4,
+	};
+
 	public ref class RemoteVideoStats
 	{
 	public:
@@ -480,6 +490,9 @@ namespace AgoraClrLibrary {
 
 	public delegate void onActiveSpeaker(int uid);
 
+	public delegate void onClientRoleChanged(ClientRoleType, ClientRoleType);
+	public delegate void onAudioDeviceVolumeChanged(MediaDeviceType, int, bool);
+
 	//PacketObserver Part
 	public delegate bool onSendAudioPacket(ClrPacket^ packet);
 	public delegate bool onSendVideoPacket(ClrPacket^ packet);
@@ -487,7 +500,7 @@ namespace AgoraClrLibrary {
 	public delegate bool onReceiveVideoPacket(ClrPacket^ packet);
 
 	//Raw Data Part
-	public delegate bool onRecodingAudioFrame(ClrAudioFrame^ frame);
+	public delegate bool onRecordAudioFrame(ClrAudioFrame^ frame);
 	public delegate bool onPlaybackAudioFrame(ClrAudioFrame^ frame);
 	public delegate bool onPlaybackAudioFrameBeforeMixing(int uid, ClrAudioFrame^ frame);
 	public delegate bool onCaptureVideoFrame(ClrVideoFrame^ frame);
@@ -555,6 +568,7 @@ namespace AgoraClrLibrary {
 		//RtcEngineParameters Part
 		int setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
 		int setPlaybackAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
+		int setMixedAudioFrameParameters(int sampleRate, int samplesPerCall);
 
 		int muteLocalAudioStream(bool mute);
 		int muteAllRemoteAudioStreams(bool mute);
@@ -588,6 +602,8 @@ namespace AgoraClrLibrary {
 
 		int setLocalVoicePitch(double pitch);
 		int setInEarMonitoringVolume(int volume);
+
+		int setExternalAudioSource(bool enabled, int sampleRate, int channels);
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
@@ -629,6 +645,9 @@ namespace AgoraClrLibrary {
 
 		onActiveSpeaker^ onActiveSpeaker;
 
+		onClientRoleChanged^ onClientRoleChanged;
+		onAudioDeviceVolumeChanged^ onAudioDeviceVolumeChanged;
+
 		//PacketObserver Part
 		onSendAudioPacket ^onSendAudioPacket;
 		onSendVideoPacket ^onSendVideoPacket;
@@ -636,7 +655,7 @@ namespace AgoraClrLibrary {
 		onReceiveVideoPacket ^onReceiveVideoPacket;
 
 		//Raw data Part
-		onRecodingAudioFrame ^onRecodingAudioFrame;
+		onRecordAudioFrame ^onRecordAudioFrame;
 		onPlaybackAudioFrame ^onPlaybackAudioFrame;
 		onPlaybackAudioFrameBeforeMixing ^onPlaybackAudioFrameBeforeMixing;
 		onCaptureVideoFrame ^onCaptureVideoFrame;
@@ -686,13 +705,16 @@ namespace AgoraClrLibrary {
 		void NativeOnAudioMixingFinished();
 
 		void NativeOnActiveSpeaker(uid_t uid);
+		
+		void NativeOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
+		void NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
 
 		bool NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnReceiveAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnReceiveVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
 
-		bool NativeOnRecodingAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
+		bool NativeOnRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
 		bool NativeOnPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
 		bool NativeOnPlaybackAudioFrameBeforeMixing(unsigned int uid, agora::media::IAudioFrameObserver::AudioFrame& frame);
 		bool NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame);

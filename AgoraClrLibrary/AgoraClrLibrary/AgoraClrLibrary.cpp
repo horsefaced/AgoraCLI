@@ -250,7 +250,7 @@ int AgoraClrLibrary::AgoraClr::clearVideoCompositingLayout()
 
 int AgoraClrLibrary::AgoraClr::configPublisher(ClrPublisherConfiguration ^ config)
 {
-#if WIN32
+#if defined(_WIN32)
 	return rtcEngine->configPublisher(*config->toRaw());
 #else
 	return 0;
@@ -291,6 +291,12 @@ int AgoraClrLibrary::AgoraClr::setPlaybackAudioFrameParameters(int sampleRate, i
 {
 	RtcEngineParameters params(*rtcEngine);
 	return params.setPlaybackAudioFrameParameters(sampleRate, channel, (RAW_AUDIO_FRAME_OP_MODE_TYPE)mode, samplesPerCall);
+}
+
+int AgoraClrLibrary::AgoraClr::setMixedAudioFrameParameters(int sampleRate, int samplesPerCall)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setMixedAudioFrameParameters(sampleRate, samplesPerCall);
 }
 
 int AgoraClr::muteLocalAudioStream(bool mute)
@@ -478,6 +484,12 @@ int AgoraClrLibrary::AgoraClr::setInEarMonitoringVolume(int volume)
 	return params.setInEarMonitoringVolume(volume);
 }
 
+int AgoraClrLibrary::AgoraClr::setExternalAudioSource(bool enabled, int sampleRate, int channels)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setExternalAudioSource(enabled, sampleRate, channels);
+}
+
 void* AgoraClr::regEvent(Object^ obj)
 {
 	gchs->Add(GCHandle::Alloc(obj));
@@ -519,6 +531,8 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onRequestChannelKeyEvent = PFOnRequestChannelKey(regEvent(gcnew NativeOnRequestChannelKeyDelegate(this, &AgoraClr::NativeOnRequestChannelKey)));
 	agoraEventHandler->onAudioMixingFinishedEvent = PFOnAudioMixingFinished(regEvent(gcnew NativeOnAudioMixingFinishedDelegate(this, &AgoraClr::NativeOnAudioMixingFinished)));
 	agoraEventHandler->onActiveSpeakerEvent = PFOnActiveSpeaker(regEvent(gcnew NativeOnActiveSpeakerDelegate(this, &AgoraClr::NativeOnActiveSpeaker)));
+	agoraEventHandler->onClientRoleChangedEvent = PFOnClientRoleChanged(regEvent(gcnew NativeOnClientRoleChangedDelegate(this, &AgoraClr::NativeOnClientRoleChanged)));
+	agoraEventHandler->onAudioDeviceVolumeChangedEvent = PFOnAudioDeviceVolumeChanged(regEvent(gcnew NativeOnAudioDeviceVolumeChangedDelegate(this, &AgoraClr::NativeOnAudioDeviceVolumeChanged)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -531,7 +545,7 @@ void AgoraClr::initializePacketObserver()
 
 void AgoraClr::initializeRawFrameObserver() 
 {
-	agoraRawObserver->onRecordAudioFrameEvent = PFOnRecordAudioFrame(regEvent(gcnew NativeOnRecordAudioFrameDelegate(this, &AgoraClr::NativeOnRecodingAudioFrame)));
+	agoraRawObserver->onRecordAudioFrameEvent = PFOnRecordAudioFrame(regEvent(gcnew NativeOnRecordAudioFrameDelegate(this, &AgoraClr::NativeOnRecordAudioFrame)));
 	agoraRawObserver->onPlaybackAudioFrameEvent = PFOnPlaybackAudioFrame(regEvent(gcnew NativeOnPlaybackAudioFrameDelegate(this, &AgoraClr::NativeOnPlaybackAudioFrame)));
 	agoraRawObserver->onPlaybackAudioFrameBeforeMixingEvent = PFOnPlaybackAudioFrameBeforeMixing(regEvent(gcnew NativeOnPlaybackAudioFrameBeforeMixingDelegate(this, &AgoraClr::NativeOnPlaybackAudioFrameBeforeMixing)));
 
@@ -633,6 +647,16 @@ void AgoraClrLibrary::AgoraClr::NativeOnAudioMixingFinished()
 void AgoraClrLibrary::AgoraClr::NativeOnActiveSpeaker(uid_t uid)
 {
 	if (onActiveSpeaker) onActiveSpeaker(uid);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+{
+	if (onClientRoleChanged) onClientRoleChanged((ClientRoleType)oldRole, (ClientRoleType)newRole);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
+{
+	if (onAudioDeviceVolumeChanged) onAudioDeviceVolumeChanged((MediaDeviceType)deviceType, volume, muted);
 }
 
 void AgoraClr::NativeOnLastmileQuality(int quality) 
@@ -793,12 +817,12 @@ bool AgoraClrLibrary::AgoraClr::NativeOnReceiveVideoPacket(agora::rtc::IPacketOb
 	return result;
 }
 
-bool AgoraClrLibrary::AgoraClr::NativeOnRecodingAudioFrame(agora::media::IAudioFrameObserver::AudioFrame & frame)
+bool AgoraClrLibrary::AgoraClr::NativeOnRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame & frame)
 {
 	bool result = true;
-	if (onRecodingAudioFrame) {
+	if (onRecordAudioFrame) {
 		ClrAudioFrame^ clrFrame = gcnew ClrAudioFrame(frame);
-		result = onRecodingAudioFrame(clrFrame);
+		result = onRecordAudioFrame(clrFrame);
 		if (result) clrFrame->writeRaw(frame);
 	}
 	return result;
