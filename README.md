@@ -17,6 +17,9 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2018-02-06 
+2.0版本上声网有一个bug，[摄像头占用问题](https://github.com/horsefaced/AgoraCLI/issues/16)，这个问题在2.0.2版本上就没有，大家可以先把agora_rtc_sdk.dll直接换成2.0.2的。
+
 ## 2017-12-13 更新版本至 2.0
 2.0版本中 IMediaEngine 接口新加了 registerVideoRenderFactory 与 pushAudioFrame ，但是官方文档里并没有，所以暂时不实现，等官方明确了这两个接口是干嘛的后在实现。
 同时，官方文档里说2.0版本新加了 pushExternalAudioFrame	推送外部音频帧 这个方法，但实际上并没有。而且在咨询了官方后，声网表示并没有在2.0上发布这个方法，所以这个方法就没有出现在 CLI 项目里，请注意，这不是一个BUG。
