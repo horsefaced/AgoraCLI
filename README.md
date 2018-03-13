@@ -21,12 +21,19 @@
 因为2.1版本声网进行了很大的改动，所以2.0（含）以前的版本进入2.0分支，需要的用户请使用2.0这个分支。2.1版本在2.1分支开发中，以后会并入master分支中。
 
 新增以下接口
-```c++
+```c#
 int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
 int setLocalVoiceReverb(AudioReverbType type, int value);
 int setLocalVideoMirrorMode(VideoMirrorModeType mode);
 String^ getVersion(int% build);
 int enableLoopbackRecording(bool enabled);
+```
+
+新增以下事件
+```c#
+virtual void onConnectionBanned()
+virtual void onRequestToken();
+
 ```
 
 官方依然没有在2.1的SDK上加入 pushExternalAudioFrame 这个方法。
