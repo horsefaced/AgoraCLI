@@ -97,6 +97,10 @@ void AgoraClrLibrary::AgoraClrEventHandler::onConnectionLost() {
 void AgoraClrLibrary::AgoraClrEventHandler::onConnectionInterrupted() {
 	if (onConnectionInterruptedEvent) onConnectionLostEvent();
 }
+void AgoraClrLibrary::AgoraClrEventHandler::onConnectionBanned()
+{
+	if (onConnectionBannedEvent) onConnectionBannedEvent();
+}
 void AgoraClrLibrary::AgoraClrEventHandler::onRefreshRecordingServiceStatus(int status) {
 	if (onRefreshRecordingServiceStatusEvent) onRefreshRecordingServiceStatusEvent(status);
 }
@@ -110,6 +114,11 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessageError(uid_t uid, int 
 void AgoraClrLibrary::AgoraClrEventHandler::onRequestChannelKey()
 {
 	if (onRequestChannelKeyEvent) onRequestChannelKeyEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRequestToken()
+{
+	if (onRequestTokenEvent) onRequestTokenEvent();
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingFinished()

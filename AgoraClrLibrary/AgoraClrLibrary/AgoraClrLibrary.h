@@ -550,11 +550,14 @@ namespace AgoraClrLibrary {
 	public delegate void onVideoStopped();
 	public delegate void onConnectionInterrupted();
 	public delegate void onConnectionLost();
+	public delegate void onConnectionBanned();
+
 	public delegate void onRefreshRecordingServiceStatus(int status);
 	public delegate void onApiCallExecuted(String ^api, int error);
 	public delegate void onStreamMessage(int uid, int streamId, String ^data);
 	public delegate void onStreamMessageError(int uid, int streamId, int code, int missed, int cached);
 	public delegate void onRequestChannelKey();
+	public delegate void onRequestToken();
 	public delegate void onAudioMixingFinished();
 
 	public delegate void onActiveSpeaker(int uid);
@@ -711,11 +714,14 @@ namespace AgoraClrLibrary {
 		onVideoStopped ^onVideoStopped;
 		onConnectionInterrupted ^onConnectionInterrupted;
 		onConnectionLost ^onConnectionLost;
+		onConnectionBanned ^onConnectionBanned;
+
 		onRefreshRecordingServiceStatus ^onRefreshRecordingServiceStatus;
 		onApiCallExecuted ^onApiCallExecuted;
 		onStreamMessage ^onStreamMessage;
 		onStreamMessageError ^onStreamMessageError;
 		onRequestChannelKey^ onRequestChannelKey;
+		onRequestToken^ onRequestToken;
 		onAudioMixingFinished^ onAudioMixingFinished;
 
 		onActiveSpeaker^ onActiveSpeaker;
@@ -772,11 +778,15 @@ namespace AgoraClrLibrary {
 		void NativeOnCameraReady();
 		void NativeOnVideoStopped();
 		void NativeOnConnectionLost();
+		void NativeOnConnectionBanned();
+
 		void NativeOnConnectionInterrupted();
 		void NativeOnRefreshRecordingServiceStatus(int status);
 		void NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
 		void NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
 		void NativeOnRequestChannelKey();
+		void NativeOnRequestToken();
+
 		void NativeOnAudioMixingFinished();
 
 		void NativeOnActiveSpeaker(uid_t uid);

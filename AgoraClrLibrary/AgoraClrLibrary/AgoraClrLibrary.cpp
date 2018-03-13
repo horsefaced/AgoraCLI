@@ -558,11 +558,15 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onCameraReadyEvent = PFOnCameraReady(regEvent(gcnew NativeOnCameraReadyDelegate(this, &AgoraClr::NativeOnCameraReady)));
 	agoraEventHandler->onVideoStoppedEvent = PFOnVideoStopped(regEvent(gcnew NativeOnVideoStoppedDelegate(this, &AgoraClr::NativeOnVideoStopped)));
 	agoraEventHandler->onConnectionLostEvent = PFOnConnectionLost(regEvent(gcnew NativeOnConnectionLostDelegate(this, &AgoraClr::NativeOnConnectionLost)));
+	agoraEventHandler->onConnectionBannedEvent = PFOnConnectionBanned(regEvent(gcnew NativeOnConnectionBannedDelegate(this, &AgoraClr::NativeOnConnectionBanned)));
+
 	agoraEventHandler->onConnectionInterruptedEvent = PFOnConnectionInterrupted(regEvent(gcnew NativeOnConnectionInterruptedDelegate(this, &AgoraClr::NativeOnConnectionInterrupted)));
 	agoraEventHandler->onRefreshRecordingServiceStatusEvent = PFOnRefreshRecordingServiceStatus(regEvent(gcnew NativeOnRefreshRecordingServiceStatusDelegate(this, &AgoraClr::NativeOnRefreshRecordingServiceStatus)));
 	agoraEventHandler->onStreamMessageEvent = PFOnStreamMessage(regEvent(gcnew NativeOnStreamMessageDelegate(this, &AgoraClr::NativeOnStreamMessage)));
 	agoraEventHandler->onStreamMessageErrorEvent = PFOnStreamMessageError(regEvent(gcnew NativeOnStreamMessageErrorDelegate(this, &AgoraClr::NativeOnStreamMessageError)));
 	agoraEventHandler->onRequestChannelKeyEvent = PFOnRequestChannelKey(regEvent(gcnew NativeOnRequestChannelKeyDelegate(this, &AgoraClr::NativeOnRequestChannelKey)));
+	agoraEventHandler->onRequestTokenEvent = PFOnRequestToken(regEvent(gcnew NativeOnRequestTokenDelegate(this, &AgoraClr::NativeOnRequestToken)));
+
 	agoraEventHandler->onAudioMixingFinishedEvent = PFOnAudioMixingFinished(regEvent(gcnew NativeOnAudioMixingFinishedDelegate(this, &AgoraClr::NativeOnAudioMixingFinished)));
 	agoraEventHandler->onActiveSpeakerEvent = PFOnActiveSpeaker(regEvent(gcnew NativeOnActiveSpeakerDelegate(this, &AgoraClr::NativeOnActiveSpeaker)));
 	agoraEventHandler->onClientRoleChangedEvent = PFOnClientRoleChanged(regEvent(gcnew NativeOnClientRoleChangedDelegate(this, &AgoraClr::NativeOnClientRoleChanged)));
@@ -782,6 +786,11 @@ void AgoraClr::NativeOnConnectionLost()
 	if (onConnectionLost) onConnectionLost();
 }
 
+void AgoraClrLibrary::AgoraClr::NativeOnConnectionBanned()
+{
+	if (onConnectionBanned) onConnectionBanned();
+}
+
 void AgoraClr::NativeOnConnectionInterrupted()
 {
 	if (onConnectionInterrupted) onConnectionInterrupted();
@@ -805,6 +814,11 @@ void AgoraClr::NativeOnStreamMessageError(uid_t uid, int streamId, int code, int
 void AgoraClrLibrary::AgoraClr::NativeOnRequestChannelKey()
 {
 	if (onRequestChannelKey) onRequestChannelKey();
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnRequestToken()
+{
+	if (onRequestToken) onRequestToken();
 }
 
 bool AgoraClrLibrary::AgoraClr::NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet & packet)
