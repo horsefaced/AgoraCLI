@@ -27,12 +27,15 @@ int setLocalVoiceReverb(AudioReverbType type, int value);
 int setLocalVideoMirrorMode(VideoMirrorModeType mode);
 String^ getVersion(int% build);
 int enableLoopbackRecording(bool enabled);
+int pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame ^frame, bool wrap);
+
 ```
 
 新增以下事件
 ```c#
 virtual void onConnectionBanned()
 virtual void onRequestToken();
+virtual bool onMixedAudioFrame(AudioFrame& audioFrame);
 
 ```
 
