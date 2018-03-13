@@ -102,7 +102,7 @@ namespace AgoraClrLibrary {
 		unsigned short rxVideoKBitRate;
 		unsigned short txVideoKBitRate;
 
-		unsigned int users;
+		unsigned int userCount;
 		double cpuAppUsage;
 		double cpuTotalUsage;
 
@@ -118,7 +118,7 @@ namespace AgoraClrLibrary {
 			txAudioKBitRate = raw.txAudioKBitRate;
 			rxVideoKBitRate = raw.rxVideoKBitRate;
 			txVideoKBitRate = raw.txVideoKBitRate;
-			users = raw.users;
+			userCount = raw.userCount;
 		}
 	};
 
@@ -531,11 +531,11 @@ namespace AgoraClrLibrary {
 		int joinChannel(String ^channelKey, String ^channelName, String ^channelInfo, int uid);
 		int leaveChannel();
 
-		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect);
+		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
 		int stopScreenCapture();
 		int updateScreenCaptureRegion(ClrRect^ rect);
 
-		int renewChannelKey(String ^channelKey);
+		int renewToken(String ^token);
 
 		int setEncryptionSecret(String ^key);
 		int setEncryptionMode(String ^mode);
@@ -559,7 +559,7 @@ namespace AgoraClrLibrary {
 		int clearVideoCompositingLayout();
 		int configPublisher(ClrPublisherConfiguration^ config);
 		int setChannelProfile(ChannelProfile profile);
-		int setClientRole(ClientRoleType role, String^ permissionKey);
+		int setClientRole(ClientRoleType role);
 
 		int createDataStream(int %id);
 		int sendStreamMessage(int id, String ^data);

@@ -49,7 +49,7 @@ int AgoraClr::initialize(String ^vendorkey)
 	if (result == 0) {
 		rtcEngine->registerPacketObserver(agoraPacketObserver);
 		agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
-		mediaEngine.queryInterface(rtcEngine, agora::rtc::AGORA_IID_MEDIA_ENGINE);
+		mediaEngine.queryInterface(rtcEngine, agora::AGORA_IID_MEDIA_ENGINE);
 		if (mediaEngine) {
 			mediaEngine->registerAudioFrameObserver(agoraRawObserver);
 			mediaEngine->registerVideoFrameObserver(agoraRawObserver);
@@ -62,7 +62,7 @@ void AgoraClr::release()
 {
 	if (rtcEngine != NULL) {
 		agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
-		mediaEngine.queryInterface(rtcEngine, agora::rtc::AGORA_IID_MEDIA_ENGINE);
+		mediaEngine.queryInterface(rtcEngine, agora::AGORA_IID_MEDIA_ENGINE);
 		if (mediaEngine) {
 			mediaEngine->registerAudioFrameObserver(NULL);
 			mediaEngine->registerVideoFrameObserver(NULL);
@@ -128,27 +128,24 @@ int AgoraClr::leaveChannel()
 	return rtcEngine->leaveChannel();
 }
 
-int AgoraClrLibrary::AgoraClr::startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect)
+int AgoraClrLibrary::AgoraClr::startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.startScreenCapture((HWND)windowId.ToPointer(), captureFreq, rect->toRaw());
+	return rtcEngine->startScreenCapture((HWND)windowId.ToPointer(), captureFreq, rect->toRaw(), bitrate);
 }
 
 int AgoraClrLibrary::AgoraClr::stopScreenCapture()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.stopScreenCapture();
+	return rtcEngine->stopScreenCapture();
 }
 
 int AgoraClrLibrary::AgoraClr::updateScreenCaptureRegion(ClrRect ^ rect)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.updateScreenCaptureRegion(rect->toRaw());
+	return rtcEngine->updateScreenCaptureRegion(rect->toRaw());
 }
 
-int AgoraClr::renewChannelKey(String ^ channelKey)
+int AgoraClr::renewToken(String ^ token)
 {
-	return rtcEngine->renewChannelKey(MarshalString(channelKey).c_str());
+	return rtcEngine->renewToken(MarshalString(token).c_str());
 }
 
 int AgoraClrLibrary::AgoraClr::setEncryptionSecret(String ^ key)
@@ -262,9 +259,9 @@ int AgoraClr::setChannelProfile(ChannelProfile profile)
 	return rtcEngine->setChannelProfile((agora::rtc::CHANNEL_PROFILE_TYPE)profile);
 }
 
-int AgoraClrLibrary::AgoraClr::setClientRole(ClientRoleType role, String ^ permissionKey)
+int AgoraClrLibrary::AgoraClr::setClientRole(ClientRoleType role)
 {
-	return rtcEngine->setClientRole((CLIENT_ROLE_TYPE)role, MarshalString(permissionKey).c_str());
+	return rtcEngine->setClientRole((CLIENT_ROLE_TYPE)role);
 }
 
 int AgoraClr::createDataStream(int % id)
