@@ -16,6 +16,7 @@ AgoraClr::AgoraClr()
 	agoraEventHandler = new AgoraClrEventHandler;
 	agoraPacketObserver = new AgoraClrPacketObserver;
 	agoraRawObserver = new AgoraClrRawFrameObserver;
+
 	initializeEventHandler();
 	initializePacketObserver();
 	initializeRawFrameObserver();
@@ -48,11 +49,11 @@ int AgoraClr::initialize(String ^vendorkey)
 	int result = rtcEngine->initialize(context);
 	if (result == 0) {
 		rtcEngine->registerPacketObserver(agoraPacketObserver);
-		agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
-		mediaEngine.queryInterface(rtcEngine, agora::AGORA_IID_MEDIA_ENGINE);
-		if (mediaEngine) {
-			mediaEngine->registerAudioFrameObserver(agoraRawObserver);
-			mediaEngine->registerVideoFrameObserver(agoraRawObserver);
+		IMediaEngine* p = NULL;
+		if (!rtcEngine->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, (void**)&p)) {
+			agoraMediaEngine = p;
+			agoraMediaEngine->registerAudioFrameObserver(agoraRawObserver);
+			agoraMediaEngine->registerVideoFrameObserver(agoraRawObserver);
 		}
 	}
 	return result;
@@ -61,12 +62,8 @@ int AgoraClr::initialize(String ^vendorkey)
 void AgoraClr::release()
 {
 	if (rtcEngine != NULL) {
-		agora::util::AutoPtr<agora::media::IMediaEngine> mediaEngine;
-		mediaEngine.queryInterface(rtcEngine, agora::AGORA_IID_MEDIA_ENGINE);
-		if (mediaEngine) {
-			mediaEngine->registerAudioFrameObserver(NULL);
-			mediaEngine->registerVideoFrameObserver(NULL);
-		}
+		if (agoraMediaEngine)
+			agoraMediaEngine->release();
 
 		delete agoraEventHandler;
 		delete agoraPacketObserver;
@@ -524,6 +521,14 @@ int AgoraClrLibrary::AgoraClr::enableLoopbackRecording(bool enabled)
 	return params.enableLoopbackRecording(enabled);
 }
 
+int AgoraClrLibrary::AgoraClr::pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame ^ frame, bool wrap)
+{
+	if (agoraMediaEngine)
+		return agoraMediaEngine->pushAudioFrame((agora::media::MEDIA_SOURCE_TYPE) type, frame->toRaw(), wrap);
+	else
+		return -1;
+}
+
 void* AgoraClr::regEvent(Object^ obj)
 {
 	gchs->Add(GCHandle::Alloc(obj));
@@ -586,6 +591,7 @@ void AgoraClr::initializeRawFrameObserver()
 	agoraRawObserver->onRecordAudioFrameEvent = PFOnRecordAudioFrame(regEvent(gcnew NativeOnRecordAudioFrameDelegate(this, &AgoraClr::NativeOnRecordAudioFrame)));
 	agoraRawObserver->onPlaybackAudioFrameEvent = PFOnPlaybackAudioFrame(regEvent(gcnew NativeOnPlaybackAudioFrameDelegate(this, &AgoraClr::NativeOnPlaybackAudioFrame)));
 	agoraRawObserver->onPlaybackAudioFrameBeforeMixingEvent = PFOnPlaybackAudioFrameBeforeMixing(regEvent(gcnew NativeOnPlaybackAudioFrameBeforeMixingDelegate(this, &AgoraClr::NativeOnPlaybackAudioFrameBeforeMixing)));
+	agoraRawObserver->onMixedAudioFrameEvent = PFOnMixedAudioFrame(regEvent(gcnew NativeOnMixedAudioFrameDelegate(this, &AgoraClr::NativeOnMixedAudioFrame)));
 
 	agoraRawObserver->onCaptureVideoFrameEvent = PFOnCaptureVideoFrame(regEvent(gcnew NativeOnCaptureVideoFrameDelegate(this, &AgoraClr::NativeOnCaptureVideoFrame)));
 	agoraRawObserver->onRenderVideoFrameEvent = PFOnRenderVideoFrame(regEvent(gcnew NativeOnRenderVideoFrameDelegate(this, &AgoraClr::NativeOnRenderVideoFrame)));
@@ -893,6 +899,17 @@ bool AgoraClrLibrary::AgoraClr::NativeOnPlaybackAudioFrameBeforeMixing(unsigned 
 	if (onPlaybackAudioFrameBeforeMixing) {
 		ClrAudioFrame^ clrFrame = gcnew ClrAudioFrame(frame);
 		result = onPlaybackAudioFrameBeforeMixing(uid, clrFrame);
+		if (result) clrFrame->writeRaw(frame);
+	}
+	return result;
+}
+
+bool AgoraClrLibrary::AgoraClr::NativeOnMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame & frame)
+{
+	bool result = true;
+	if (onMixedAudioFrame) {
+		ClrAudioFrame^ clrFrame = gcnew ClrAudioFrame(frame);
+		result = onMixedAudioFrame(clrFrame);
 		if (result) clrFrame->writeRaw(frame);
 	}
 	return result;

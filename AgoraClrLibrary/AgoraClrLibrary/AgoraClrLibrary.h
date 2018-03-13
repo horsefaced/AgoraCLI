@@ -279,6 +279,12 @@ namespace AgoraClrLibrary {
 			if (sizeModified) raw.buffer = Marshal::AllocHGlobal(samples * bytesPerSample).ToPointer();
 			Marshal::Copy(data, 0, IntPtr(raw.buffer), samples * bytesPerSample);
 		}
+
+		agora::media::IAudioFrameObserver::AudioFrame* toRaw() {
+			agora::media::IAudioFrameObserver::AudioFrame* raw = new agora::media::IAudioFrameObserver::AudioFrame();
+			writeRaw(*raw);
+			return raw;
+		}
 	};
 
 	public enum class ClrVideoFrameType {
@@ -575,6 +581,8 @@ namespace AgoraClrLibrary {
 	public delegate bool onRecordAudioFrame(ClrAudioFrame^ frame);
 	public delegate bool onPlaybackAudioFrame(ClrAudioFrame^ frame);
 	public delegate bool onPlaybackAudioFrameBeforeMixing(int uid, ClrAudioFrame^ frame);
+	public delegate bool onMixedAudioFrame(ClrAudioFrame^ frame);
+
 	public delegate bool onCaptureVideoFrame(ClrVideoFrame^ frame);
 	public delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^ frame);
 
@@ -683,6 +691,8 @@ namespace AgoraClrLibrary {
 		String^ getVersion(int% build);
 		int enableLoopbackRecording(bool enabled);
 
+		int pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame ^frame, bool wrap);
+
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
 		IRtcEngine* getEngine();
@@ -739,6 +749,8 @@ namespace AgoraClrLibrary {
 		onRecordAudioFrame ^onRecordAudioFrame;
 		onPlaybackAudioFrame ^onPlaybackAudioFrame;
 		onPlaybackAudioFrameBeforeMixing ^onPlaybackAudioFrameBeforeMixing;
+		onMixedAudioFrame ^onMixedAudioFrame;
+
 		onCaptureVideoFrame ^onCaptureVideoFrame;
 		onRenderVideoFrame ^onRenderVideoFrame;
 
@@ -748,6 +760,7 @@ namespace AgoraClrLibrary {
 		AgoraClrEventHandler *agoraEventHandler;
 		AgoraClrPacketObserver *agoraPacketObserver;
 		AgoraClrRawFrameObserver *agoraRawObserver;
+		agora::media::IMediaEngine* agoraMediaEngine;
 
 		List<GCHandle> ^gchs;
 
@@ -802,6 +815,8 @@ namespace AgoraClrLibrary {
 		bool NativeOnRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
 		bool NativeOnPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
 		bool NativeOnPlaybackAudioFrameBeforeMixing(unsigned int uid, agora::media::IAudioFrameObserver::AudioFrame& frame);
+		bool NativeOnMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
+
 		bool NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame);
 		bool NativeOnRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
 

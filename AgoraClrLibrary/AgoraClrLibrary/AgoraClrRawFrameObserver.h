@@ -8,6 +8,7 @@ namespace AgoraClrLibrary {
 	typedef bool(__stdcall * PFOnPlaybackAudioFrame)(IAudioFrameObserver::AudioFrame & audioFrame);
 	typedef bool(__stdcall * PFOnMixedAudioFrame)(IAudioFrameObserver::AudioFrame & audioFrame);
 	typedef bool(__stdcall * PFOnPlaybackAudioFrameBeforeMixing)(unsigned int uid, IAudioFrameObserver::AudioFrame & audioFrame);
+
 	typedef bool(__stdcall * PFOnCaptureVideoFrame)(IVideoFrameObserver::VideoFrame & videoFrame);
 	typedef bool(__stdcall * PFOnRenderVideoFrame)(unsigned int uid, IVideoFrameObserver::VideoFrame & videoFrame);
 
@@ -27,6 +28,7 @@ namespace AgoraClrLibrary {
 		PFOnPlaybackAudioFrame onPlaybackAudioFrameEvent = 0;
 		PFOnMixedAudioFrame onMixedAudioFrameEvent = 0;
 		PFOnPlaybackAudioFrameBeforeMixing onPlaybackAudioFrameBeforeMixingEvent = 0;
+
 		PFOnCaptureVideoFrame onCaptureVideoFrameEvent = 0;
 		PFOnRenderVideoFrame onRenderVideoFrameEvent = 0;
 
