@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "__mutex_base": "cpp",
+        "memory": "cpp"
+    }
+}
