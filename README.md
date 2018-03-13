@@ -20,6 +20,17 @@
 ## 2018-03-13
 因为2.1版本声网进行了很大的改动，所以2.0（含）以前的版本进入2.0分支，需要的用户请使用2.0这个分支。2.1版本在2.1分支开发中，以后会并入master分支中。
 
+新增以下接口
+```c++
+int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
+int setLocalVoiceReverb(AudioReverbType type, int value);
+int setLocalVideoMirrorMode(VideoMirrorModeType mode);
+String^ getVersion(int% build);
+int enableLoopbackRecording(bool enabled);
+```
+
+官方依然没有在2.1的SDK上加入 pushExternalAudioFrame 这个方法。
+
 ## 2018-02-06
 2.0版本上声网有一个bug，[摄像头占用问题](https://github.com/horsefaced/AgoraCLI/issues/16)，这个问题在2.0.2版本上就没有，大家可以先把agora_rtc_sdk.dll直接换成2.0.2的。
 
