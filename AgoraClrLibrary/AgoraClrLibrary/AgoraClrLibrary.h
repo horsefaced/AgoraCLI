@@ -26,38 +26,78 @@ namespace AgoraClrLibrary {
 
 	public enum class VideoProfile
 	{                                   // res       fps  kbps
-		VIDEO_PROFILE_120P = 0,         // 160x120   15   65
-		VIDEO_PROFILE_120P_3 = 2,       // 120x120   15   50
-		VIDEO_PROFILE_180P = 10,        // 320x180   15   140
-		VIDEO_PROFILE_180P_3 = 12,      // 180x180   15   100
-		VIDEO_PROFILE_180P_4 = 13,      // 240x180   15   120
-		VIDEO_PROFILE_240P = 20,        // 320x240   15   200
-		VIDEO_PROFILE_240P_3 = 22,      // 240x240   15   140
-		VIDEO_PROFILE_240P_4 = 23,      // 424x240   15   220
-		VIDEO_PROFILE_360P = 30,        // 640x360   15   400
-		VIDEO_PROFILE_360P_3 = 32,      // 360x360   15   260
-		VIDEO_PROFILE_360P_4 = 33,      // 640x360   30   600
-		VIDEO_PROFILE_360P_6 = 35,      // 360x360   30   400
-		VIDEO_PROFILE_360P_7 = 36,      // 480x360   15   320
-		VIDEO_PROFILE_360P_8 = 37,      // 480x360   30   490
-		VIDEO_PROFILE_480P = 40,        // 640x480   15   500
-		VIDEO_PROFILE_480P_3 = 42,      // 480x480   15   400
-		VIDEO_PROFILE_480P_4 = 43,      // 640x480   30   750
-		VIDEO_PROFILE_480P_6 = 45,      // 480x480   30   600
-		VIDEO_PROFILE_480P_8 = 47,		// 848x480   15   610
-		VIDEO_PROFILE_480P_9 = 48,		// 848x480   30   930
-		VIDEO_PROFILE_720P = 50,        // 1280x720  15   1130
-		VIDEO_PROFILE_720P_3 = 52,      // 1280x720  30   1710
-		VIDEO_PROFILE_720P_5 = 54,      // 960x720  15    910
-		VIDEO_PROFILE_720P_6 = 55,      // 960x720  30    1380
-		VIDEO_PROFILE_1080P = 60,       // 1920x1080 15   2080
-		VIDEO_PROFILE_1080P_3 = 62,        // 1920x1080 30   3150
-		VIDEO_PROFILE_1080P_5 = 64,        // 1920x1080 60   4780
-		VIDEO_PROFILE_1440P = 66,        // 2560x1440 30   4850
-		VIDEO_PROFILE_1440P_2 = 67,        // 2560x1440 60   7350
-		VIDEO_PROFILE_4K = 70,            // 3840x2160 30   8910
-		VIDEO_PROFILE_4K_3 = 72,        // 3840x2160 60   13500
-		VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_360P,
+		VIDEO_PROFILE_LANDSCAPE_120P = 0,         // 160x120   15
+		VIDEO_PROFILE_LANDSCAPE_120P_3 = 2,       // 120x120   15
+		VIDEO_PROFILE_LANDSCAPE_180P = 10,        // 320x180   15
+		VIDEO_PROFILE_LANDSCAPE_180P_3 = 12,      // 180x180   15
+		VIDEO_PROFILE_LANDSCAPE_180P_4 = 13,      // 240x180   15
+		VIDEO_PROFILE_LANDSCAPE_240P = 20,        // 320x240   15
+		VIDEO_PROFILE_LANDSCAPE_240P_3 = 22,      // 240x240   15
+		VIDEO_PROFILE_LANDSCAPE_240P_4 = 23,      // 424x240   15
+		VIDEO_PROFILE_LANDSCAPE_360P = 30,        // 640x360   15
+		VIDEO_PROFILE_LANDSCAPE_360P_3 = 32,      // 360x360   15
+		VIDEO_PROFILE_LANDSCAPE_360P_4 = 33,      // 640x360   30
+		VIDEO_PROFILE_LANDSCAPE_360P_6 = 35,      // 360x360   30
+		VIDEO_PROFILE_LANDSCAPE_360P_7 = 36,      // 480x360   15
+		VIDEO_PROFILE_LANDSCAPE_360P_8 = 37,      // 480x360   30
+		VIDEO_PROFILE_LANDSCAPE_360P_9 = 38,      // 640x360   15
+		VIDEO_PROFILE_LANDSCAPE_360P_10 = 39,     // 640x360   24
+		VIDEO_PROFILE_LANDSCAPE_360P_11 = 100,    // 640x360   24
+		VIDEO_PROFILE_LANDSCAPE_480P = 40,        // 640x480   15
+		VIDEO_PROFILE_LANDSCAPE_480P_3 = 42,      // 480x480   15
+		VIDEO_PROFILE_LANDSCAPE_480P_4 = 43,      // 640x480   30
+		VIDEO_PROFILE_LANDSCAPE_480P_6 = 45,      // 480x480   30
+		VIDEO_PROFILE_LANDSCAPE_480P_8 = 47,      // 848x480   15
+		VIDEO_PROFILE_LANDSCAPE_480P_9 = 48,      // 848x480   30
+		VIDEO_PROFILE_LANDSCAPE_480P_10 = 49,     // 640x480   10
+		VIDEO_PROFILE_LANDSCAPE_720P = 50,        // 1280x720  15
+		VIDEO_PROFILE_LANDSCAPE_720P_3 = 52,      // 1280x720  30
+		VIDEO_PROFILE_LANDSCAPE_720P_5 = 54,      // 960x720   15
+		VIDEO_PROFILE_LANDSCAPE_720P_6 = 55,      // 960x720   30
+		VIDEO_PROFILE_LANDSCAPE_1080P = 60,       // 1920x1080 15
+		VIDEO_PROFILE_LANDSCAPE_1080P_3 = 62,     // 1920x1080 30
+		VIDEO_PROFILE_LANDSCAPE_1080P_5 = 64,     // 1920x1080 60
+		VIDEO_PROFILE_LANDSCAPE_1440P = 66,       // 2560x1440 30
+		VIDEO_PROFILE_LANDSCAPE_1440P_2 = 67,     // 2560x1440 60
+		VIDEO_PROFILE_LANDSCAPE_4K = 70,          // 3840x2160 30
+		VIDEO_PROFILE_LANDSCAPE_4K_3 = 72,        // 3840x2160 60
+
+		VIDEO_PROFILE_PORTRAIT_120P = 1000,       // 120x160   15
+		VIDEO_PROFILE_PORTRAIT_120P_3 = 1002,     // 120x120   15
+		VIDEO_PROFILE_PORTRAIT_180P = 1010,       // 180x320   15
+		VIDEO_PROFILE_PORTRAIT_180P_3 = 1012,     // 180x180   15
+		VIDEO_PROFILE_PORTRAIT_180P_4 = 1013,     // 180x240   15
+		VIDEO_PROFILE_PORTRAIT_240P = 1020,       // 240x320   15
+		VIDEO_PROFILE_PORTRAIT_240P_3 = 1022,     // 240x240   15
+		VIDEO_PROFILE_PORTRAIT_240P_4 = 1023,     // 240x424   15
+		VIDEO_PROFILE_PORTRAIT_360P = 1030,       // 360x640   15
+		VIDEO_PROFILE_PORTRAIT_360P_3 = 1032,     // 360x360   15
+		VIDEO_PROFILE_PORTRAIT_360P_4 = 1033,     // 360x640   30
+		VIDEO_PROFILE_PORTRAIT_360P_6 = 1035,     // 360x360   30
+		VIDEO_PROFILE_PORTRAIT_360P_7 = 1036,     // 360x480   15
+		VIDEO_PROFILE_PORTRAIT_360P_8 = 1037,     // 360x480   30
+		VIDEO_PROFILE_PORTRAIT_360P_9 = 1038,     // 360x640   15
+		VIDEO_PROFILE_PORTRAIT_360P_10 = 1039,    // 360x640   24
+		VIDEO_PROFILE_PORTRAIT_360P_11 = 1100,    // 360x640   24
+		VIDEO_PROFILE_PORTRAIT_480P = 1040,       // 480x640   15
+		VIDEO_PROFILE_PORTRAIT_480P_3 = 1042,     // 480x480   15
+		VIDEO_PROFILE_PORTRAIT_480P_4 = 1043,     // 480x640   30
+		VIDEO_PROFILE_PORTRAIT_480P_6 = 1045,     // 480x480   30
+		VIDEO_PROFILE_PORTRAIT_480P_8 = 1047,     // 480x848   15
+		VIDEO_PROFILE_PORTRAIT_480P_9 = 1048,     // 480x848   30
+		VIDEO_PROFILE_PORTRAIT_480P_10 = 1049,    // 480x640   10
+		VIDEO_PROFILE_PORTRAIT_720P = 1050,       // 720x1280  15
+		VIDEO_PROFILE_PORTRAIT_720P_3 = 1052,     // 720x1280  30
+		VIDEO_PROFILE_PORTRAIT_720P_5 = 1054,     // 720x960   15
+		VIDEO_PROFILE_PORTRAIT_720P_6 = 1055,     // 720x960   30
+		VIDEO_PROFILE_PORTRAIT_1080P = 1060,      // 1080x1920 15
+		VIDEO_PROFILE_PORTRAIT_1080P_3 = 1062,    // 1080x1920 30
+		VIDEO_PROFILE_PORTRAIT_1080P_5 = 1064,    // 1080x1920 60
+		VIDEO_PROFILE_PORTRAIT_1440P = 1066,      // 1440x2560 30
+		VIDEO_PROFILE_PORTRAIT_1440P_2 = 1067,    // 1440x2560 60
+		VIDEO_PROFILE_PORTRAIT_4K = 1070,         // 2160x3840 30
+		VIDEO_PROFILE_PORTRAIT_4K_3 = 1072,       // 2160x3840 60
+		VIDEO_PROFILE_DEFAULT = VIDEO_PROFILE_LANDSCAPE_360P,
 	};
 
 	public enum class ChannelProfile
@@ -442,13 +482,42 @@ namespace AgoraClrLibrary {
 	public enum class AudioScenarioType// set a suitable scenario for your app type
 	{
 		AUDIO_SCENARIO_DEFAULT = 0,
-		AUDIO_SCENARIO_CHATROOM = 1,
+		AUDIO_SCENARIO_CHATROOM_ENTERTAINMENT = 1,
 		AUDIO_SCENARIO_EDUCATION = 2,
 		AUDIO_SCENARIO_GAME_STREAMING = 3,
 		AUDIO_SCENARIO_SHOWROOM = 4,
-		AUDIO_SCENARIO_NUM = 5,
+		AUDIO_SCENARIO_CHATROOM_GAMING = 5,
 	};
 
+	public enum class AudioEqualizationBandFrequency
+	{
+		AUDIO_EQUALIZATION_BAND_31 = 0,
+		AUDIO_EQUALIZATION_BAND_62 = 1,
+		AUDIO_EQUALIZATION_BAND_125 = 2,
+		AUDIO_EQUALIZATION_BAND_250 = 3,
+		AUDIO_EQUALIZATION_BAND_500 = 4,
+		AUDIO_EQUALIZATION_BAND_1K = 5,
+		AUDIO_EQUALIZATION_BAND_2K = 6,
+		AUDIO_EQUALIZATION_BAND_4K = 7,
+		AUDIO_EQUALIZATION_BAND_8K = 8,
+		AUDIO_EQUALIZATION_BAND_16K = 9,
+	};
+
+	public enum class AudioReverbType
+	{
+		AUDIO_REVERB_DRY_LEVEL = 0, // (dB, [-20,10]), the level of the dry signal
+		AUDIO_REVERB_WET_LEVEL = 1, // (dB, [-20,10]), the level of the early reflection signal (wet signal)
+		AUDIO_REVERB_ROOM_SIZE = 2, // ([0, 100]), the room size of the reflection
+		AUDIO_REVERB_WET_DELAY = 3, // (ms, [0, 200]), the length of the initial delay of the wet signal in ms
+		AUDIO_REVERB_STRENGTH = 4, // ([0, 100]), the strength of the late reverberation
+	};
+
+	public enum class VideoMirrorModeType
+	{
+		VIDEO_MIRROR_MODE_AUTO = 0,//determined by SDK
+		VIDEO_MIRROR_MODE_ENABLED = 1,//enabled mirror
+		VIDEO_MIRROR_MODE_DISABLED = 2,//disable mirror
+	};
 
 
 	//RtcEngineEventHandler Part
@@ -528,7 +597,7 @@ namespace AgoraClrLibrary {
 
 		int enableWebSdkInteroperability(bool enabled);
 
-		int joinChannel(String ^channelKey, String ^channelName, String ^channelInfo, int uid);
+		int joinChannel(String ^token, String ^channelName, String ^channelInfo, int uid);
 		int leaveChannel();
 
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
@@ -539,7 +608,7 @@ namespace AgoraClrLibrary {
 
 		int setEncryptionSecret(String ^key);
 		int setEncryptionMode(String ^mode);
-
+		
 
 		int getCallId(String^ %callid);
 		int rate(String ^callid, int rating, String ^desc);
@@ -597,13 +666,19 @@ namespace AgoraClrLibrary {
 		int startRecordingService(String ^key);
 		int stopRecordingService(String ^key);
 		int refreshRecordingServiceStatus();
-		int adjustRecodingSignalVolumne(int volume);
+		int adjustRecordingSignalVolumne(int volume);
 		int adjustPlaybackSignalVolume(int volume);
 
 		int setLocalVoicePitch(double pitch);
 		int setInEarMonitoringVolume(int volume);
 
 		int setExternalAudioSource(bool enabled, int sampleRate, int channels);
+
+		int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
+		int setLocalVoiceReverb(AudioReverbType type, int value);
+		int setLocalVideoMirrorMode(VideoMirrorModeType mode);
+		String^ getVersion(int% build);
+		int enableLoopbackRecording(bool enabled);
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();

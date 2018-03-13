@@ -67,6 +67,11 @@ void AgoraClr::release()
 			mediaEngine->registerAudioFrameObserver(NULL);
 			mediaEngine->registerVideoFrameObserver(NULL);
 		}
+
+		delete agoraEventHandler;
+		delete agoraPacketObserver;
+		delete agoraRawObserver;
+
 		rtcEngine->release();
 		rtcEngine = NULL;
 	}
@@ -115,9 +120,9 @@ int AgoraClrLibrary::AgoraClr::enableWebSdkInteroperability(bool enabled)
 	return params.enableWebSdkInteroperability(enabled);
 }
 
-int AgoraClr::joinChannel(String ^ channelKey, String ^ channelName, String ^channelInfo, int uid)
+int AgoraClr::joinChannel(String ^ token, String ^ channelName, String ^channelInfo, int uid)
 {
-	std::string key = MarshalString(channelKey);
+	std::string key = MarshalString(token);
 	std::string name = MarshalString(channelName);
 	std::string info = MarshalString(channelInfo);
 	return rtcEngine->joinChannel(key.c_str(), name.c_str(), info.c_str(), uid);
@@ -457,7 +462,7 @@ int AgoraClr::refreshRecordingServiceStatus()
 	return params.refreshRecordingServiceStatus();
 }
 
-int AgoraClrLibrary::AgoraClr::adjustRecodingSignalVolumne(int volume)
+int AgoraClrLibrary::AgoraClr::adjustRecordingSignalVolumne(int volume)
 {
 	RtcEngineParameters params(*rtcEngine);
 	return params.adjustRecordingSignalVolume(volume);
@@ -485,6 +490,38 @@ int AgoraClrLibrary::AgoraClr::setExternalAudioSource(bool enabled, int sampleRa
 {
 	RtcEngineParameters params(*rtcEngine);
 	return params.setExternalAudioSource(enabled, sampleRate, channels);
+}
+
+int AgoraClrLibrary::AgoraClr::setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setLocalVoiceEqualization((AUDIO_EQUALIZATION_BAND_FREQUENCY)freq, bandGain);
+}
+
+int AgoraClrLibrary::AgoraClr::setLocalVoiceReverb(AudioReverbType type, int value)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setLocalVoiceReverb((AUDIO_REVERB_TYPE)type, value);
+}
+
+int AgoraClrLibrary::AgoraClr::setLocalVideoMirrorMode(VideoMirrorModeType mode)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setLocalVideoMirrorMode((VIDEO_MIRROR_MODE_TYPE)mode);
+}
+
+String^ AgoraClrLibrary::AgoraClr::getVersion(int% build)
+{
+	int version;
+	String^ result = gcnew String(rtcEngine->getVersion(&version));
+	build = version;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClr::enableLoopbackRecording(bool enabled)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.enableLoopbackRecording(enabled);
 }
 
 void* AgoraClr::regEvent(Object^ obj)
