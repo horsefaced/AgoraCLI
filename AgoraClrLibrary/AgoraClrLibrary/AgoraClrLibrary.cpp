@@ -529,6 +529,35 @@ int AgoraClrLibrary::AgoraClr::pushAudioFrame(ClrAudioFrameType type, ClrAudioFr
 		return -1;
 }
 
+int AgoraClrLibrary::AgoraClr::addPublishStreamUrl(String ^ url, bool transcodingEnabled)
+{
+	return rtcEngine->addPublishStreamUrl(MarshalString(url).c_str(), transcodingEnabled);
+}
+
+int AgoraClrLibrary::AgoraClr::removePublishStreamUrl(String ^ url)
+{
+	return rtcEngine->removePublishStreamUrl(MarshalString(url).c_str());
+}
+
+int AgoraClrLibrary::AgoraClr::setLiveTranscoding(ClrLiveTranscoding ^ transcoding)
+{
+	LiveTranscoding lt;
+	transcoding->writeRaw(lt);
+	return rtcEngine->setLiveTranscoding(lt);
+}
+
+int AgoraClrLibrary::AgoraClr::addInjectStreamUrl(String ^ url, ClrInjectStreamConfig ^ config)
+{
+	InjectStreamConfig raw;
+	config->writeRaw(raw);
+	return rtcEngine->addInjectStreamUrl(MarshalString(url).c_str(), raw);
+}
+
+int AgoraClrLibrary::AgoraClr::removeInjectStreamUrl(String ^ url)
+{
+	return rtcEngine->removeInjectStreamUrl(MarshalString(url).c_str());
+}
+
 void* AgoraClr::regEvent(Object^ obj)
 {
 	gchs->Add(GCHandle::Alloc(obj));

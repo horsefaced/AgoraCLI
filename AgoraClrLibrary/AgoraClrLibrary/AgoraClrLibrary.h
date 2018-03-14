@@ -473,6 +473,61 @@ namespace AgoraClrLibrary {
 			return result;
 		}
 	};
+	
+	public ref class ClrTranscodingUser {
+	public:
+		int uid;
+
+		int x;
+		int y;
+		int width;
+		int height;
+
+		int zOrder;
+		double alpha;
+		int audioChannel;
+
+		ClrTranscodingUser()
+			: uid(0)
+			, x(0)
+			, y(0)
+			, width(0)
+			, height(0)
+			, zOrder(0)
+			, alpha(1.0)
+			, audioChannel(0)
+		{}
+
+		TranscodingUser* toRaw() {
+			TranscodingUser* result = new TranscodingUser();
+			result->uid = uid;
+			result->x = x;
+			result->y = y;
+			result->width = width;
+			result->height = height;
+			result->zOrder = zOrder;
+			result->alpha = alpha;
+			result->audioChannel = audioChannel;
+			return result;
+		}
+
+	};
+
+
+
+	public enum class VideoCodecProfileType
+	{
+		VIDEO_CODEC_PROFILE_BASELINE = 66,
+		VIDEO_CODEC_PROFILE_MAIN = 77,
+		VIDEO_CODEC_PROFILE_HIGH = 100,
+	};
+
+	public enum class AudioSampleRateType
+	{
+		AUDIO_SAMPLE_RATE_32000 = 32000,
+		AUDIO_SAMPLE_RATE_44100 = 44100,
+		AUDIO_SAMPLE_RATE_48000 = 48000,
+	};
 
 	public enum class AudioProfileType// sample rate, bit rate, mono/stereo, speech/music codec
 	{
@@ -483,6 +538,62 @@ namespace AgoraClrLibrary {
 		AUDIO_PROFILE_MUSIC_HIGH_QUALITY = 4, // 48Khz, 128kbps, mono, music
 		AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO = 5, // 48Khz, 128kbps, stereo, music
 		AUDIO_PROFILE_NUM = 6,
+	};
+
+	public ref class ClrLiveTranscoding {
+	public:
+		int width;
+		int height;
+		int videoBitrate;
+		int videoFramerate;
+
+		bool lowLatency;
+
+		int videoGop;
+		VideoCodecProfileType videoCodecProfile;
+		unsigned int backgroundColor;
+		unsigned int userCount;
+		ClrTranscodingUser transcodingUsers;
+
+		String ^transcodingExtraInfo;
+
+		AudioSampleRateType audioSampleRate;
+		int audioBitrate;
+		int audioChannels;
+
+		ClrLiveTranscoding()
+			: width(360)
+			, height(640)
+			, videoBitrate(400)
+			, videoFramerate(15)
+			, lowLatency(false)
+			, backgroundColor(0x000000)
+			, videoGop(30)
+			, videoCodecProfile(VideoCodecProfileType::VIDEO_CODEC_PROFILE_HIGH)
+			, userCount(0)
+			, transcodingUsers()
+			, transcodingExtraInfo(nullptr)
+			, audioSampleRate(AudioSampleRateType::AUDIO_SAMPLE_RATE_48000)
+			, audioBitrate(48)
+			, audioChannels(1)
+		{}
+
+		void writeRaw(LiveTranscoding &raw) {
+			raw.width = width;
+			raw.height = height;
+			raw.videoBitrate = videoBitrate;
+			raw.videoFramerate = videoFramerate;
+			raw.lowLatency = lowLatency;
+			raw.videoGop = videoGop;
+			raw.videoCodecProfile = (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
+			raw.backgroundColor = backgroundColor;
+			raw.userCount = userCount;
+			raw.transcodingUsers = transcodingUsers.toRaw();
+			raw.transcodingExtraInfo = MarshalString(transcodingExtraInfo).c_str();
+			raw.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
+			raw.audioBitrate = audioBitrate;
+			raw.audioChannels = audioChannels;
+		}
 	};
 
 	public enum class AudioScenarioType// set a suitable scenario for your app type
@@ -523,6 +634,41 @@ namespace AgoraClrLibrary {
 		VIDEO_MIRROR_MODE_AUTO = 0,//determined by SDK
 		VIDEO_MIRROR_MODE_ENABLED = 1,//enabled mirror
 		VIDEO_MIRROR_MODE_DISABLED = 2,//disable mirror
+	};
+
+	public ref class ClrInjectStreamConfig {
+	public:
+		int width;
+		int height;
+		int videoGop;
+		int videoFramerate;
+		int videoBitrate;
+		AudioSampleRateType audioSampleRate;
+		int audioBitrate;
+		int audioChannels;
+
+		// width / height default set to 0 means pull the stream with its original resolution
+		ClrInjectStreamConfig()
+			: width(0)
+			, height(0)
+			, videoGop(30)
+			, videoFramerate(15)
+			, videoBitrate(400)
+			, audioSampleRate(AudioSampleRateType::AUDIO_SAMPLE_RATE_48000)
+			, audioBitrate(48)
+			, audioChannels(1)
+		{}
+
+		void writeRaw(InjectStreamConfig &raw) {
+			raw.width = width;
+			raw.height = height;
+			raw.videoGop = videoGop;
+			raw.videoFramerate = videoFramerate;
+			raw.videoBitrate = videoBitrate;
+			raw.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
+			raw.audioBitrate = audioBitrate;
+			raw.audioChannels = audioChannels;
+		}
 	};
 
 
@@ -692,6 +838,12 @@ namespace AgoraClrLibrary {
 		int enableLoopbackRecording(bool enabled);
 
 		int pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame ^frame, bool wrap);
+
+		int addPublishStreamUrl(String^ url, bool transcodingEnabled);
+		int removePublishStreamUrl(String^ url);
+		int setLiveTranscoding(ClrLiveTranscoding ^transcoding);
+		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig ^config);
+		int removeInjectStreamUrl(String^ url);
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
