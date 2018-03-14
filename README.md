@@ -27,12 +27,19 @@ int setLocalVoiceReverb(AudioReverbType type, int value);
 int setLocalVideoMirrorMode(VideoMirrorModeType mode);
 String^ getVersion(int% build);
 int enableLoopbackRecording(bool enabled);
+int pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame ^frame, bool wrap);
+int addPublishStreamUrl(String^ url, bool transcodingEnabled);
+int removePublishStreamUrl(String^ url);
+int setLiveTranscoding(ClrLiveTranscoding ^transcoding);
+int addInjectStreamUrl(String^ url, ClrInjectStreamConfig ^config);
+int removeInjectStreamUrl(String^ url);
 ```
 
 新增以下事件
 ```c#
 virtual void onConnectionBanned()
 virtual void onRequestToken();
+virtual bool onMixedAudioFrame(AudioFrame& audioFrame);
 
 ```
 
