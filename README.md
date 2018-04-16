@@ -22,6 +22,7 @@
 ```c#
 void onStreamUrlUnpublished(String^ url);
 void onStreamPublished(String^ url, int error);
+void onTranscodingUpdated();
 ```
 
 ## 2018-03-13

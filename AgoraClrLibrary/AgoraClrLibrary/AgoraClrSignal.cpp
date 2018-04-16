@@ -265,7 +265,7 @@ void AgoraClrLibrary::AgoraClrSignal::setCallback()
 
 void AgoraClrLibrary::AgoraClrSignal::NativeOnReconnecting(uint32_t nretry)
 {
-	if (onReconnecting) PFOnReconnecting(nretry);
+	if (onReconnecting) onReconnecting(nretry);
 }
 
 void AgoraClrLibrary::AgoraClrSignal::NativeOnReconnected(int fd)

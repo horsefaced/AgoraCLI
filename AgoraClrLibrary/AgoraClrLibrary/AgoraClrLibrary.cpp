@@ -608,6 +608,7 @@ void AgoraClr::initializeEventHandler()
 
 	agoraEventHandler->onStreamUrlUnpublishedEvent = PFOnStreamUrlUnpublished(regEvent(gcnew NativeOnStreamUrlUnpublishedDelegate(this, &AgoraClr::NativeOnStreamUrlUnpublished)));
 	agoraEventHandler->onStreamPublishedEvent = PFOnStreamPublished(regEvent(gcnew NativeOnStreamPublishedDelegate(this, &AgoraClr::NativeOnStreamPublished)));
+	agoraEventHandler->onTranscodingUpdatedEvent = PFOnTranscodingUpdated(regEvent(gcnew NativeOnTranscodingUpdatedDelegate(this, &AgoraClr::NativeOnTranscodingUpdated)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -743,6 +744,11 @@ void AgoraClrLibrary::AgoraClr::NativeOnStreamUrlUnpublished(const char * url)
 void AgoraClrLibrary::AgoraClr::NativeOnStreamPublished(const char* url, int error)
 {
 	if (onStreamPublished) onStreamPublished(gcnew String(url), error);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnTranscodingUpdated()
+{
+	if (onTranscodingUpdated) onTranscodingUpdated();
 }
 
 void AgoraClr::NativeOnLastmileQuality(int quality) 

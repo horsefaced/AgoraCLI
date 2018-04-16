@@ -47,6 +47,7 @@ namespace AgoraClrLibrary {
 
 	typedef void(__stdcall * PFOnStreamUrlUnpublished)(const char* url);
 	typedef void(__stdcall * PFOnStreamPublished)(const char* url, int error);
+	typedef void(__stdcall * PFOnTranscodingUpdated)();
 
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -91,6 +92,7 @@ namespace AgoraClrLibrary {
 
 	delegate void NativeOnStreamPublishedDelegate(const char* url, int error);
 	delegate void NativeOnStreamUrlUnpublishedDelegate(const char* url);
+	delegate void NativeOnTranscodingUpdatedDelegate();
 
 	public class AgoraClrEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
@@ -140,6 +142,7 @@ namespace AgoraClrLibrary {
 
 		PFOnStreamUrlUnpublished onStreamUrlUnpublishedEvent = 0;
 		PFOnStreamPublished onStreamPublishedEvent = 0;
+		PFOnTranscodingUpdated onTranscodingUpdatedEvent = 0;
 
 		virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
@@ -183,6 +186,7 @@ namespace AgoraClrLibrary {
 
 		virtual void onStreamUrlUnpublished(const char* url);
 		virtual void onStreamPublished(const char* url, int error);
+		virtual void onTranscodingUpdated();
 	};
 
 }

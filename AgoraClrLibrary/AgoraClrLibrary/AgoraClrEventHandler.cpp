@@ -150,3 +150,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamPublished(const char * url, 
 {
 	if (onStreamPublishedEvent) onStreamPublishedEvent(url, error);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onTranscodingUpdated()
+{
+	if (onTranscodingUpdatedEvent) onTranscodingUpdatedEvent();
+}
