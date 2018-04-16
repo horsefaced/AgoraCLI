@@ -145,3 +145,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamUrlUnpublished(const char * 
 {
 	if (onStreamUrlUnpublishedEvent) onStreamUrlUnpublishedEvent(url);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onStreamPublished(const char * url, int error)
+{
+	if (onStreamPublishedEvent) onStreamPublishedEvent(url, error);
+}

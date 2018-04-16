@@ -607,6 +607,7 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onAudioDeviceVolumeChangedEvent = PFOnAudioDeviceVolumeChanged(regEvent(gcnew NativeOnAudioDeviceVolumeChangedDelegate(this, &AgoraClr::NativeOnAudioDeviceVolumeChanged)));
 
 	agoraEventHandler->onStreamUrlUnpublishedEvent = PFOnStreamUrlUnpublished(regEvent(gcnew NativeOnStreamUrlUnpublishedDelegate(this, &AgoraClr::NativeOnStreamUrlUnpublished)));
+	agoraEventHandler->onStreamPublishedEvent = PFOnStreamPublished(regEvent(gcnew NativeOnStreamPublishedDelegate(this, &AgoraClr::NativeOnStreamPublished)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -737,6 +738,11 @@ void AgoraClrLibrary::AgoraClr::NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TY
 void AgoraClrLibrary::AgoraClr::NativeOnStreamUrlUnpublished(const char * url)
 {
 	if (onStreamUrlUnpublished) onStreamUrlUnpublished(gcnew String(url));
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnStreamPublished(const char* url, int error)
+{
+	if (onStreamPublished) onStreamPublished(gcnew String(url), error);
 }
 
 void AgoraClr::NativeOnLastmileQuality(int quality) 

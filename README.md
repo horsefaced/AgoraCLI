@@ -21,6 +21,7 @@
 新增事件
 ```c#
 void onStreamUrlUnpublished(String^ url);
+void onStreamPublished(String^ url, int error);
 ```
 
 ## 2018-03-13

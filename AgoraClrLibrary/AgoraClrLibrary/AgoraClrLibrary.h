@@ -718,6 +718,7 @@ namespace AgoraClrLibrary {
 	public delegate void onAudioDeviceVolumeChanged(MediaDeviceType, int, bool);
 
 	public delegate void onStreamUrlUnpublished(String ^url);
+	public delegate void onStreamPublished(String ^url, int error);
 
 	//PacketObserver Part
 	public delegate bool onSendAudioPacket(ClrPacket^ packet);
@@ -894,6 +895,7 @@ namespace AgoraClrLibrary {
 		onAudioDeviceVolumeChanged^ onAudioDeviceVolumeChanged;
 
 		onStreamUrlUnpublished^ onStreamUrlUnpublished;
+		onStreamPublished^ onStreamPublished;
 
 		//PacketObserver Part
 		onSendAudioPacket ^onSendAudioPacket;
@@ -964,6 +966,7 @@ namespace AgoraClrLibrary {
 		void NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
 
 		void NativeOnStreamUrlUnpublished(const char* url);
+		void NativeOnStreamPublished(const char* url, int error);
 
 		bool NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
