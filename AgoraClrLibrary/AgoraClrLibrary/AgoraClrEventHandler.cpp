@@ -140,3 +140,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onAudioDeviceVolumeChanged(MEDIA_DEV
 {
 	if (onAudioDeviceVolumeChangedEvent) onAudioDeviceVolumeChangedEvent(deviceType, volume, muted);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onStreamUrlUnpublished(const char * url)
+{
+	if (onStreamUrlUnpublishedEvent) onStreamUrlUnpublishedEvent(url);
+}

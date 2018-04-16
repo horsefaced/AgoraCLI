@@ -605,6 +605,8 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onActiveSpeakerEvent = PFOnActiveSpeaker(regEvent(gcnew NativeOnActiveSpeakerDelegate(this, &AgoraClr::NativeOnActiveSpeaker)));
 	agoraEventHandler->onClientRoleChangedEvent = PFOnClientRoleChanged(regEvent(gcnew NativeOnClientRoleChangedDelegate(this, &AgoraClr::NativeOnClientRoleChanged)));
 	agoraEventHandler->onAudioDeviceVolumeChangedEvent = PFOnAudioDeviceVolumeChanged(regEvent(gcnew NativeOnAudioDeviceVolumeChangedDelegate(this, &AgoraClr::NativeOnAudioDeviceVolumeChanged)));
+
+	agoraEventHandler->onStreamUrlUnpublishedEvent = PFOnStreamUrlUnpublished(regEvent(gcnew NativeOnStreamUrlUnpublishedDelegate(this, &AgoraClr::NativeOnStreamUrlUnpublished)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -730,6 +732,11 @@ void AgoraClrLibrary::AgoraClr::NativeOnClientRoleChanged(CLIENT_ROLE_TYPE oldRo
 void AgoraClrLibrary::AgoraClr::NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
 {
 	if (onAudioDeviceVolumeChanged) onAudioDeviceVolumeChanged((MediaDeviceType)deviceType, volume, muted);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnStreamUrlUnpublished(const char * url)
+{
+	if (onStreamUrlUnpublished) onStreamUrlUnpublished(gcnew String(url));
 }
 
 void AgoraClr::NativeOnLastmileQuality(int quality) 

@@ -45,6 +45,8 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnClientRoleChanged)(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
 	typedef void(__stdcall * PFOnAudioDeviceVolumeChanged)(MEDIA_DEVICE_TYPE, int, bool);
 
+	typedef void(__stdcall * PFOnStreamUrlUnpublished)(const char* url);
+
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
 	delegate void NativeOnRejoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -85,6 +87,8 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnActiveSpeakerDelegate(uid_t uid);
 	delegate void NativeOnClientRoleChangedDelegate(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
 	delegate void NativeOnAudioDeviceVolumeChangedDelegate(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
+
+	delegate void NativeOnStreamUrlUnpublishedDelegate(const char* url);
 
 	public class AgoraClrEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
@@ -132,6 +136,8 @@ namespace AgoraClrLibrary {
 		PFOnClientRoleChanged onClientRoleChangedEvent = 0;
 		PFOnAudioDeviceVolumeChanged onAudioDeviceVolumeChangedEvent = 0;
 
+		PFOnStreamUrlUnpublished onStreamUrlUnpublishedEvent = 0;
+
 		virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onWarning(int warn, const char* msg);
@@ -171,6 +177,8 @@ namespace AgoraClrLibrary {
 		virtual void onActiveSpeaker(uid_t uid);
 		virtual void onClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
 		virtual void onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
+
+		virtual void onStreamUrlUnpublished(const char* url);
 	};
 
 }
