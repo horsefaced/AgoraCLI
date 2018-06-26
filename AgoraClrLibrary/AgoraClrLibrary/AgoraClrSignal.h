@@ -1,8 +1,7 @@
 #pragma once
-#include "include\agora_api_win.h"
+
 #include "AgoraClrSignalCallback.h"
 
-using namespace agora_sdk_win;
 using namespace System;
 using namespace System::Data;
 using namespace System::Collections::Generic;
@@ -101,7 +100,7 @@ namespace AgoraClrLibrary {
 		void channelInviteUser2(String^ channelID, String^ account, String^ extra);
 		void channelInviteDTMF(String^ channelID, String^ phone, String^ dtmf);
 
-		void channelInviteAccept(String^ channelID, String^ account);
+		void channelInviteAccept(String^ channelID, String^ account, String^ extra);
 		void channelInviteRefuse(String^ channelID, String^ account, String^ extra);
 		void channelInviteEnd(String^ channelID, String^ account);
 

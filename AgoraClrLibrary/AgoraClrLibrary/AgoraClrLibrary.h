@@ -1,7 +1,7 @@
 // AgoraClrLibrary.h
 
 #pragma once
-#include "include\IAgoraRtcEngine.h"
+#include "..\..\agorasdk\include\IAgoraRtcEngine.h"
 #include "AgoraClrEventHandler.h"
 #include "AgoraClrPacketObserver.h"
 #include "AgoraClrRawFrameObserver.h"
