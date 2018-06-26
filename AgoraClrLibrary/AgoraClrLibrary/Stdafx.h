@@ -3,6 +3,7 @@
 // 特定于项目的包含文件
 
 #pragma once
+#include "include\AgoraBase.h"
 #include "include\IAgoraMediaEngine.h"
 #include "include\IAgoraRtcEngine.h"
 #include "include\agora_api_win.h"

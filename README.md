@@ -17,11 +17,47 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2018-06-27
+合并2.1分支进入主分支，2.2因为删除了一些头文件，造成不兼容，新开2.2分支进行开发，原2.1的一些没有开发完的功能将在2.2分支上实现
+
 ## 2018-05-10
-<h1>发现2.2版本的声网dll与项目不兼容，在没有找到问题之前，请大家使用2.1版本的dll</h1>
+<h1>声网的2.2sdk删除了一些头文件，造成项目不兼容，请大家先不要升级到2.2</h1>
+
+## 2018-04-17
+新增事件
+```c#
+void onStreamUrlUnpublished(String^ url);
+void onStreamPublished(String^ url, int error);
+void onTranscodingUpdated();
+```
 
 ## 2018-03-13
 因为2.1版本声网进行了很大的改动，所以2.0（含）以前的版本进入2.0分支，需要的用户请使用2.0这个分支。2.1版本在2.1分支开发中，以后会并入master分支中。
+
+新增以下接口
+```c#
+int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
+int setLocalVoiceReverb(AudioReverbType type, int value);
+int setLocalVideoMirrorMode(VideoMirrorModeType mode);
+String^ getVersion(int% build);
+int enableLoopbackRecording(bool enabled);
+int pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame ^frame, bool wrap);
+int addPublishStreamUrl(String^ url, bool transcodingEnabled);
+int removePublishStreamUrl(String^ url);
+int setLiveTranscoding(ClrLiveTranscoding ^transcoding);
+int addInjectStreamUrl(String^ url, ClrInjectStreamConfig ^config);
+int removeInjectStreamUrl(String^ url);
+```
+
+新增以下事件
+```c#
+virtual void onConnectionBanned()
+virtual void onRequestToken();
+virtual bool onMixedAudioFrame(AudioFrame& audioFrame);
+
+```
+
+官方依然没有在2.1的SDK上加入 pushExternalAudioFrame 这个方法。
 
 ## 2018-02-06
 2.0版本上声网有一个bug，[摄像头占用问题](https://github.com/horsefaced/AgoraCLI/issues/16)，这个问题在2.0.2版本上就没有，大家可以先把agora_rtc_sdk.dll直接换成2.0.2的。

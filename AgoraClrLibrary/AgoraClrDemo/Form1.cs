@@ -111,7 +111,8 @@ namespace AgoraClrDemo
         private void button1_Click_1(object sender, EventArgs e)
         {
             //log(" convert -1 to unit result is " + Convert.ToUInt32(-1), 0);
-            log("start audio recording", agora.startAudioRecording("recording.mp4", AudioRecordingQualityType.AUDIO_RECORDING_QUALITY_HIGH));
+            //log("start audio recording", agora.startAudioRecording("recording.mp4", AudioRecordingQualityType.AUDIO_RECORDING_QUALITY_HIGH));
+            agora.release();
         }
     }
 }

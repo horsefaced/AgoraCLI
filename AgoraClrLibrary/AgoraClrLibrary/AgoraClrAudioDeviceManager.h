@@ -49,6 +49,7 @@ namespace AgoraClrLibrary {
 		int stopPlaybackDeviceTest();
 		int startRecordingDeviceTest(int indicationInterval);
 		int stopRecordingDeviceTest();
+
 	private:
 		AgoraClr^ engine;
 

@@ -97,6 +97,10 @@ void AgoraClrLibrary::AgoraClrEventHandler::onConnectionLost() {
 void AgoraClrLibrary::AgoraClrEventHandler::onConnectionInterrupted() {
 	if (onConnectionInterruptedEvent) onConnectionLostEvent();
 }
+void AgoraClrLibrary::AgoraClrEventHandler::onConnectionBanned()
+{
+	if (onConnectionBannedEvent) onConnectionBannedEvent();
+}
 void AgoraClrLibrary::AgoraClrEventHandler::onRefreshRecordingServiceStatus(int status) {
 	if (onRefreshRecordingServiceStatusEvent) onRefreshRecordingServiceStatusEvent(status);
 }
@@ -110,6 +114,11 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessageError(uid_t uid, int 
 void AgoraClrLibrary::AgoraClrEventHandler::onRequestChannelKey()
 {
 	if (onRequestChannelKeyEvent) onRequestChannelKeyEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRequestToken()
+{
+	if (onRequestTokenEvent) onRequestTokenEvent();
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingFinished()
@@ -130,4 +139,19 @@ void AgoraClrLibrary::AgoraClrEventHandler::onClientRoleChanged(CLIENT_ROLE_TYPE
 void AgoraClrLibrary::AgoraClrEventHandler::onAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted)
 {
 	if (onAudioDeviceVolumeChangedEvent) onAudioDeviceVolumeChangedEvent(deviceType, volume, muted);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onStreamUrlUnpublished(const char * url)
+{
+	if (onStreamUrlUnpublishedEvent) onStreamUrlUnpublishedEvent(url);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onStreamPublished(const char * url, int error)
+{
+	if (onStreamPublishedEvent) onStreamPublishedEvent(url, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onTranscodingUpdated()
+{
+	if (onTranscodingUpdatedEvent) onTranscodingUpdatedEvent();
 }
