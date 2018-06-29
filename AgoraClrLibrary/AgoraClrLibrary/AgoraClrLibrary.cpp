@@ -558,6 +558,83 @@ int AgoraClrLibrary::AgoraClr::removeInjectStreamUrl(String ^ url)
 	return rtcEngine->removeInjectStreamUrl(MarshalString(url).c_str());
 }
 
+int AgoraClrLibrary::AgoraClr::getEffectsVolume()
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.getEffectsVolume();
+}
+
+int AgoraClrLibrary::AgoraClr::setEffectsVolume(int volume)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setEffectsVolume(volume);
+}
+
+int AgoraClrLibrary::AgoraClr::setVolumeOfEffect(int soundId, int volume)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setVolumeOfEffect(soundId, volume);
+}
+
+int AgoraClrLibrary::AgoraClr::playEffect(int soundId, String ^ file, int loopCount, double pitch, double pan, int gain, bool publish)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.playEffect(soundId, MarshalString(file).c_str(), loopCount, pitch, pan, gain, publish);
+}
+
+int AgoraClrLibrary::AgoraClr::stopEffect(int soundId)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.stopEffect(soundId);
+}
+
+int AgoraClrLibrary::AgoraClr::stopAllEffects()
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.stopAllEffects();
+}
+
+int AgoraClrLibrary::AgoraClr::preloadEffect(int soundId, String ^ file)
+{
+	RtcEngineParameters params(*rtcEngine);
+	std::string str = MarshalString(file);
+	char* cstr = new char[str.length() + 1];
+	strcpy(cstr, str.c_str());
+	int result = params.preloadEffect(soundId, cstr);
+	delete cstr;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClr::unloadEffect(int soundId)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.unloadEffect(soundId);
+}
+
+int AgoraClrLibrary::AgoraClr::pauseEffect(int soundId)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.pauseEffect(soundId);
+}
+
+int AgoraClrLibrary::AgoraClr::pauseAllEffects()
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.pauseAllEffects();
+}
+
+int AgoraClrLibrary::AgoraClr::resumeEffect(int soundId)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.resumeEffect(soundId);
+}
+
+int AgoraClrLibrary::AgoraClr::resumeAllEffects()
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.resumeAllEffects();
+}
+
 void* AgoraClr::regEvent(Object^ obj)
 {
 	gchs->Add(GCHandle::Alloc(obj));

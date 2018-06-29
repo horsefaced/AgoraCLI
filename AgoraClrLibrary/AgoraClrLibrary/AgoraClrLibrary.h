@@ -849,6 +849,20 @@ namespace AgoraClrLibrary {
 		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig ^config);
 		int removeInjectStreamUrl(String^ url);
 
+		int getEffectsVolume();
+		int setEffectsVolume(int volume);
+		int setVolumeOfEffect(int soundId, int volume);
+		int playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish);
+		int stopEffect(int soundId);
+		int stopAllEffects();
+		int preloadEffect(int soundId, String^ file);
+		int unloadEffect(int soundId);
+		int pauseEffect(int soundId);
+		int pauseAllEffects();
+		int resumeEffect(int soundId);
+		int resumeAllEffects();
+
+
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
 		IRtcEngine* getEngine();

@@ -17,6 +17,23 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2018-06-30
+新增以下接口
+```c#
+        int	getEffectsVolume();
+	    int setEffectsVolume(int volume);
+		int setVolumeOfEffect(int soundId, int volume);
+		int playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish);
+		int stopEffect(int soundId);
+		int stopAllEffects();
+		int preloadEffect(int soundId, String^ file);
+		int unloadEffect(int soundId);
+		int pauseEffect(int soundId);
+		int pauseAllEffects();
+		int resumeEffect(int soundId);
+		int resumeAllEffects();
+```
+
 ## 2018-06-27
 合并2.1分支进入主分支，2.2因为删除了一些头文件，造成不兼容，新开2.2分支进行开发，原2.1的一些没有开发完的功能将在2.2分支上实现
 
