@@ -16,7 +16,7 @@ namespace AgoraClrLibrary {
 		!ClrVideoDeviceCollection();
 
 		int getCount();
-		int getDevice(int index, String^ deviceName, String^ deviceId);
+		int getDevice(int index, String^% deviceName, String^% deviceId);
 		int setDevice(String^ deviceId);
 		void release();
 	private:
