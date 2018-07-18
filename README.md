@@ -17,6 +17,9 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2018-07-19
+修改[枚举设备列表BUG](https://github.com/horsefaced/AgoraCLI/issues/18)的issue
+
 ## 2018-06-30
 新增以下接口
 ```c#
