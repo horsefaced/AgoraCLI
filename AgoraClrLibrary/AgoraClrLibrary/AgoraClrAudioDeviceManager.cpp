@@ -18,7 +18,6 @@ AgoraClrLibrary::ClrAudioDeviceCollection::~ClrAudioDeviceCollection()
 
 AgoraClrLibrary::ClrAudioDeviceCollection::!ClrAudioDeviceCollection()
 {
-	throw gcnew System::NotImplementedException();
 }
 
 int AgoraClrLibrary::ClrAudioDeviceCollection::getCount()
@@ -26,9 +25,14 @@ int AgoraClrLibrary::ClrAudioDeviceCollection::getCount()
 	return raw->getCount();
 }
 
-int AgoraClrLibrary::ClrAudioDeviceCollection::getDevice(int index, String ^ deviceName, String ^ deviceId)
+int AgoraClrLibrary::ClrAudioDeviceCollection::getDevice(int index, String ^% deviceName, String ^% deviceId)
 {
-	return raw->getDevice(index, const_cast<char*>(MarshalString(deviceName).c_str()), const_cast<char*>(MarshalString(deviceId).c_str()));
+	char deviceNameBuffer[MAX_DEVICE_ID_LENGTH] = { 0 }; char deviceIdBuffer[MAX_DEVICE_ID_LENGTH] = { 0 };
+	int result = raw->getDevice(index, deviceNameBuffer, deviceIdBuffer);
+	if (result != 0) return result;
+	deviceName = gcnew String(deviceNameBuffer), deviceId = gcnew String(deviceIdBuffer);
+	return result;
+	//	return raw->getDevice(index, const_cast<char*>(MarshalString(deviceName).c_str()), const_cast<char*>(MarshalString(deviceId).c_str()));
 }
 
 int AgoraClrLibrary::ClrAudioDeviceCollection::setDevice(String ^ deviceId)

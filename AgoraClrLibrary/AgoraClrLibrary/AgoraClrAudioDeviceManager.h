@@ -1,5 +1,5 @@
 #pragma once
-#include "include\IAgoraRtcEngine.h"
+#include "..\..\agorasdk\include\IAgoraRtcEngine.h"
 
 using namespace agora::rtc;
 using namespace System;
@@ -15,7 +15,7 @@ namespace AgoraClrLibrary {
 		!ClrAudioDeviceCollection();
 
 		int getCount();
-		int getDevice(int index, String^ deviceName, String^ deviceId);
+		int getDevice(int index, String^% deviceName, String^% deviceId);
 		int setDevice(String^ deviceId);
 		void release();
 	private:
