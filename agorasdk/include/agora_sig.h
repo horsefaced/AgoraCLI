@@ -132,6 +132,7 @@ namespace agora_sdk_win
     virtual void messageInstantSend2 (char const * account, size_t account_size,uint32_t uid,char const * msg, size_t msg_size,char const * msgID, size_t msgID_size,char const * options, size_t options_size) = 0;
     virtual void messageChannelSend (char const * channelID, size_t channelID_size,char const * msg, size_t msg_size,char const * msgID, size_t msgID_size) = 0;
     virtual void messageChannelSendForce (char const * channelID, size_t channelID_size,char const * msg, size_t msg_size,char const * msgID, size_t msgID_size) = 0;
+    virtual void messageChannelSend2 (char const * channelID, size_t channelID_size,char const * msg, size_t msg_size,char const * msgID, size_t msgID_size,char const * extra, size_t extra_size) = 0;
     virtual void messagePushSend (char const * account, size_t account_size,uint32_t uid,char const * msg, size_t msg_size,char const * msgID, size_t msgID_size) = 0;
     virtual void messageChatSend (char const * account, size_t account_size,uint32_t uid,char const * msg, size_t msg_size,char const * msgID, size_t msgID_size) = 0;
     virtual void messageDTMFSend (uint32_t uid,char const * msg, size_t msg_size,char const * msgID, size_t msgID_size) = 0;
