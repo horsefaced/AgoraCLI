@@ -1,7 +1,7 @@
 // AgoraClrLibrary.h
 
 #pragma once
-#include "include\IAgoraRtcEngine.h"
+#include "..\..\agorasdk\include\IAgoraRtcEngine.h"
 #include "AgoraClrEventHandler.h"
 #include "AgoraClrPacketObserver.h"
 #include "AgoraClrRawFrameObserver.h"
@@ -18,7 +18,7 @@ namespace AgoraClrLibrary {
 
 	static std::string MarshalString(String ^s) {
 		if (s == nullptr) return std::string();
-		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
+		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAuto(s);
 		std::string result((char *)middleStr.ToPointer());
 		Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
 		return result;
@@ -848,6 +848,20 @@ namespace AgoraClrLibrary {
 		int setLiveTranscoding(ClrLiveTranscoding ^transcoding);
 		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig ^config);
 		int removeInjectStreamUrl(String^ url);
+
+		int getEffectsVolume();
+		int setEffectsVolume(int volume);
+		int setVolumeOfEffect(int soundId, int volume);
+		int playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish);
+		int stopEffect(int soundId);
+		int stopAllEffects();
+		int preloadEffect(int soundId, String^ file);
+		int unloadEffect(int soundId);
+		int pauseEffect(int soundId);
+		int pauseAllEffects();
+		int resumeEffect(int soundId);
+		int resumeAllEffects();
+
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
