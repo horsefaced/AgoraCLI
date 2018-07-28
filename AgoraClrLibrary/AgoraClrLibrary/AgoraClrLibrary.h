@@ -18,7 +18,7 @@ namespace AgoraClrLibrary {
 
 	static std::string MarshalString(String ^s) {
 		if (s == nullptr) return std::string();
-		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAuto(s);
+		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalUni(s);
 		std::string result((char *)middleStr.ToPointer());
 		Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
 		return result;
