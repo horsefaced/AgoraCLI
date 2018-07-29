@@ -259,8 +259,8 @@ namespace AgoraClrLibrary {
 		ClrAudioFrameType type;
 		int samples;  //number of samples in this frame
 		int bytesPerSample;  //number of bytes per sample: 2 for PCM16
-		int channels;  //声道数
-		int samplesPerSec;  //采样率
+		int channels;  //脡霉碌脌脢媒
+		int samplesPerSec;  //虏脡脩霉脗脢
 		array<Byte>^ data;
 		int64_t renderTimeMs;
 
@@ -794,7 +794,7 @@ namespace AgoraClrLibrary {
 		int createDataStream(int %id);
 		int sendStreamMessage(int id, String ^data);
 
-		//原始数据API
+		//脭颅脢录脢媒戮脻API
 		//RtcEngineParameters Part
 		int setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
 		int setPlaybackAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
@@ -848,20 +848,6 @@ namespace AgoraClrLibrary {
 		int setLiveTranscoding(ClrLiveTranscoding ^transcoding);
 		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig ^config);
 		int removeInjectStreamUrl(String^ url);
-
-		int getEffectsVolume();
-		int setEffectsVolume(int volume);
-		int setVolumeOfEffect(int soundId, int volume);
-		int playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish);
-		int stopEffect(int soundId);
-		int stopAllEffects();
-		int preloadEffect(int soundId, String^ file);
-		int unloadEffect(int soundId);
-		int pauseEffect(int soundId);
-		int pauseAllEffects();
-		int resumeEffect(int soundId);
-		int resumeAllEffects();
-
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
