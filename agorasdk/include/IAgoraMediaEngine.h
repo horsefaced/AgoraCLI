@@ -36,7 +36,7 @@ public:
   virtual bool onRecordAudioFrame(AudioFrame& audioFrame) = 0;
   virtual bool onPlaybackAudioFrame(AudioFrame& audioFrame) = 0;
   virtual bool onMixedAudioFrame(AudioFrame& audioFrame) = 0;
-  virtual bool onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame& audioFrame) = 0;
+  virtual bool onPlaybackAudioFrameBeforeMixing(const char* uid, AudioFrame& audioFrame) = 0;
 };
 
 class IVideoFrameObserver
@@ -60,7 +60,7 @@ public:
   };
 public:
   virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) = 0;
-  virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame) = 0;
+  virtual bool onRenderVideoFrame(const char* uid, VideoFrame& videoFrame) = 0;
 };
 
 class IVideoFrame

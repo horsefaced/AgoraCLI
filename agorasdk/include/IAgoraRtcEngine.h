@@ -178,6 +178,7 @@ enum ERROR_CODE_TYPE
 	ERR_STREAM_MESSAGE_TIMEOUT = 117,
     ERR_SET_CLIENT_ROLE_NOT_AUTHORIZED = 119,
     ERR_CLIENT_IS_BANNED_BY_SERVER = 123,
+    ERR_INVALID_UID_NAME = 124,
 
     //1001~2000
     ERR_LOAD_MEDIA_ENGINE = 1001,
@@ -403,7 +404,7 @@ enum RAW_AUDIO_FRAME_OP_MODE_TYPE
 
 struct AudioVolumeInfo
 {
-    uid_t uid;
+    const char* uid;
     unsigned int volume; // [0,255]
 };
 
@@ -433,7 +434,7 @@ struct LocalVideoStats
 
 struct RemoteVideoStats
 {
-    uid_t uid;
+    const char* uid;
     int delay;
 	int width;
 	int height;
@@ -445,7 +446,7 @@ struct RemoteVideoStats
 struct VideoCompositingLayout
 {
     struct Region {
-        uid_t uid;
+        const char* uid;
         double x;//[0,1]
         double y;//[0,1]
         double width;//[0,1]
@@ -458,7 +459,7 @@ struct VideoCompositingLayout
 
         RENDER_MODE_TYPE renderMode;//RENDER_MODE_HIDDEN: Crop, RENDER_MODE_FIT: Zoom to fit
         Region()
-            :uid(0)
+            :uid(NULL)
             , x(0)
             , y(0)
             , width(0)
@@ -544,16 +545,16 @@ struct VideoCanvas
 {
     view_t view;
     int renderMode;
-    uid_t uid;
+    const char* uid;
     void *priv; // private data (underlying video engine denotes it)
 
     VideoCanvas()
         : view(NULL)
         , renderMode(RENDER_MODE_HIDDEN)
-        , uid(0)
+        , uid(NULL)
         , priv(NULL)
     {}
-    VideoCanvas(view_t v, int m, uid_t u)
+    VideoCanvas(view_t v, int m, const char* u)
         : view(v)
         , renderMode(m)
         , uid(u)
@@ -625,7 +626,7 @@ public:
     * @param [in] elapsed
     *        the time elapsed in ms from the joinChannel been called to joining completed
     */
-    virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) {
+    virtual void onJoinChannelSuccess(const char* channel, const char* uid, int elapsed) {
         (void)channel;
         (void)uid;
         (void)elapsed;
@@ -640,7 +641,7 @@ public:
     * @param [in] elapsed
     *        the time elapsed in ms elapsed
     */
-    virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed) {
+    virtual void onRejoinChannelSuccess(const char* channel, const char* uid, int elapsed) {
         (void)channel;
         (void)uid;
         (void)elapsed;
@@ -681,7 +682,7 @@ public:
     * @param [in] lost
     *        the rate of the audio packages lost
     */
-    virtual void onAudioQuality(uid_t uid, int quality, unsigned short delay, unsigned short lost) {
+    virtual void onAudioQuality(const char* uid, int quality, unsigned short delay, unsigned short lost) {
         (void)uid;
         (void)quality;
         (void)delay;
@@ -780,7 +781,7 @@ public:
 	* @param [in] rxQuality
 	*        the score of the recv network quality 0~5 the higher the better
 	*/
-    virtual void onNetworkQuality(uid_t uid, int txQuality, int rxQuality) {
+    virtual void onNetworkQuality(const char* uid, int txQuality, int rxQuality) {
 		(void)uid;
 		(void)txQuality;
 		(void)rxQuality;
@@ -821,7 +822,7 @@ public:
     * @param [in] elapsed
     *        the time elapsed from channel joined in ms
     */
-    virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) {
+    virtual void onFirstRemoteVideoDecoded(const char* uid, int width, int height, int elapsed) {
         (void)uid;
         (void)width;
         (void)height;
@@ -839,7 +840,7 @@ public:
      * @param [in] rotation
      *        the rotation of the video
      */
-    virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) {
+    virtual void onVideoSizeChanged(const char* uid, int width, int height, int rotation) {
         (void)uid;
         (void)width;
         (void)height;
@@ -857,7 +858,7 @@ public:
     * @param [in] elapsed
     *        the time elapsed from remote user called joinChannel in ms
     */
-    virtual void onFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed) {
+    virtual void onFirstRemoteVideoFrame(const char* uid, int width, int height, int elapsed) {
         (void)uid;
         (void)width;
         (void)height;
@@ -871,7 +872,7 @@ public:
     * @param [in] elapsed
     *        the time elapsed from remote used called joinChannel to joining completed in ms
     */
-    virtual void onUserJoined(uid_t uid, int elapsed) {
+    virtual void onUserJoined(const char* uid, int elapsed) {
         (void)uid;
         (void)elapsed;
     }
@@ -881,7 +882,7 @@ public:
     * @param [in] uid
     *        the UID of the remote user
     */
-    virtual void onUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason) {
+    virtual void onUserOffline(const char* uid, USER_OFFLINE_REASON_TYPE reason) {
         (void)uid;
         (void)reason;
     }
@@ -893,7 +894,7 @@ public:
     * @param [in] muted
     *        true: the remote user muted the audio stream, false: the remote user unmuted the audio stream
     */
-    virtual void onUserMuteAudio(uid_t uid, bool muted) {
+    virtual void onUserMuteAudio(const char* uid, bool muted) {
         (void)uid;
         (void)muted;
     }
@@ -905,7 +906,7 @@ public:
     * @param [in] muted
     *        true: the remote user muted the video stream, false: the remote user unmuted the video stream
     */
-    virtual void onUserMuteVideo(uid_t uid, bool muted) {
+    virtual void onUserMuteVideo(const char* uid, bool muted) {
         (void)uid;
         (void)muted;
     }
@@ -917,7 +918,7 @@ public:
 	* @param [in] enabled
 	*        true: the remote user has enabled video function, false: the remote user has disabled video function
 	*/
-	virtual void onUserEnableVideo(uid_t uid, bool enabled) {
+	virtual void onUserEnableVideo(const char* uid, bool enabled) {
 		(void)uid;
 		(void)enabled;
 	}
@@ -929,7 +930,7 @@ public:
     * @param [in] enabled
     *        true: the remote user has enabled local video function, false: the remote user has disabled local video function
     */
-    virtual void onUserEnableLocalVideo(uid_t uid, bool enabled) {
+    virtual void onUserEnableLocalVideo(const char* uid, bool enabled) {
         (void)uid;
         (void)enabled;
     }
@@ -1006,7 +1007,7 @@ public:
     *        the message length, in bytes
     *        frame rate
     */
-    virtual void onStreamMessage(uid_t uid, int streamId, const char* data, size_t length) {
+    virtual void onStreamMessage(const char* uid, int streamId, const char* data, size_t length) {
         (void)uid;
         (void)streamId;
         (void)data;
@@ -1016,7 +1017,7 @@ public:
 	/**
 	* 
 	*/
-	virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) {
+	virtual void onStreamMessageError(const char* uid, int streamId, int code, int missed, int cached) {
         (void)uid;
         (void)streamId;
         (void)code;
@@ -1053,14 +1054,14 @@ public:
     * @param [in] elapsed
     *        the time elapsed from remote user called joinChannel in ms
     */
-    virtual void onFirstRemoteAudioFrame(uid_t uid, int elapsed) {
+    virtual void onFirstRemoteAudioFrame(const char* uid, int elapsed) {
         (void)uid;
         (void)elapsed;
     }
     /** @param [in] uid
     *        the speaker uid who is talking in the channel
     */
-    virtual void onActiveSpeaker(uid_t uid) {
+    virtual void onActiveSpeaker(const char* uid) {
         (void)uid;
     }
 
@@ -1384,10 +1385,10 @@ public:
   * @param [in] info
     *        the additional information, it can be null here
     * @param [in] uid
-    *        the uid of you, if 0 the system will automatically allocate one for you
+    *        the uid of you
     * @return return 0 if success or an error code
     */
-    virtual int joinChannel(const char* channelKey, const char* channelName, const char* info, uid_t uid) = 0;
+    virtual int joinChannel(const char* channelKey, const char* channelName, const char* info, const char* uid) = 0;
 
     /**
     * leave the current channel
@@ -1529,6 +1530,8 @@ public:
 #if defined(_WIN32)
 	virtual int configPublisher(const PublisherConfiguration& config) = 0;
 #endif
+
+    virtual void onFatalError(void *pExp) = 0;
 };
 
 
@@ -1764,8 +1767,8 @@ public:
     *       false: unmute
     * @return return 0 if success or an error code
     */
-    int muteRemoteAudioStream(uid_t uid, bool mute) {
-        return setObject("rtc.audio.mute_peer", "{\"uid\":%u,\"mute\":%s}", uid, mute?"true":"false");
+    int muteRemoteAudioStream(const char* uid, bool mute) {
+        return setObject("rtc.audio.mute_peer", "{\"uid\":\"%s\",\"mute\":%s}", uid, mute?"true":"false");
     }
 
     /**
@@ -1802,13 +1805,13 @@ public:
     *       false: unmute
     * @return return 0 if success or an error code
     */
-    int muteRemoteVideoStream(uid_t uid, bool mute) {
-        return setObject("rtc.video.mute_peer", "{\"uid\":%u,\"mute\":%s}", uid, mute ? "true" : "false");
+    int muteRemoteVideoStream(const char* uid, bool mute) {
+        return setObject("rtc.video.mute_peer", "{\"uid\":\"%s\",\"mute\":%s}", uid, mute ? "true" : "false");
     }
 
-    int setRemoteVideoStreamType(uid_t uid, REMOTE_VIDEO_STREAM_TYPE streamType) {
-        return setParameters("{\"rtc.video.set_remote_video_stream\":{\"uid\":%u,\"stream\":%d}, \"che.video.setstream\":{\"uid\":%u,\"stream\":%d}}", uid, streamType, uid, streamType);
-//        return setObject("rtc.video.set_remote_video_stream", "{\"uid\":%u,\"stream\":%d}", uid, streamType);
+    int setRemoteVideoStreamType(const char* uid, REMOTE_VIDEO_STREAM_TYPE streamType) {
+        return setObject("rtc.video.set_remote_video_stream", "{\"uid\":\"%s\",\"stream\":%d}", uid, streamType);
+        //return setParameters("{\"rtc.video.set_remote_video_stream\":{\"uid\":%u,\"stream\":%d}, \"che.video.setstream\":{\"uid\":%u,\"stream\":%d}}", uid, streamType, uid, streamType);
     }
 
     int setRemoteDefaultVideoStreamType(REMOTE_VIDEO_STREAM_TYPE streamType) {
@@ -2108,7 +2111,7 @@ public:
     * @return return 0 if success or an error code
     */
     int setLocalRenderMode(RENDER_MODE_TYPE renderMode) {
-        return setRemoteRenderMode(0, renderMode);
+        return setObject("che.video.render_mode", "{\"uid\":0,\"mode\":%d}", renderMode);
     }
 
     /**
@@ -2117,8 +2120,18 @@ public:
     *        the render mode
     * @return return 0 if success or an error code
     */
-    int setRemoteRenderMode(uid_t uid, RENDER_MODE_TYPE renderMode) {
-        return setObject("che.video.render_mode", "{\"uid\":%u,\"mode\":%d}", uid, renderMode);
+    int setRemoteRenderMode(const char* uid, RENDER_MODE_TYPE renderMode) {
+        return setObject("rtc.api.set_remote_render_mode", "{\"uid\":\"%s\",\"mode\":%d}", uid, renderMode);
+    }
+
+    /**
+    * set uid compatible mode
+    * @param [in] enabled
+    *        enable the compatible mode, it's false by default
+    * @return return 0 if success or an error code
+     */
+    int setUidCompatibleMode(bool enabled) {
+        return m_parameter ? m_parameter->setBool("rtc.api.set_uid_compatible_mode", enabled) : -ERR_NOT_INITIALIZED;
     }
     
     int setLocalVideoMirrorMode(VIDEO_MIRROR_MODE_TYPE mirrorMode) {
