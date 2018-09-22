@@ -32,14 +32,14 @@ namespace AgoraClrDemo
             return true;
         }
 
-        private void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed)
+        private void onFirstRemoteVideoDecoded(String uid, int width, int height, int elapsed)
         {
             log("remote video decoded in " + uid, elapsed);
             setupRemoteVideo(uid);
         }
 
-        delegate void setupRemoteVideoDelegate(int uid);
-        private void setupRemoteVideo(int uid)
+        delegate void setupRemoteVideoDelegate(String uid);
+        private void setupRemoteVideo(String uid)
         {
             if (remoteVideo.InvokeRequired)
             {
@@ -47,7 +47,7 @@ namespace AgoraClrDemo
                 this.Invoke(d, uid);
             } else
             {
-                agora.setupRemoteVideo(remoteVideo.Handle, (int)RenderMode.RENDER_MODE_ADAPTIVE, uid);
+                agora.setupRemoteVideo(remoteVideo.Handle, (int)RenderMode.RENDER_MODE_ADAPTIVE, "" + uid);
             }
         }
 
@@ -56,7 +56,7 @@ namespace AgoraClrDemo
             log("Camera Ready Event", 0);
         }
 
-        private void onJoinChannelSuccess(String channel, int uid, int elapsed)
+        private void onJoinChannelSuccess(String channel, String uid, int elapsed)
         {
             log("join channel success in " + channel + " by " + uid, elapsed);
         }
@@ -98,14 +98,14 @@ namespace AgoraClrDemo
 
         private void btnStartPreview_Click(object sender, EventArgs e)
         {
-            log("setuplocalVideo", agora.setupLocalVideo(localVideo.Handle, (int)RenderMode.RENDER_MODE_ADAPTIVE, 0));
+            log("setuplocalVideo", agora.setupLocalVideo(localVideo.Handle, (int)RenderMode.RENDER_MODE_ADAPTIVE, "0"));
             log("enableVideo", agora.enableVideo());
             log("startPreview", agora.startPreview());
         }
 
         private void btnJoinChannel_Click(object sender, EventArgs e)
         {
-            log("join channel", agora.joinChannel("", txtChannelName.Text, null, 0));
+            log("join channel", agora.joinChannel("", txtChannelName.Text, null, "0"));
         }
 
         private void button1_Click_1(object sender, EventArgs e)

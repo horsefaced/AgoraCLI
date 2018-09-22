@@ -26,7 +26,7 @@ bool AgoraClrLibrary::AgoraClrRawFrameObserver::onMixedAudioFrame(AudioFrame & a
 	else return false;
 }
 
-bool AgoraClrRawFrameObserver::onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame & audioFrame)
+bool AgoraClrRawFrameObserver::onPlaybackAudioFrameBeforeMixing(const char* uid, AudioFrame & audioFrame)
 {
 	if (onPlaybackAudioFrameBeforeMixingEvent) return onPlaybackAudioFrameBeforeMixingEvent(uid, audioFrame);
 	else return true;
@@ -38,7 +38,7 @@ bool AgoraClrRawFrameObserver::onCaptureVideoFrame(VideoFrame & videoFrame)
 	else return true;
 }
 
-bool AgoraClrRawFrameObserver::onRenderVideoFrame(unsigned int uid, VideoFrame & videoFrame)
+bool AgoraClrRawFrameObserver::onRenderVideoFrame(const char* uid, VideoFrame & videoFrame)
 {
 	if (onRenderVideoFrameEvent) return onRenderVideoFrameEvent(uid, videoFrame);
 	else return true;

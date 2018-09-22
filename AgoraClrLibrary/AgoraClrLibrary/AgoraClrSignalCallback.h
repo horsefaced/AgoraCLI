@@ -1,5 +1,5 @@
 #pragma once
-#include "include\agora_api_win.h"
+#include "..\..\agorasdk\include\agora_api_win.h"
 
 using namespace agora_sdk_win;
 

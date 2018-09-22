@@ -3,9 +3,9 @@
 // 特定于项目的包含文件
 
 #pragma once
-#include "include\IAgoraMediaEngine.h"
-#include "include\IAgoraRtcEngine.h"
-#include "include\agora_api_win.h"
-#pragma comment(lib, "lib/agora_rtc_sdk.lib")
-#pragma comment(lib, "lib/agorasdk.lib")
+#include "../../agorasdk/include/IAgoraMediaEngine.h"
+#include "../../agorasdk/include/IAgoraRtcEngine.h"
+#include "../../agorasdk/include/agora_api_win.h"
+#pragma comment(lib, "../../agorasdk/lib/agora_rtc_sdk.lib")
+#pragma comment(lib, "../../agorasdk/lib/agorasdk.lib")
 

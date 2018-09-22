@@ -9,12 +9,12 @@ AgoraClrLibrary::AgoraClrEventHandler::~AgoraClrEventHandler()
 {
 }
 
-void AgoraClrLibrary::AgoraClrEventHandler::onJoinChannelSuccess(const char * channel, uid_t uid, int elapsed)
+void AgoraClrLibrary::AgoraClrEventHandler::onJoinChannelSuccess(const char * channel, const char* uid, int elapsed)
 {
 	if (onJoinChannelSuccessEvent) onJoinChannelSuccessEvent(channel, uid, elapsed);
 }
 
-void AgoraClrLibrary::AgoraClrEventHandler::onRejoinChannelSuccess(const char * channel, uid_t uid, int elapsed)
+void AgoraClrLibrary::AgoraClrEventHandler::onRejoinChannelSuccess(const char * channel, const char* uid, int elapsed)
 {
 	if (onRejoinChannelSuccessEvent) onRejoinChannelSuccessEvent(channel, uid, elapsed);
 }
@@ -27,7 +27,7 @@ void AgoraClrLibrary::AgoraClrEventHandler::onWarning(int warn, const char * msg
 void AgoraClrLibrary::AgoraClrEventHandler::onError(int err, const char* msg) {
 	if (onErrorEvent) onErrorEvent(err, msg);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onAudioQuality(uid_t uid, int quality, unsigned short delay, unsigned short lost) {
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioQuality(const char* uid, int quality, unsigned short delay, unsigned short lost) {
 	if (onAudioQualityEvent) onAudioQualityEvent(uid, quality, delay, lost);
 }
 void AgoraClrLibrary::AgoraClrEventHandler::onAudioVolumeIndication(const AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume) {
@@ -48,32 +48,32 @@ void AgoraClrLibrary::AgoraClrEventHandler::onVideoDeviceStateChanged(const char
 void AgoraClrLibrary::AgoraClrEventHandler::onLastmileQuality(int quality) {
 	if (onLastmileQualityEvent) onLastmileQualityEvent(quality);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onNetworkQuality(uid_t uid, int txQuality, int rxQuality)
+void AgoraClrLibrary::AgoraClrEventHandler::onNetworkQuality(const char* uid, int txQuality, int rxQuality)
 {
 	if (onNetworkQualityEvent) onNetworkQualityEvent(uid, txQuality, rxQuality);
 }
 void AgoraClrLibrary::AgoraClrEventHandler::onFirstLocalVideoFrame(int width, int height, int elapsed) {
 	if (onFirstLocalVideoFrameEvent) onFirstLocalVideoFrameEvent(width, height, elapsed);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) {
+void AgoraClrLibrary::AgoraClrEventHandler::onFirstRemoteVideoDecoded(const char* uid, int width, int height, int elapsed) {
 	if (onFirstRemoteVideoDecodedEvent) onFirstRemoteVideoDecodedEvent(uid, width, height, elapsed);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed) {
+void AgoraClrLibrary::AgoraClrEventHandler::onFirstRemoteVideoFrame(const char* uid, int width, int height, int elapsed) {
 	if (onFirstRemoteVideoFrameEvent) onFirstRemoteVideoFrameEvent(uid, width, height, elapsed);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onUserJoined(uid_t uid, int elapsed) {
+void AgoraClrLibrary::AgoraClrEventHandler::onUserJoined(const char* uid, int elapsed) {
 	if (onUserJoinedEvent) onUserJoinedEvent(uid, elapsed);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason) {
+void AgoraClrLibrary::AgoraClrEventHandler::onUserOffline(const char* uid, USER_OFFLINE_REASON_TYPE reason) {
 	if (onUserOfflineEvent) onUserOfflineEvent(uid, reason);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onUserMuteAudio(uid_t uid, bool muted) {
+void AgoraClrLibrary::AgoraClrEventHandler::onUserMuteAudio(const char* uid, bool muted) {
 	if (onUserMuteAudioEvent) onUserMuteAudioEvent(uid, muted);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onUserMuteVideo(uid_t uid, bool muted) {
+void AgoraClrLibrary::AgoraClrEventHandler::onUserMuteVideo(const char* uid, bool muted) {
 	if (onUserMuteVideoEvent) onUserMuteVideoEvent(uid, muted);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onUserEnableVideo(uid_t uid, bool enabled) {
+void AgoraClrLibrary::AgoraClrEventHandler::onUserEnableVideo(const char* uid, bool enabled) {
 	if (onUserEnableVideoEvent) onUserEnableVideoEvent(uid, enabled);
 }
 void AgoraClrLibrary::AgoraClrEventHandler::onApiCallExecuted(const char* api, int error) {
@@ -100,10 +100,10 @@ void AgoraClrLibrary::AgoraClrEventHandler::onConnectionInterrupted() {
 void AgoraClrLibrary::AgoraClrEventHandler::onRefreshRecordingServiceStatus(int status) {
 	if (onRefreshRecordingServiceStatusEvent) onRefreshRecordingServiceStatusEvent(status);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessage(uid_t uid, int streamId, const char* data, size_t length) {
+void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessage(const char* uid, int streamId, const char* data, size_t length) {
 	if (onStreamMessageEvent) onStreamMessageEvent(uid, streamId, data, length);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) {
+void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessageError(const char* uid, int streamId, int code, int missed, int cached) {
 	if (onStreamMessageErrorEvent) onStreamMessageErrorEvent(uid, streamId, code, missed, cached);
 }
 
@@ -117,7 +117,7 @@ void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingFinished()
 	if (onAudioMixingFinishedEvent) onAudioMixingFinishedEvent();
 }
 
-void AgoraClrLibrary::AgoraClrEventHandler::onActiveSpeaker(uid_t uid)
+void AgoraClrLibrary::AgoraClrEventHandler::onActiveSpeaker(const char* uid)
 {
 	if (onActiveSpeakerEvent) onActiveSpeakerEvent(uid);
 }

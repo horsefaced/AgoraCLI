@@ -1,7 +1,7 @@
 // AgoraClrLibrary.h
 
 #pragma once
-#include "include\IAgoraRtcEngine.h"
+#include "..\..\agorasdk\include\IAgoraRtcEngine.h"
 #include "AgoraClrEventHandler.h"
 #include "AgoraClrPacketObserver.h"
 #include "AgoraClrRawFrameObserver.h"
@@ -83,7 +83,7 @@ namespace AgoraClrLibrary {
 	public ref class AudioVolumeInfo
 	{
 	public:
-		int uid;
+		String^ uid;
 		unsigned int volume; // [0,255]
 	};
 
@@ -170,7 +170,7 @@ namespace AgoraClrLibrary {
 	public ref class RemoteVideoStats
 	{
 	public:
-		int uid;
+		String^ uid;
 		int delay;
 		int width;
 		int height;
@@ -179,7 +179,7 @@ namespace AgoraClrLibrary {
 		RemoteVideoStreamType rxStreamType;
 
 		RemoteVideoStats(agora::rtc::RemoteVideoStats stats) {
-			uid = stats.uid;
+			uid = gcnew String(stats.uid);
 			delay = stats.delay;
 			width = stats.width;
 			height = stats.height;
@@ -293,7 +293,7 @@ namespace AgoraClrLibrary {
 
 	public ref class ClrRegion {
 	public:
-		int uid;
+		String^ uid;
 		double x;//[0,1]
 		double y;//[0,1]
 		double width;//[0,1]
@@ -307,7 +307,7 @@ namespace AgoraClrLibrary {
 		RenderMode renderMode;//RENDER_MODE_HIDDEN: Crop, RENDER_MODE_FIT: Zoom to fit
 
 		ClrRegion()
-			:uid(0)
+			:uid()
 			, x(0)
 			, y(0)
 			, width(0)
@@ -319,7 +319,7 @@ namespace AgoraClrLibrary {
 
 		agora::rtc::VideoCompositingLayout::Region* toRaw() {
 			VideoCompositingLayout::Region* result = new VideoCompositingLayout::Region();
-			result->uid = uid, result->x = x, result->y = y, result->width = width, result->height = height;
+			result->uid = MarshalString(uid).c_str(), result->x = x, result->y = y, result->width = width, result->height = height;
 			result->zOrder = zOrder, result->alpha = alpha;
 			return result;
 		}
@@ -452,43 +452,43 @@ namespace AgoraClrLibrary {
 
 
 	//RtcEngineEventHandler Part
-	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
-	public delegate void onRejoinChannelSuccess(String ^channel, int uid, int elapsed);
+	public delegate void onJoinChannelSuccess(String ^channel, String^ uid, int elapsed);
+	public delegate void onRejoinChannelSuccess(String ^channel, String^ uid, int elapsed);
 	public delegate void onWarning(int warn, String ^msg);
 	public delegate void onError(int err, String ^msg);
-	public delegate void onAudioQuality(int uid, int quality, unsigned short delay, unsigned short lost);
+	public delegate void onAudioQuality(String^ uid, int quality, unsigned short delay, unsigned short lost);
 	public delegate void onAudioVolumeIndication(List<AudioVolumeInfo^>^ speakers, int totalVolume);
 	public delegate void onLeaveChannel(RtcStats ^stat);
-	public delegate void onUserJoined(int uid, int elapsed);
-	public delegate void onUserOffline(int uid, UserOfflineType reason);
+	public delegate void onUserJoined(String^ uid, int elapsed);
+	public delegate void onUserOffline(String^ uid, UserOfflineType reason);
 	public delegate void onRtcStats(RtcStats ^stat);
 	public delegate void onLocalVideoStats(LocalVideoStats ^stats);
 	public delegate void onRemoteVideoStats(RemoteVideoStats ^stats);
 	public delegate void onFirstLocalVideoFrame(int width, int height, int elapsed);
-	public delegate void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed);
-	public delegate void onFirstRemoteVideoFrame(int uid, int width, int height, int elapsed);
+	public delegate void onFirstRemoteVideoDecoded(String^ uid, int width, int height, int elapsed);
+	public delegate void onFirstRemoteVideoFrame(String^ uid, int width, int height, int elapsed);
 
 	public delegate void onAudioDeviceStateChanged(String ^deviceid, int deviceType, int deviceState);
 	public delegate void onVideoDeviceStateChanged(String ^deviceid, int deviceType, int deviceState);
 
 	public delegate void onLastmileQuality(int quality);
-	public delegate void onNetworkQuality(int uid, int txQuality, int rxQuality);
+	public delegate void onNetworkQuality(String^ uid, int txQuality, int rxQuality);
 
-	public delegate void onUserMuteAudio(int uid, bool muted);
-	public delegate void onUserMuteVideo(int uid, bool muted);
-	public delegate void onUserEnableVideo(int uid, bool enabled);
+	public delegate void onUserMuteAudio(String^ uid, bool muted);
+	public delegate void onUserMuteVideo(String^ uid, bool muted);
+	public delegate void onUserEnableVideo(String^ uid, bool enabled);
 	public delegate void onCameraReady();
 	public delegate void onVideoStopped();
 	public delegate void onConnectionInterrupted();
 	public delegate void onConnectionLost();
 	public delegate void onRefreshRecordingServiceStatus(int status);
 	public delegate void onApiCallExecuted(String ^api, int error);
-	public delegate void onStreamMessage(int uid, int streamId, String ^data);
-	public delegate void onStreamMessageError(int uid, int streamId, int code, int missed, int cached);
+	public delegate void onStreamMessage(String^ uid, int streamId, String ^data);
+	public delegate void onStreamMessageError(String^ uid, int streamId, int code, int missed, int cached);
 	public delegate void onRequestChannelKey();
 	public delegate void onAudioMixingFinished();
 
-	public delegate void onActiveSpeaker(int uid);
+	public delegate void onActiveSpeaker(String^ uid);
 
 	public delegate void onClientRoleChanged(ClientRoleType, ClientRoleType);
 	public delegate void onAudioDeviceVolumeChanged(MediaDeviceType, int, bool);
@@ -502,9 +502,9 @@ namespace AgoraClrLibrary {
 	//Raw Data Part
 	public delegate bool onRecordAudioFrame(ClrAudioFrame^ frame);
 	public delegate bool onPlaybackAudioFrame(ClrAudioFrame^ frame);
-	public delegate bool onPlaybackAudioFrameBeforeMixing(int uid, ClrAudioFrame^ frame);
+	public delegate bool onPlaybackAudioFrameBeforeMixing(String^ uid, ClrAudioFrame^ frame);
 	public delegate bool onCaptureVideoFrame(ClrVideoFrame^ frame);
-	public delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^ frame);
+	public delegate bool onRenderVideoFrame(String^ uid, ClrVideoFrame^ frame);
 
 	public ref class AgoraClr
 	{
@@ -528,7 +528,7 @@ namespace AgoraClrLibrary {
 
 		int enableWebSdkInteroperability(bool enabled);
 
-		int joinChannel(String ^channelKey, String ^channelName, String ^channelInfo, int uid);
+		int joinChannel(String ^channelKey, String ^channelName, String ^channelInfo, String^ uid);
 		int leaveChannel();
 
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect);
@@ -550,10 +550,10 @@ namespace AgoraClrLibrary {
 		int disableLastmileTest();
 
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
-		int setupLocalVideo(IntPtr view, int renderMode, int uid);
-		int setupRemoteVideo(IntPtr view, int renderMode, int uid);
+		int setupLocalVideo(IntPtr view, int renderMode, String^ uid);
+		int setupRemoteVideo(IntPtr view, int renderMode, String^ uid);
 		int enableDualStreamMode(bool enabled);
-		int setRemoteVideoStreamType(int uid, RemoteVideoStreamType type);
+		int setRemoteVideoStreamType(String^ uid, RemoteVideoStreamType type);
 		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
 		int setVideoCompositingLayout(ClrVideoCompositingLayout^ sei);
 		int clearVideoCompositingLayout();
@@ -572,14 +572,14 @@ namespace AgoraClrLibrary {
 
 		int muteLocalAudioStream(bool mute);
 		int muteAllRemoteAudioStreams(bool mute);
-		int muteRemoteAudioStream(int uid, bool mute);
+		int muteRemoteAudioStream(String^ uid, bool mute);
 		int muteLocalVideoStream(bool mute);
 		int enableLocalVideo(bool enabled);
 		int muteAllRemoteVideoStream(bool mute);
-		int muteRemoteVideoStream(int uid, bool mute);
+		int muteRemoteVideoStream(String^ uid, bool mute);
 		int setPlaybackDeviceVolume(int volume);
 		int setLocalRenderMode(RenderMode mode);
-		int setRemoteRenderMode(int uid, RenderMode mode);
+		int setRemoteRenderMode(String^ uid, RenderMode mode);
 		int enableAudioVolumeIndication(int interval, int smooth);
 		int startAudioRecording(String ^path, AudioRecordingQualityType quality);
 		int stopAudioRecording();
@@ -671,26 +671,26 @@ namespace AgoraClrLibrary {
 		List<GCHandle> ^gchs;
 
 		//Native Agora Event Handler
-		void NativeOnJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
-		void NativeOnRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
+		void NativeOnJoinChannelSuccess(const char* channel, const char* uid, int elapsed);
+		void NativeOnRejoinChannelSuccess(const char* channel, const char* uid, int elapsed);
 		void NativeOnWarning(int warn, const char* msg);
 		void NativeOnError(int err, const char* msg);
-		void NativeOnAudioQuality(uid_t uid, int quality, unsigned short delay, unsigned short lost);
+		void NativeOnAudioQuality(const char* uid, int quality, unsigned short delay, unsigned short lost);
 		void NativeOnAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume);
 		void NativeOnLeaveChannel(const agora::rtc::RtcStats& stats);
 		void NativeOnRtcStats(const agora::rtc::RtcStats& stats);
 		void NativeOnAudioDeviceStateChanged(const char* deviceId, int deviceType, int deviceState);
 		void NativeOnVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState);
 		void NativeOnLastmileQuality(int quality);
-		void NativeOnNetworkQuality(uid_t uid, int txQuality, int rxQuality);
+		void NativeOnNetworkQuality(const char* uid, int txQuality, int rxQuality);
 		void NativeOnFirstLocalVideoFrame(int width, int height, int elapsed);
-		void NativeOnFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed);
-		void NativeOnFirstRemoteVideoFrame(uid_t uid, int width, int height, int elapsed);
-		void NativeOnUserJoined(uid_t uid, int elapsed);
-		void NativeOnUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason);
-		void NativeOnUserMuteAudio(uid_t uid, bool muted);
-		void NativeOnUserMuteVideo(uid_t uid, bool muted);
-		void NativeOnUserEnableVideo(uid_t uid, bool enabled);
+		void NativeOnFirstRemoteVideoDecoded(const char* uid, int width, int height, int elapsed);
+		void NativeOnFirstRemoteVideoFrame(const char* uid, int width, int height, int elapsed);
+		void NativeOnUserJoined(const char* uid, int elapsed);
+		void NativeOnUserOffline(const char* uid, USER_OFFLINE_REASON_TYPE reason);
+		void NativeOnUserMuteAudio(const char* uid, bool muted);
+		void NativeOnUserMuteVideo(const char* uid, bool muted);
+		void NativeOnUserEnableVideo(const char* uid, bool enabled);
 		void NativeOnApiCallExecuted(const char* api, int error);
 		void NativeOnLocalVideoStats(const agora::rtc::LocalVideoStats& stats);
 		void NativeOnRemoteVideoStats(const agora::rtc::RemoteVideoStats& stats);
@@ -699,12 +699,12 @@ namespace AgoraClrLibrary {
 		void NativeOnConnectionLost();
 		void NativeOnConnectionInterrupted();
 		void NativeOnRefreshRecordingServiceStatus(int status);
-		void NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
-		void NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
+		void NativeOnStreamMessage(const char* uid, int streamId, const char* data, size_t length);
+		void NativeOnStreamMessageError(const char* uid, int streamId, int code, int missed, int cached);
 		void NativeOnRequestChannelKey();
 		void NativeOnAudioMixingFinished();
 
-		void NativeOnActiveSpeaker(uid_t uid);
+		void NativeOnActiveSpeaker(const char* uid);
 		
 		void NativeOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
 		void NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
@@ -716,9 +716,9 @@ namespace AgoraClrLibrary {
 
 		bool NativeOnRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
 		bool NativeOnPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
-		bool NativeOnPlaybackAudioFrameBeforeMixing(unsigned int uid, agora::media::IAudioFrameObserver::AudioFrame& frame);
+		bool NativeOnPlaybackAudioFrameBeforeMixing(const char* uid, agora::media::IAudioFrameObserver::AudioFrame& frame);
 		bool NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame);
-		bool NativeOnRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
+		bool NativeOnRenderVideoFrame(const char* uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
 
 		void initializeEventHandler();
 		void initializePacketObserver();
