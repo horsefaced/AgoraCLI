@@ -1,10 +1,10 @@
+## 这个实现分支是基于2.0版本上一个独特的uid为String类型的实现
+
 # AgoraCLI项目
 
 因为要用到Visual C++，所以在安装.net运行时后，还需要安装 **Visual C++ Redistributable for Visual Studio** 才可以运行。
 
 对了,他们家新的WebRtc版本好像要出来了,你们可以找他们要这个版本看看, 可能会更好的哦.
-
-## 这个实现分支是基于2.0版本上一个独特的uid为String类型的实现
 
 [Agora声网](http://cn.agora.io)的Windows端SDK只提供了C++的实现, 用在.NET平台上对开发者要求很高. 所以用CLI将其做了一个桥接, 使其可以使用C#进行开发.
 
