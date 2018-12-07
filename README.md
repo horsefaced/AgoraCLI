@@ -17,6 +17,9 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2018-12-07
+修改ClrLiveTranscoding不能设置transcodingUsers的BUG
+
 ## 2018-07-20
 修改信令中 messageInstantSend 方法不能处理中文的BUG
 
