@@ -553,7 +553,7 @@ namespace AgoraClrLibrary {
 		VideoCodecProfileType videoCodecProfile;
 		unsigned int backgroundColor;
 		unsigned int userCount;
-		ClrTranscodingUser transcodingUsers;
+		ClrTranscodingUser ^transcodingUsers;
 
 		String ^transcodingExtraInfo;
 
@@ -588,7 +588,7 @@ namespace AgoraClrLibrary {
 			raw.videoCodecProfile = (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
 			raw.backgroundColor = backgroundColor;
 			raw.userCount = userCount;
-			raw.transcodingUsers = transcodingUsers.toRaw();
+			raw.transcodingUsers = transcodingUsers->toRaw();
 			raw.transcodingExtraInfo = MarshalString(transcodingExtraInfo).c_str();
 			raw.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
 			raw.audioBitrate = audioBitrate;
