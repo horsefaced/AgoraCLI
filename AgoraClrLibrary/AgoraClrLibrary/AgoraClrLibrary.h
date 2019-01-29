@@ -18,7 +18,7 @@ namespace AgoraClrLibrary {
 
 	static std::string MarshalString(String ^s) {
 		if (s == nullptr) return std::string();
-		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
+		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalUni(s);
 		std::string result((char *)middleStr.ToPointer());
 		Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
 		return result;
@@ -259,8 +259,8 @@ namespace AgoraClrLibrary {
 		ClrAudioFrameType type;
 		int samples;  //number of samples in this frame
 		int bytesPerSample;  //number of bytes per sample: 2 for PCM16
-		int channels;  //声道数
-		int samplesPerSec;  //采样率
+		int channels;  //脡霉碌脌脢媒
+		int samplesPerSec;  //虏脡脩霉脗脢
 		array<Byte>^ data;
 		int64_t renderTimeMs;
 
@@ -794,7 +794,7 @@ namespace AgoraClrLibrary {
 		int createDataStream(int %id);
 		int sendStreamMessage(int id, String ^data);
 
-		//原始数据API
+		//脭颅脢录脢媒戮脻API
 		//RtcEngineParameters Part
 		int setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
 		int setPlaybackAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
