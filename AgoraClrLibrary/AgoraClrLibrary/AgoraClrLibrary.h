@@ -824,9 +824,6 @@ namespace AgoraClrLibrary {
 		int setAudioProfile(AudioProfileType profile, AudioScenarioType scenario);
 		int setLogFile(String ^path);
 		int setLogFilter(unsigned int filter);
-		int startRecordingService(String ^key);
-		int stopRecordingService(String ^key);
-		int refreshRecordingServiceStatus();
 		int adjustRecordingSignalVolumne(int volume);
 		int adjustPlaybackSignalVolume(int volume);
 
@@ -896,7 +893,6 @@ namespace AgoraClrLibrary {
 		onConnectionLost ^onConnectionLost;
 		onConnectionBanned ^onConnectionBanned;
 
-		onRefreshRecordingServiceStatus ^onRefreshRecordingServiceStatus;
 		onApiCallExecuted ^onApiCallExecuted;
 		onStreamMessage ^onStreamMessage;
 		onStreamMessageError ^onStreamMessageError;
@@ -968,7 +964,6 @@ namespace AgoraClrLibrary {
 		void NativeOnConnectionBanned();
 
 		void NativeOnConnectionInterrupted();
-		void NativeOnRefreshRecordingServiceStatus(int status);
 		void NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
 		void NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
 		void NativeOnRequestChannelKey();

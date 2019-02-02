@@ -34,7 +34,6 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnConnectionInterrupted)();
 	typedef void(__stdcall * PFOnConnectionBanned)();
 
-	typedef void(__stdcall * PFOnRefreshRecordingServiceStatus)(int status);
 	typedef void(__stdcall * PFOnStreamMessage)(uid_t uid, int streamId, const char* data, size_t length);
 	typedef void(__stdcall * PFOnStreamMessageError)(uid_t uid, int streamId, int code, int missed, int cached);
 	typedef void(__stdcall * PFOnRequestChannelKey)();
@@ -79,7 +78,6 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnConnectionBannedDelegate();
 
 	delegate void NativeOnConnectionInterruptedDelegate();
-	delegate void NativeOnRefreshRecordingServiceStatusDelegate(int status);
 	delegate void NativeOnStreamMessageDelegate(uid_t uid, int streamId, const char* data, size_t length);
 	delegate void NativeOnStreamMessageErrorDelegate(uid_t uid, int streamId, int code, int missed, int cached);
 	delegate void NativeOnRequestChannelKeyDelegate();
@@ -129,7 +127,6 @@ namespace AgoraClrLibrary {
 		PFOnConnectionBanned onConnectionBannedEvent = 0;
 
 		PFOnConnectionInterrupted onConnectionInterruptedEvent = 0;
-		PFOnRefreshRecordingServiceStatus onRefreshRecordingServiceStatusEvent = 0;
 		PFOnStreamMessage onStreamMessageEvent = 0;
 		PFOnStreamMessageError onStreamMessageErrorEvent = 0;
 		PFOnRequestChannelKey onRequestChannelKeyEvent = 0;
@@ -173,7 +170,6 @@ namespace AgoraClrLibrary {
 		virtual void onConnectionInterrupted();
 		virtual void onConnectionBanned();
 
-		virtual void onRefreshRecordingServiceStatus(int status);
 		virtual void onStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
 		virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
 		virtual void onRequestChannelKey();

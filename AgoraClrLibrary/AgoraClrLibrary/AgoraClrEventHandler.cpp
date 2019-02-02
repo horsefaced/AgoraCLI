@@ -101,9 +101,6 @@ void AgoraClrLibrary::AgoraClrEventHandler::onConnectionBanned()
 {
 	if (onConnectionBannedEvent) onConnectionBannedEvent();
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onRefreshRecordingServiceStatus(int status) {
-	if (onRefreshRecordingServiceStatusEvent) onRefreshRecordingServiceStatusEvent(status);
-}
 void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessage(uid_t uid, int streamId, const char* data, size_t length) {
 	if (onStreamMessageEvent) onStreamMessageEvent(uid, streamId, data, length);
 }

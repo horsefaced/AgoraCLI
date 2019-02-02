@@ -38,7 +38,7 @@ namespace agora {
         class ILiveEngine;
         enum MEDIA_TYPE;
         /**
-        * the event call back interface
+        * The IPublisherEventHandler event callback interface.
         */
         class IPublisherEventHandler
         {
@@ -46,43 +46,43 @@ namespace agora {
             virtual ~IPublisherEventHandler() {}
 
             /**
-            * When new publish url added, the function will be called.
-            * @param [in] url
-            *        new added url
+            * A publish URL is added.
+
+            * @param url Added URL.
             */
             virtual void onUrlAdded(const char *url) {
                 (void)url;
             }
 
             /**
-            * When publish url removed, the function will be called
-            * @param [in] url
-            *        the removed url
+            * A publish URL is removed.
+
+            * @param url Removed URL.
             */
             virtual void onUrlRemoved(const char *url) {
                 (void)url;
             }
 
             /**
-            * When publish success, the function will be called
+            * Publish has succeeded.
             */
             virtual void onPublished() {
             }
 
 			/*
-			* When unpublish, the function will be called.
+			* Unpublish has succeeded.
 			*/
             virtual void onUnpublished() {
             }
 
             /**
-            * When transcoding update, the function will be called.
+            * Transcoding is updated.
             */
             virtual void onTranscodingUpdated() {
             }
 
 			/*
-			* When inject stream requested, the funtion will be called.
+			* An inject stream is requested.
 			*/
             virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) {
                 (void)url;
@@ -93,87 +93,90 @@ namespace agora {
 
         class IPublisherEngine
         {
+        protected:
+            virtual ~IPublisherEngine(){}
         public:
             /**
-            * release the engine resource
+            * Releases the engine resource
             */
             virtual void release() = 0;
 
             /**
-            * initialize the engine
-            * @param [in] engine
-            *        the ILiveEngine instance
-            * @return return 0 if success or an error code
+            * Initializes the engine
+
+            * @param engine ILiveEngine instance
+            @return
+
+            - 0: Success.
+            - < 0: Failure.
             */
             virtual int initialize(ILiveEngine *engine) = 0;
 
 			/*
-			* set event handler for publisher Engine.
-			* @param [in] eventHandler
-			*		 registered event handler.
+			* Sets the event handler for the publisher engine.
+
+			* @param eventHandler Registered event handler.
 			*/
             virtual int setEventHandler(IPublisherEventHandler *eventHandler) = 0;
 
 			/*
-			* Publish stream.
+			* Publishes a stream.
 			*/
             virtual int publish() = 0;
 
 			/*
-			* unpublish stream
+			* Unpublishes a stream.
 			*/
             virtual int unpublish() = 0;
 
 			/*
-			* Add publish stream url.
-			* @param [in] url
-			*		 added publish stream url
-			* @param [in] transcodingEnabled
-			*		 Whether the transcoding is enabled.
+			* Adds a publish stream URL.
+
+			* @param url Publish stream URL.
+			* @param transcodingEnabled Whether the transcoding is enabled: true/false.
 			*/
             virtual int addStreamUrl(const char *url, bool transcodingEnabled) = 0;
 
 			/*
-			* Remove publish stream url
-			* @param [in] url
-					 removed publish stream url.
+			* Removes a publish stream URL.
+
+			* @param url Publish stream URL to remove.
 			*/
             virtual int removeStreamUrl(const char *url) = 0;
 
 			/*
-			* Set publish media type
-			* @param [in] type
-			*		 The media type going to set.
+			* Sets the publish media type.
+
+			* @param type The media type: #MEDIA_TYPE
 			*/
             virtual int setMediaType(MEDIA_TYPE type) = 0;
 
 			/*
-			* Set live transcoding
-			* @param [in] transcoding
-			*		 the transcoding going to set.
+			* Sets the live transcoding.
+
+			* @param transcoding The transcoding option: #LiveTranscoding
 			*/
             virtual int setLiveTranscoding(const LiveTranscoding &transcoding) = 0;
 
 			/*
-			* Add inject stream url
-			* @param [in] url
-			*		 The added injected stream url
-			* @param [in] config
-			*		 The inject stream configuration
+			* Adds the inject stream URL.
+
+			* @param url The added injected stream URL.
+			* @param config The inject stream configuration: InjectStreamConfig
 			*/
             virtual int addInjectStreamUrl(const char* url, const InjectStreamConfig& config) = 0;
 
 			/*
-			* Remove injected stream url
-			* @param [in] url
-			*		 the injected stream url that to be removed.
+			* Removes the injected stream URL.
+
+			* @param url The injected stream URL to remove.
 			*/
             virtual int removeInjectStreamUrl(const char* url) = 0;
 
 			/*
-			* set video profile
-			* @param [in] profile
-			*		 The video profile going to set.
+			* Sets the video profile.
+
+			* @param profile The video profile: VIDEO_PROFILE_TYPE
 			*/
             virtual int setVideoProfile(VIDEO_PROFILE_TYPE profile) = 0;
         };
@@ -181,8 +184,9 @@ namespace agora {
 }
 
 /**
-* create the RTC live publisher engine object and return the pointer
-* @return returns the pointer of the RTC engine object
+* Creates the RTC live publisher engine object and returns the pointer.
+
+* @return The pointer of the RTC engine object.
 */
 AGORA_API agora::rtc::IPublisherEngine* AGORA_CALL createAgoraLivePublisherEngine();
 #endif

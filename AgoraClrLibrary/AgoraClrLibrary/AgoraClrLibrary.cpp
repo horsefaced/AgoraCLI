@@ -441,24 +441,6 @@ int AgoraClr::setLogFilter(unsigned int filter)
 	return params.setLogFilter(filter);
 }
 
-int AgoraClr::startRecordingService(String ^ key)
-{
-	RtcEngineParameters params(*rtcEngine);
-	return params.startRecordingService(MarshalString(key).c_str());
-}
-
-int AgoraClr::stopRecordingService(String ^ key)
-{
-	RtcEngineParameters params(*rtcEngine);
-	return params.stopRecordingService(MarshalString(key).c_str());
-}
-
-int AgoraClr::refreshRecordingServiceStatus()
-{
-	RtcEngineParameters params(*rtcEngine);
-	return params.refreshRecordingServiceStatus();
-}
-
 int AgoraClrLibrary::AgoraClr::adjustRecordingSignalVolumne(int volume)
 {
 	RtcEngineParameters params(*rtcEngine);
@@ -672,7 +654,6 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onConnectionBannedEvent = PFOnConnectionBanned(regEvent(gcnew NativeOnConnectionBannedDelegate(this, &AgoraClr::NativeOnConnectionBanned)));
 
 	agoraEventHandler->onConnectionInterruptedEvent = PFOnConnectionInterrupted(regEvent(gcnew NativeOnConnectionInterruptedDelegate(this, &AgoraClr::NativeOnConnectionInterrupted)));
-	agoraEventHandler->onRefreshRecordingServiceStatusEvent = PFOnRefreshRecordingServiceStatus(regEvent(gcnew NativeOnRefreshRecordingServiceStatusDelegate(this, &AgoraClr::NativeOnRefreshRecordingServiceStatus)));
 	agoraEventHandler->onStreamMessageEvent = PFOnStreamMessage(regEvent(gcnew NativeOnStreamMessageDelegate(this, &AgoraClr::NativeOnStreamMessage)));
 	agoraEventHandler->onStreamMessageErrorEvent = PFOnStreamMessageError(regEvent(gcnew NativeOnStreamMessageErrorDelegate(this, &AgoraClr::NativeOnStreamMessageError)));
 	agoraEventHandler->onRequestChannelKeyEvent = PFOnRequestChannelKey(regEvent(gcnew NativeOnRequestChannelKeyDelegate(this, &AgoraClr::NativeOnRequestChannelKey)));
@@ -925,11 +906,6 @@ void AgoraClrLibrary::AgoraClr::NativeOnConnectionBanned()
 void AgoraClr::NativeOnConnectionInterrupted()
 {
 	if (onConnectionInterrupted) onConnectionInterrupted();
-}
-
-void AgoraClr::NativeOnRefreshRecordingServiceStatus(int status)
-{
-	if (onRefreshRecordingServiceStatus) onRefreshRecordingServiceStatus(status);
 }
 
 void AgoraClr::NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length)
