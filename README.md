@@ -17,6 +17,31 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2019-02-06 19:28
+onStreamUrlUnpublished 改为 onStreamUnpublished
+添加下列回调
+```c#
+onTokenPrivilegeWillExpire
+onConnectionStateChanged
+onFirstLocalAudioFrame
+onFirstRemoteAudioFrame
+onUserEnableLocalVideo
+onVideoSizeChanged
+onRemoteVideoStateChanged
+onLocalPublishFallbackToAudioOnly
+onRemoteSubscribeFallbackToAudioOnly
+onCameraFocusAreaChanged
+onRemoteAudioStats
+onRemoteAudioTransportStats
+onRemoteVideoTransportStats
+onRemoteAudioMixingBegin
+onRemoteAudioMixingEnd
+onAudioEffectFinished
+onStreamInjectedStatus
+onMediaEngineLoadSuccess
+onMediaEngineStartCallSuccess
+```
+
 ## 2019-02-06 12:22
 修改 muteAllRemoteVideoStream 为 muteAllRemoteVideoStreams
 添加下列函数

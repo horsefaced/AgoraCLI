@@ -680,6 +680,16 @@ namespace AgoraClrLibrary {
 		CONNECTION_STATE_FAILED = 5,
 	};
 
+	public enum class ConnectionChangedReasonType
+	{
+		CONNECTION_CHANGED_CONNECTING = 0,
+		CONNECTION_CHANGED_JOIN_SUCCESS = 1,
+		CONNECTION_CHANGED_INTERRUPTED = 2,
+		CONNECTION_CHANGED_BANNED_BY_SERVER = 3,
+		CONNECTION_CHANGED_JOIN_FAILED = 4,
+		CONNECTION_CHANGED_LEAVE_CHANNEL = 5,
+	};
+
 	public ref class ClrVideoDimensions {
 	public:
 		int width;
@@ -837,6 +847,47 @@ namespace AgoraClrLibrary {
 		}
 	};
 
+	public enum class StreamFallbackOptions
+	{
+		STREAM_FALLBACK_OPTION_DISABLED = 0,
+		STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1,
+		STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2,
+	};
+
+	public enum class RemoteVideoState
+	{
+		REMOTE_VIDEO_STATE_RUNNING = 1,  // Running state, remote video can be displayed normally
+		REMOTE_VIDEO_STATE_FROZEN = 2,    // Remote video is frozen, probably due to network issue.
+	};
+
+	public ref class ClrRemoteAudioStats
+	{
+	public:
+		int uid;
+		int quality;
+		int networkTransportDelay;
+		int jitterBufferDelay;
+		int audioLossRate;
+
+		ClrRemoteAudioStats() {}
+
+		ClrRemoteAudioStats(const RemoteAudioStats& raw): 
+			uid(raw.uid), 
+			quality(raw.quality), 
+			networkTransportDelay(raw.networkTransportDelay), 
+			jitterBufferDelay(raw.jitterBufferDelay),
+			audioLossRate(raw.audioLossRate)
+		{}
+
+		void writeRaw(RemoteAudioStats& raw) {
+			raw.uid = uid;
+			raw.quality = quality;
+			raw.networkTransportDelay = networkTransportDelay;
+			raw.jitterBufferDelay = jitterBufferDelay;
+			raw.audioLossRate = audioLossRate;
+		}
+	};
+
 
 	//RtcEngineEventHandler Part
 	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
@@ -883,9 +934,29 @@ namespace AgoraClrLibrary {
 	public delegate void onClientRoleChanged(ClientRoleType, ClientRoleType);
 	public delegate void onAudioDeviceVolumeChanged(MediaDeviceType, int, bool);
 
-	public delegate void onStreamUrlUnpublished(String ^url);
+	public delegate void onStreamUnpublished(String ^url);
 	public delegate void onStreamPublished(String ^url, int error);
 	public delegate void onTranscodingUpdated();
+
+	public delegate void onConnectionStateChanged(ConnectionStateType state, ConnectionChangedReasonType reason);
+	public delegate void onTokenPrivilegeWillExpire(String^ token);
+	public delegate void onFirstLocalAudioFrame(int elapsed);
+	public delegate void onFirstRemoteAudioFrame(int uid, int elapsed);
+	public delegate void onUserEnableLocalVideo(int uid, bool enabled);
+	public delegate void onVideoSizeChanged(int uid, int width, int height, int rotation);
+	public delegate void onRemoteVideoStateChanged(int uid, RemoteVideoState state);
+	public delegate void onLocalPublishFallbackToAudioOnly(bool);
+	public delegate void onRemoteSubscribeFallbackToAudioOnly(int uid, bool isFallbackOrRecover);
+	public delegate void onCameraFocusAreaChanged(int x, int y, int width, int height);
+	public delegate void onRemoteAudioStats(ClrRemoteAudioStats^ stats);
+	public delegate void onRemoteAudioTransportStats(int uid, short delay, short lost, short rxKBitRate);
+	public delegate void onRemoteVideoTransportStats(int uid, short delay, short lost, short rxKBitRate);
+	public delegate void onAudioMixingBegin();
+	public delegate void onAudioMixingEnd();
+	public delegate void onAudioEffectFinished(int soundId);
+	public delegate void onStreamInjectedStatus(String^ url, int uid, int status);
+	public delegate void onMediaEngineLoadSuccess();
+	public delegate void onMediaEngineStartCallSuccess();
 
 	//PacketObserver Part
 	public delegate bool onSendAudioPacket(ClrPacket^ packet);
@@ -901,6 +972,7 @@ namespace AgoraClrLibrary {
 
 	public delegate bool onCaptureVideoFrame(ClrVideoFrame^ frame);
 	public delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^ frame);
+
 
 	public ref class AgoraClr
 	{
@@ -1038,6 +1110,11 @@ namespace AgoraClrLibrary {
 		int addVideoWatermark(ClrRtcImage^ image);
 		int clearVideoWatermark();
 
+		int setLocalPublishFallbackOption(StreamFallbackOptions option);
+		int setRemoteSubscribeFallbackOption(StreamFallbackOptions option);
+		int setRemoteDefaultVideoStreamType(RemoteVideoStreamType type);
+		String^ getErrorDescription(int code);
+
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
 		IRtcEngine* getEngine();
@@ -1083,9 +1160,29 @@ namespace AgoraClrLibrary {
 		onClientRoleChanged^ onClientRoleChanged;
 		onAudioDeviceVolumeChanged^ onAudioDeviceVolumeChanged;
 
-		onStreamUrlUnpublished^ onStreamUrlUnpublished;
+		onStreamUnpublished^ onStreamUnpublished;
 		onStreamPublished^ onStreamPublished;
 		onTranscodingUpdated^ onTranscodingUpdated;
+
+		onConnectionStateChanged ^onConnectionStateChanged;
+		onTokenPrivilegeWillExpire^ onTokenPrivilegeWillExpire;
+		onFirstLocalAudioFrame^ onFirstLocalAudioFrame;
+		onFirstRemoteAudioFrame^ onFirstRemoteAudioFrame;
+		onUserEnableLocalVideo^ onUserEnableLocalVideo;
+		onVideoSizeChanged^ onVideoSizeChanged;
+		onRemoteVideoStateChanged^ onRemoteVideoStateChanged;
+		onLocalPublishFallbackToAudioOnly^ onLocalPublishFallbackToAudioOnly;
+		onRemoteSubscribeFallbackToAudioOnly^ onRemoteSubscribeFallbackToAudioOnly;
+		onCameraFocusAreaChanged^ onCameraFocusAreaChanged;
+		onRemoteAudioStats^ onRemoteAudioStats;
+		onRemoteAudioTransportStats^ onRemoteAudioTransportStats;
+		onRemoteVideoTransportStats^ onRemoteVideoTransportStats;
+		onAudioMixingBegin^ onAudioMixingBegin;
+		onAudioMixingEnd^ onAudioMixingEnd;
+		onAudioEffectFinished^ onAudioEffectFinished;
+		onStreamInjectedStatus^ onStreamInjectedStatus;
+		onMediaEngineLoadSuccess^ onMediaEngineLoadSuccess;
+		onMediaEngineStartCallSuccess^ onMediaEngineStartCallSuccess;
 
 		//PacketObserver Part
 		onSendAudioPacket ^onSendAudioPacket;
@@ -1101,6 +1198,7 @@ namespace AgoraClrLibrary {
 
 		onCaptureVideoFrame ^onCaptureVideoFrame;
 		onRenderVideoFrame ^onRenderVideoFrame;
+
 
 	private:
 		agora::rtc::IRtcEngine *rtcEngine;
@@ -1154,9 +1252,30 @@ namespace AgoraClrLibrary {
 		void NativeOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
 		void NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
 
-		void NativeOnStreamUrlUnpublished(const char* url);
+		void NativeOnStreamUnpublished(const char* url);
 		void NativeOnStreamPublished(const char* url, int error);
 		void NativeOnTranscodingUpdated();
+
+		void NativeOnConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
+		void NativeOnTokenPrivilegeWilExpire(const char* token);
+		void NativeOnFirstLocalAudioFrame(int elapsed);
+		void NativeOnFirstRemoteAudioFrame(uid_t uid, int elapsed);
+		void NativeOnUserEnableLocalVideo(uid_t uid, bool enabled);
+		void NativeOnVideoSizeChanged(uid_t uid, int width, int height, int rotation);
+		void NativeOnRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state);
+		void NativeOnLocalPublishFallbackToAudioOnly(bool);
+		void NativeOnRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover);
+		void NativeOnCameraFocusAreaChanged(int x, int y, int width, int height);
+		void NativeOnRemoteAudioStats(const RemoteAudioStats& stats);
+		void NativeOnRemoteAudioTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+		void NativeOnRemoteVideoTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+		void NativeOnAudioMixingBegin();
+		void NativeOnAudioMixingEnd();
+		void NativeOnAudioEffectFinished(int soundId);
+		void NativeOnStreamInjectedStatus(const char* url, uid_t uid, int status);
+		void NativeOnMediaEngineLoadSuccess();
+		void NativeOnMediaEngineStartCallSuccess();
+
 
 		bool NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
@@ -1175,8 +1294,6 @@ namespace AgoraClrLibrary {
 		void initializePacketObserver();
 		void initializeRawFrameObserver();
 		void* regEvent(Object^ obj);
-
-
 
 	};
 }
