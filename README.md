@@ -23,6 +23,14 @@
 ## 2019-02-06 19:28
 onStreamUrlUnpublished 改为 onStreamUnpublished
 
+添加下列函数
+```c#
+		int setLocalPublishFallbackOption(StreamFallbackOptions option);
+		int setRemoteSubscribeFallbackOption(StreamFallbackOptions option);
+		int setRemoteDefaultVideoStreamType(RemoteVideoStreamType type);
+		String^ getErrorDescription(int code);
+```
+
 添加下列回调
 ```c#
 onTokenPrivilegeWillExpire
