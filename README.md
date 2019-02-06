@@ -17,6 +17,23 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2019-02-06 12:22
+修改 muteAllRemoteVideoStream 为 muteAllRemoteVideoStreams
+添加下列函数
+```c#
+		ConnectionStateType getConnectionState();
+		int setDefaultMuteAllRemoteAudioStreams(bool mute);
+		int setVideoEncoderConfiguration(ClrVideoEncoderConfiguration^ config);
+		int setDefaultMuteAllRemoteVideoStreams(bool mute);
+		int adjustAudioMixingPlayoutVolume(int volume);
+		int adjustAudioMixingPublishVolume(int volume);
+		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
+		int setExternalVideoSource(bool enabled, bool useTexture);
+		int pushVideoFrame(ClrExternalVideoFrame^ frame);
+		int addVideoWatermark(ClrRtcImage^ image);
+		int clearVideoWatermark();
+```
+
 ## 2019-02-01
 因2.3.0以后，声网就不再支持录制接口，转而由Recording SDK来提供，于是相应删除
 startRecordingService

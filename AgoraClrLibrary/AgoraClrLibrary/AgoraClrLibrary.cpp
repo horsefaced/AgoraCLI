@@ -682,6 +682,11 @@ int AgoraClrLibrary::AgoraClr::addVideoWatermark(ClrRtcImage ^ image)
 	return rtcEngine->addVideoWatermark(i);
 }
 
+int AgoraClrLibrary::AgoraClr::clearVideoWatermark()
+{
+	return rtcEngine->clearVideoWatermarks();
+}
+
 void* AgoraClr::regEvent(Object^ obj)
 {
 	gchs->Add(GCHandle::Alloc(obj));

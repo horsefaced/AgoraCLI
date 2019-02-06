@@ -1036,6 +1036,7 @@ namespace AgoraClrLibrary {
 		int setExternalVideoSource(bool enabled, bool useTexture);
 		int pushVideoFrame(ClrExternalVideoFrame^ frame);
 		int addVideoWatermark(ClrRtcImage^ image);
+		int clearVideoWatermark();
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
