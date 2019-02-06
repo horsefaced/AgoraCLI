@@ -22,6 +22,7 @@
 
 ## 2019-02-06 19:28
 onStreamUrlUnpublished 改为 onStreamUnpublished
+
 添加下列回调
 ```c#
 onTokenPrivilegeWillExpire
@@ -47,6 +48,7 @@ onMediaEngineStartCallSuccess
 
 ## 2019-02-06 12:22
 修改 muteAllRemoteVideoStream 为 muteAllRemoteVideoStreams
+
 添加下列函数
 ```c#
 		ConnectionStateType getConnectionState();
@@ -64,14 +66,12 @@ onMediaEngineStartCallSuccess
 
 ## 2019-02-01
 因2.3.0以后，声网就不再支持录制接口，转而由Recording SDK来提供，于是相应删除
+```c#
 startRecordingService
 stopRecordingService
 refreshRecordingServiceStatus
 onRefreshRecordingServiceStatus
-
-## 2019-02-02
-新增2.3分支，开发完成后将并入主分支，想要其他版本的请到相应分支中拉取
-
+```
 ## 2018-12-07
 修改ClrLiveTranscoding不能设置transcodingUsers的BUG
 
