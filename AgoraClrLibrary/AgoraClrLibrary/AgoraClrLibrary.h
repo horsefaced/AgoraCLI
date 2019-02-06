@@ -671,6 +671,172 @@ namespace AgoraClrLibrary {
 		}
 	};
 
+	public enum class ConnectionStateType
+	{
+		CONNECTION_STATE_DISCONNECTED = 1,
+		CONNECTION_STATE_CONNECTING = 2,
+		CONNECTION_STATE_CONNECTED = 3,
+		CONNECTION_STATE_RECONNECTING = 4,
+		CONNECTION_STATE_FAILED = 5,
+	};
+
+	public ref class ClrVideoDimensions {
+	public:
+		int width;
+		int height;
+
+		ClrVideoDimensions()
+			: width(640), height(480)
+		{}
+		ClrVideoDimensions(int w, int h)
+			: width(w), height(h)
+		{}
+	};
+
+	public enum class FrameRate
+	{
+		FRAME_RATE_FPS_1 = 1,
+		FRAME_RATE_FPS_7 = 7,
+		FRAME_RATE_FPS_10 = 10,
+		FRAME_RATE_FPS_15 = 15,
+		FRAME_RATE_FPS_24 = 24,
+		FRAME_RATE_FPS_30 = 30,
+		FRAME_RATE_FPS_60 = 60,
+	};
+
+	public enum class OrientationMode {
+		ORIENTATION_MODE_ADAPTIVE = 0,
+		ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
+		ORIENTATION_MODE_FIXED_PORTRAIT = 2,
+	};
+
+
+	public ref class ClrVideoEncoderConfiguration {
+	public:
+		ClrVideoDimensions dimensions;
+		FrameRate frameRate;
+		int bitrate;
+		int minBitrate;
+		OrientationMode orientationMode;
+
+		ClrVideoEncoderConfiguration(
+			const ClrVideoDimensions d, FrameRate f,
+			int b, OrientationMode m)
+			: dimensions(d.width, d.height), frameRate(f), bitrate(b),
+			minBitrate(DEFAULT_MIN_BITRATE), orientationMode(m)
+		{}
+		ClrVideoEncoderConfiguration(
+			int width, int height, FrameRate f,
+			int b, OrientationMode m)
+			: dimensions(width, height), frameRate(f), bitrate(b),
+			minBitrate(DEFAULT_MIN_BITRATE), orientationMode(m)
+		{}
+		ClrVideoEncoderConfiguration()
+			: dimensions(640, 480)
+			, frameRate(FrameRate::FRAME_RATE_FPS_15)
+			, bitrate(STANDARD_BITRATE)
+			, minBitrate(DEFAULT_MIN_BITRATE)
+			, orientationMode(OrientationMode::ORIENTATION_MODE_ADAPTIVE)
+		{}
+
+		void writeRaw(VideoEncoderConfiguration& raw) {
+			raw.bitrate = this->bitrate;
+			raw.dimensions = VideoDimensions(dimensions.width, dimensions.height);
+			raw.frameRate = (FRAME_RATE)this->frameRate;
+			raw.minBitrate = this->minBitrate;
+			raw.orientationMode = (ORIENTATION_MODE)this->orientationMode;
+		}
+	};
+
+	public enum class VideoBufferType
+	{
+		/** 1: The video buffer in the format of raw data.
+		 */
+		VIDEO_BUFFER_RAW_DATA = 1,
+	};
+
+	/** The video pixel format.
+	 */
+	public enum class VideoPixelFormate
+	{
+		/** 0: The video pixel format is unknown.
+		 */
+		VIDEO_PIXEL_UNKNOWN = 0,
+		/** 1: The video pixel format is I420.
+		 */
+		VIDEO_PIXEL_I420 = 1,
+		/** 2: The video pixel format is BGRA.
+		 */
+		VIDEO_PIXEL_BGRA = 2,
+		/** 8: The video pixel format is NV12.
+		 */
+		VIDEO_PIXEL_NV12 = 8,
+	};
+
+	public ref class ClrExternalVideoFrame
+	{
+	public:
+		VideoBufferType type;
+		VideoPixelFormate format;
+	    array<Byte>^ buffer;
+		int stride;
+		int height;
+		int cropLeft;
+		int cropTop;
+		int cropRight;
+		int cropBottom;
+		int rotation;
+		long long timestamp;
+
+
+		ExternalVideoFrame* toRaw() {
+			ExternalVideoFrame* result = new ExternalVideoFrame();
+			result->type = (ExternalVideoFrame::VIDEO_BUFFER_TYPE) type;
+			result->format = (ExternalVideoFrame::VIDEO_PIXEL_FORMAT) format;
+			result->stride = stride;
+			result->height = height;
+			result->cropLeft = cropLeft;
+			result->cropTop = cropTop;
+			result->cropRight = cropRight;
+			result->cropBottom = cropBottom;
+			result->rotation = rotation;
+			result->timestamp = timestamp;
+			result->buffer = Marshal::AllocHGlobal(buffer->LongLength * sizeof(Byte)).ToPointer();
+			Marshal::Copy(buffer, 0, (IntPtr)result->buffer, buffer->LongLength);
+			return result;
+		}
+
+	};
+
+	public ref class ClrRtcImage {
+	public:
+		ClrRtcImage() :
+			url(nullptr),
+			x(0),
+			y(0),
+			width(0),
+			height(0)
+		{}
+		/** URL address of the image on the broadcasting video. */
+	    String^ url;
+		/** Horizontal position of the image from the upper left of the broadcasting video. */
+		int x;
+		/** Vertical position of the image from the upper left of the broadcasting video. */
+		int y;
+		/** Width of the image on the broadcasting video. */
+		int width;
+		/** Height of the image on the broadcasting video. */
+		int height;
+
+		void writeRaw(RtcImage& raw) {
+			raw.x = x;
+			raw.y = y;
+			raw.width = width;
+			raw.height = height;
+			raw.url = MarshalString(url).c_str();
+		}
+	};
+
 
 	//RtcEngineEventHandler Part
 	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
@@ -805,7 +971,7 @@ namespace AgoraClrLibrary {
 		int muteRemoteAudioStream(int uid, bool mute);
 		int muteLocalVideoStream(bool mute);
 		int enableLocalVideo(bool enabled);
-		int muteAllRemoteVideoStream(bool mute);
+		int muteAllRemoteVideoStreams(bool mute);
 		int muteRemoteVideoStream(int uid, bool mute);
 		int setPlaybackDeviceVolume(int volume);
 		int setLocalRenderMode(RenderMode mode);
@@ -859,6 +1025,17 @@ namespace AgoraClrLibrary {
 		int resumeEffect(int soundId);
 		int resumeAllEffects();
 
+		//2.3
+		ConnectionStateType getConnectionState();
+		int setDefaultMuteAllRemoteAudioStreams(bool mute);
+		int setVideoEncoderConfiguration(ClrVideoEncoderConfiguration^ config);
+		int setDefaultMuteAllRemoteVideoStreams(bool mute);
+		int adjustAudioMixingPlayoutVolume(int volume);
+		int adjustAudioMixingPublishVolume(int volume);
+		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
+		int setExternalVideoSource(bool enabled, bool useTexture);
+		int pushVideoFrame(ClrExternalVideoFrame^ frame);
+		int addVideoWatermark(ClrRtcImage^ image);
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();

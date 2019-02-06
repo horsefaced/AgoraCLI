@@ -328,7 +328,7 @@ int AgoraClr::enableLocalVideo(bool enabled)
 	return params.enableLocalVideo(enabled);
 }
 
-int AgoraClr::muteAllRemoteVideoStream(bool mute)
+int AgoraClr::muteAllRemoteVideoStreams(bool mute)
 {
 	RtcEngineParameters params(*rtcEngine);
 	return params.muteAllRemoteVideoStreams(mute);
@@ -615,6 +615,71 @@ int AgoraClrLibrary::AgoraClr::resumeAllEffects()
 {
 	RtcEngineParameters params(*rtcEngine);
 	return params.resumeAllEffects();
+}
+
+ConnectionStateType AgoraClrLibrary::AgoraClr::getConnectionState()
+{
+	return (ConnectionStateType)rtcEngine->getConnectionState();
+}
+
+int AgoraClrLibrary::AgoraClr::setDefaultMuteAllRemoteAudioStreams(bool mute)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setDefaultMuteAllRemoteAudioStreams(mute);
+}
+
+int AgoraClrLibrary::AgoraClr::setVideoEncoderConfiguration(ClrVideoEncoderConfiguration ^ config)
+{
+	VideoEncoderConfiguration configuration;
+	config->writeRaw(configuration);
+	return rtcEngine->setVideoEncoderConfiguration(configuration);
+}
+
+int AgoraClrLibrary::AgoraClr::setDefaultMuteAllRemoteVideoStreams(bool mute)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setDefaultMuteAllRemoteVideoStreams(mute);
+}
+
+int AgoraClrLibrary::AgoraClr::adjustAudioMixingPlayoutVolume(int volume)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.adjustAudioMixingPlayoutVolume(volume);
+}
+
+int AgoraClrLibrary::AgoraClr::adjustAudioMixingPublishVolume(int volume)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.adjustAudioMixingPublishVolume(volume);
+}
+
+int AgoraClrLibrary::AgoraClr::setExternalAudioSink(bool enabled, int sampleRate, int channels)
+{
+	RtcEngineParameters params(*rtcEngine);
+	return params.setExternalAudioSink(enabled, sampleRate, channels);
+}
+
+int AgoraClrLibrary::AgoraClr::setExternalVideoSource(bool enabled, bool useTexture)
+{
+	if (agoraMediaEngine)
+		return agoraMediaEngine->setExternalVideoSource(enabled, useTexture);
+	else
+		return -1;
+}
+
+int AgoraClrLibrary::AgoraClr::pushVideoFrame(ClrExternalVideoFrame ^ frame)
+{
+	if (agoraMediaEngine)
+		return agoraMediaEngine->pushVideoFrame(frame->toRaw());
+	else
+		return -1;
+}
+
+int AgoraClrLibrary::AgoraClr::addVideoWatermark(ClrRtcImage ^ image)
+{
+	RtcImage i;
+	image->writeRaw(i);
+	return rtcEngine->addVideoWatermark(i);
 }
 
 void* AgoraClr::regEvent(Object^ obj)
