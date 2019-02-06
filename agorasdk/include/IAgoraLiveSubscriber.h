@@ -35,23 +35,19 @@
 namespace agora {
     namespace rtc {
         /**
-        * the event call back interface
+        * The ISubscriberEventHandler event callback interface.
         */
         class ISubscriberEventHandler
         {
         public:
             virtual ~ISubscriberEventHandler() {}
 
-            /**
-            * when the first remote video frame decoded, the function will be called
-            * @param [in] uid
-            *        the UID of the remote user
-            * @param [in] width
-            *        the width of the video frame
-            * @param [in] height
-            *        the height of the video frame
-            * @param [in] elapsed
-            *        the time elapsed from channel joined in ms
+            /** The first remote video frame is decoded.
+
+            * @param uid UID of the remote user.
+            * @param width Width of the video frame.
+            * @param height Height of the video frame.
+            * @param elapsed Time elapsed (ms) from joining a channel.
             */
             virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) {
                 (void)uid;
@@ -60,16 +56,12 @@ namespace agora {
                 (void)elapsed;
             }
 
-            /**
-             * when video size changed or rotation changed, the function will be called
-             * @param [in] uid
-             *        the UID of the remote user or local user (0)
-             * @param [in] width
-             *        the new width of the video
-             * @param [in] height
-             *        the new height of the video
-             * @param [in] rotation
-             *        the rotation of the video
+            /** The video size or rotation changed.
+
+             * @param uid UID of the remote or local user (0)
+             * @param width New width of the video.
+             * @param height New height of the video.
+             * @param rotation New rotation of the video.
              */
             virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation) {
                 (void)uid;
@@ -79,11 +71,10 @@ namespace agora {
             }
 
 			/*
-			* when remote user published, the function will be called.
-			* @param [in] uid
-			*		 the UID of the remote user
-			* @param [type]
-			*		 the media type of publish
+			* The remote user has published.
+
+			* @param uid UID of the remote user
+			* @param The media type published.
 			*/
             virtual void onUserPublished(uid_t uid, MEDIA_TYPE type) {
                 (void)uid;
@@ -91,20 +82,19 @@ namespace agora {
             }
 
 			/*
-			* when remote user unpublished ,the function will be called.
-			* @param [in] uid
-			*		 the UID of the remote user.
+			* The remote user has unpublished.
+
+			* @param uid UID of the remote user.
 			*/
             virtual void onUserUnpublished(uid_t uid) {
                 (void)uid;
             }
 
 			/*
-			* when remote user publish stream type changed, the function will be called.
-			* @param [in] uid
-			*		 the UID of the remote user.
-			* @param [in] newType
-			*		 the new media type
+			* The remote user's publish stream type changed.
+
+			* @param uid UID of the remote user.
+			* @param newType New media type.
 			*/
             virtual void onStreamTypeChanged(uid_t uid, MEDIA_TYPE newType) {
                 (void)uid;
@@ -117,50 +107,48 @@ namespace agora {
 
         class ISubscriberEngine
         {
+        protected:
+            ~ISubscriberEngine(){}
         public:
             /**
-            * release the subscriber engine resource
-            * @param [in] sync
-            *        true: release the engine resources and return after all resources have been destroyed.
-            *              APP should try not to call release(true) in the engine's callbacks, call it this way in a separate thread instead.
-            *        false: notify engine to release its resources and returns without waiting for resources are really destroyed
+            * Releases the subscriber engine resource.
+
+            * @param sync
+
+            - true: Releases the engine resources and returns after all resources have been destroyed. The application should not call release(true) in the engine's callbacks, call it this way in a separate thread instead.
+            - false: Notifies engine to release its resources and returns without waiting for resources are really destroyed
             */
             virtual void release(bool sync = false) = 0;
 
             /**
-            * initialize the engine
-            * @param [in] context
-            *        the RTC engine context
-            * @return return 0 if success or an error code
+            * Initializes the engine.
+
+            @param engine RTC engine context
+            @return
+
+            - 0: Success.
+            - < 0: Failure.
             */
             virtual int initialize(ILiveEngine *engine) = 0;
 
 			/*
-			* Set event handler of subscriber engine.
-			* @param [in] eventHandler
-			*		 the event handler
+			* Sets the event handler of the subscriber engine.
+
+			* @param eventHandler Event handler.
 			*/
             virtual int setEventHandler(ISubscriberEventHandler *eventHandler) = 0;
 
-			/*
-			* to subscribe remote user
-			* @param [in] uid
-			*		 the UID of remote user
-			* @param [in] type
-			*		 the media type
-			* @param [in] view
-			*		 reserved view
-			* @param [in] mode
-			*		 render mode
-			* @param [in] streamType
-			*		 remote user stream type
+			/* Subscribes to a remote user.
+			* @param uid UID of the remote user.
+			* @param type Media type.
+			* @param view Reserved view.
+			* @param mode Render mode.
+			* @param streamType Remote user stream type.
 			*/
             virtual int subscribe(uid_t uid, MEDIA_TYPE type, view_t view, RENDER_MODE_TYPE mode, REMOTE_VIDEO_STREAM_TYPE streamType) = 0;
 
-			/*
-			* unsubscribe user
-			* @param [in] uid
-			*		 the UID of remote user.
+			/* Unsubscribes a user.
+			* @param uid UID of the remote user.
 			*/
             virtual int unsubscribe(uid_t uid) = 0;
 
@@ -168,9 +156,8 @@ namespace agora {
     }
 }
 
-/**
-* create the RTC live subscriber engine object and return the pointer
-* @return returns the pointer of the RTC engine object
+/** Creates the RTC live subscriber engine object and returns the pointer.
+* @return The pointer of the RTC engine object.
 */
 AGORA_API agora::rtc::ISubscriberEngine* AGORA_CALL createAgoraLiveSubscriberEngine();
 

@@ -101,9 +101,6 @@ void AgoraClrLibrary::AgoraClrEventHandler::onConnectionBanned()
 {
 	if (onConnectionBannedEvent) onConnectionBannedEvent();
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onRefreshRecordingServiceStatus(int status) {
-	if (onRefreshRecordingServiceStatusEvent) onRefreshRecordingServiceStatusEvent(status);
-}
 void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessage(uid_t uid, int streamId, const char* data, size_t length) {
 	if (onStreamMessageEvent) onStreamMessageEvent(uid, streamId, data, length);
 }
@@ -141,9 +138,9 @@ void AgoraClrLibrary::AgoraClrEventHandler::onAudioDeviceVolumeChanged(MEDIA_DEV
 	if (onAudioDeviceVolumeChangedEvent) onAudioDeviceVolumeChangedEvent(deviceType, volume, muted);
 }
 
-void AgoraClrLibrary::AgoraClrEventHandler::onStreamUrlUnpublished(const char * url)
+void AgoraClrLibrary::AgoraClrEventHandler::onStreamUnpublished(const char * url)
 {
-	if (onStreamUrlUnpublishedEvent) onStreamUrlUnpublishedEvent(url);
+	if (onStreamUnpublishedEvent) onStreamUnpublishedEvent(url);
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onStreamPublished(const char * url, int error)
@@ -154,4 +151,99 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamPublished(const char * url, 
 void AgoraClrLibrary::AgoraClrEventHandler::onTranscodingUpdated()
 {
 	if (onTranscodingUpdatedEvent) onTranscodingUpdatedEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason)
+{
+	if (onConnectionStateChangedEvent) onConnectionStateChangedEvent(state, reason);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onTokenPrivilegeWillExpire(const char * token)
+{
+	if (onTokenPrivilegeWillExpireEvent) onTokenPrivilegeWillExpireEvent(token);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onFirstLocalAudioFrame(int elapsed)
+{
+	if (onFirstLocalAudioFrameEvent) onFirstLocalAudioFrameEvent(elapsed);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onFirstRemoteAudioFrame(uid_t uid, int elapsed)
+{
+	if (onFirstRemoteAudioFrameEvent) onFirstRemoteAudioFrameEvent(uid, elapsed);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onUserEnableLocalVideo(uid_t uid, bool enabled)
+{
+	if (onUserEnableLocalVideoEvent) onUserEnableLocalVideoEvent(uid, enabled);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onVideoSizeChanged(uid_t uid, int width, int height, int rotation)
+{
+	if (onVideoSizeChangedEvent) onVideoSizeChangedEvent(uid, width, height, rotation);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state)
+{
+	if (onRemoteVideoStateChangedEvent) onRemoteVideoStateChangedEvent(uid, state);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLocalPublishFallbackToAudioOnly(bool fallbackOrRecover)
+{
+	if (onLocalPublishFallbackToAudioOnlyEvent) onLocalPublishFallbackToAudioOnlyEvent(fallbackOrRecover);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover)
+{
+	if (onRemoteSubscribeFallbackToAudioOnlyEvent) onRemoteSubscribeFallbackToAudioOnlyEvent(uid, isFallbackOrRecover);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onCameraFocusAreaChanged(int x, int y, int width, int height)
+{
+	if (onCameraFocusAreaChangedEvent) onCameraFocusAreaChangedEvent(x, y, width, height);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioStats(const RemoteAudioStats & stats)
+{
+	if (onRemoteAudioStatsEvent) onRemoteAudioStatsEvent(stats);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
+{
+	if (onRemoteAudioTransportStatsEvent) onRemoteAudioTransportStatsEvent(uid, delay, lost, rxKBitRate);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteVideoTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
+{
+	if (onRemoteVideoTransportStatsEvent) onRemoteVideoTransportStatsEvent(uid, delay, lost, rxKBitRate);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingBegin()
+{
+	if (onAudioMixingBeginEvent) onAudioMixingBeginEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingEnd()
+{
+	if (onAudioMixingEndEvent) onAudioMixingEndEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioEffectFinished(int soundId)
+{
+	if (onAudioEffectFinishedEvent) onAudioEffectFinishedEvent(soundId);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onStreamInjectedStatus(const char * url, uid_t uid, int status)
+{
+	if (onStreamInjectedStatusEvent) onStreamInjectedStatusEvent(url, uid, status);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onMediaEngineLoadSuccess()
+{
+	if (onMediaEngineLoadSuccessEvent) onMediaEngineLoadSuccessEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onMediaEngineStartCallSuccess()
+{
+	if (onMediaEngineStartCallSuccessEvent) onMediaEngineStartCallSuccessEvent();
 }

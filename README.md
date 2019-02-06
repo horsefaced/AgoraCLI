@@ -17,8 +17,63 @@
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2019-02-06 19:54
+升级Master分支至2.3，要以前版本的请到各自版本的分支去拿
+
+## 2019-02-06 19:28
+onStreamUrlUnpublished 改为 onStreamUnpublished
+添加下列回调
+```c#
+onTokenPrivilegeWillExpire
+onConnectionStateChanged
+onFirstLocalAudioFrame
+onFirstRemoteAudioFrame
+onUserEnableLocalVideo
+onVideoSizeChanged
+onRemoteVideoStateChanged
+onLocalPublishFallbackToAudioOnly
+onRemoteSubscribeFallbackToAudioOnly
+onCameraFocusAreaChanged
+onRemoteAudioStats
+onRemoteAudioTransportStats
+onRemoteVideoTransportStats
+onRemoteAudioMixingBegin
+onRemoteAudioMixingEnd
+onAudioEffectFinished
+onStreamInjectedStatus
+onMediaEngineLoadSuccess
+onMediaEngineStartCallSuccess
+```
+
+## 2019-02-06 12:22
+修改 muteAllRemoteVideoStream 为 muteAllRemoteVideoStreams
+添加下列函数
+```c#
+		ConnectionStateType getConnectionState();
+		int setDefaultMuteAllRemoteAudioStreams(bool mute);
+		int setVideoEncoderConfiguration(ClrVideoEncoderConfiguration^ config);
+		int setDefaultMuteAllRemoteVideoStreams(bool mute);
+		int adjustAudioMixingPlayoutVolume(int volume);
+		int adjustAudioMixingPublishVolume(int volume);
+		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
+		int setExternalVideoSource(bool enabled, bool useTexture);
+		int pushVideoFrame(ClrExternalVideoFrame^ frame);
+		int addVideoWatermark(ClrRtcImage^ image);
+		int clearVideoWatermark();
+```
+
+## 2019-02-01
+因2.3.0以后，声网就不再支持录制接口，转而由Recording SDK来提供，于是相应删除
+startRecordingService
+stopRecordingService
+refreshRecordingServiceStatus
+onRefreshRecordingServiceStatus
+
 ## 2019-02-02
 新增2.3分支，开发完成后将并入主分支，想要其他版本的请到相应分支中拉取
+
+## 2018-12-07
+修改ClrLiveTranscoding不能设置transcodingUsers的BUG
 
 ## 2018-07-20
 修改信令中 messageInstantSend 方法不能处理中文的BUG
@@ -26,6 +81,26 @@
 ## 2018-07-19
 修改[枚举设备列表BUG](https://github.com/horsefaced/AgoraCLI/issues/18)的issue
 
+<<<<<<< HEAD
+=======
+## 2018-06-30
+新增以下接口
+```c#
+        int	getEffectsVolume();
+	    int setEffectsVolume(int volume);
+		int setVolumeOfEffect(int soundId, int volume);
+		int playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish);
+		int stopEffect(int soundId);
+		int stopAllEffects();
+		int preloadEffect(int soundId, String^ file);
+		int unloadEffect(int soundId);
+		int pauseEffect(int soundId);
+		int pauseAllEffects();
+		int resumeEffect(int soundId);
+		int resumeAllEffects();
+```
+
+>>>>>>> 2.3
 ## 2018-06-27
 合并2.1分支进入主分支，2.2因为删除了一些头文件，造成不兼容，新开2.2分支进行开发，原2.1的一些没有开发完的功能将在2.2分支上实现
 

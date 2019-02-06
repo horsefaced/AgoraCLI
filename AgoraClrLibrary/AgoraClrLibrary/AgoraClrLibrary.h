@@ -553,7 +553,7 @@ namespace AgoraClrLibrary {
 		VideoCodecProfileType videoCodecProfile;
 		unsigned int backgroundColor;
 		unsigned int userCount;
-		ClrTranscodingUser transcodingUsers;
+		ClrTranscodingUser ^transcodingUsers;
 
 		String ^transcodingExtraInfo;
 
@@ -588,7 +588,7 @@ namespace AgoraClrLibrary {
 			raw.videoCodecProfile = (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
 			raw.backgroundColor = backgroundColor;
 			raw.userCount = userCount;
-			raw.transcodingUsers = transcodingUsers.toRaw();
+			raw.transcodingUsers = transcodingUsers->toRaw();
 			raw.transcodingExtraInfo = MarshalString(transcodingExtraInfo).c_str();
 			raw.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
 			raw.audioBitrate = audioBitrate;
@@ -671,6 +671,223 @@ namespace AgoraClrLibrary {
 		}
 	};
 
+	public enum class ConnectionStateType
+	{
+		CONNECTION_STATE_DISCONNECTED = 1,
+		CONNECTION_STATE_CONNECTING = 2,
+		CONNECTION_STATE_CONNECTED = 3,
+		CONNECTION_STATE_RECONNECTING = 4,
+		CONNECTION_STATE_FAILED = 5,
+	};
+
+	public enum class ConnectionChangedReasonType
+	{
+		CONNECTION_CHANGED_CONNECTING = 0,
+		CONNECTION_CHANGED_JOIN_SUCCESS = 1,
+		CONNECTION_CHANGED_INTERRUPTED = 2,
+		CONNECTION_CHANGED_BANNED_BY_SERVER = 3,
+		CONNECTION_CHANGED_JOIN_FAILED = 4,
+		CONNECTION_CHANGED_LEAVE_CHANNEL = 5,
+	};
+
+	public ref class ClrVideoDimensions {
+	public:
+		int width;
+		int height;
+
+		ClrVideoDimensions()
+			: width(640), height(480)
+		{}
+		ClrVideoDimensions(int w, int h)
+			: width(w), height(h)
+		{}
+	};
+
+	public enum class FrameRate
+	{
+		FRAME_RATE_FPS_1 = 1,
+		FRAME_RATE_FPS_7 = 7,
+		FRAME_RATE_FPS_10 = 10,
+		FRAME_RATE_FPS_15 = 15,
+		FRAME_RATE_FPS_24 = 24,
+		FRAME_RATE_FPS_30 = 30,
+		FRAME_RATE_FPS_60 = 60,
+	};
+
+	public enum class OrientationMode {
+		ORIENTATION_MODE_ADAPTIVE = 0,
+		ORIENTATION_MODE_FIXED_LANDSCAPE = 1,
+		ORIENTATION_MODE_FIXED_PORTRAIT = 2,
+	};
+
+
+	public ref class ClrVideoEncoderConfiguration {
+	public:
+		ClrVideoDimensions dimensions;
+		FrameRate frameRate;
+		int bitrate;
+		int minBitrate;
+		OrientationMode orientationMode;
+
+		ClrVideoEncoderConfiguration(
+			const ClrVideoDimensions d, FrameRate f,
+			int b, OrientationMode m)
+			: dimensions(d.width, d.height), frameRate(f), bitrate(b),
+			minBitrate(DEFAULT_MIN_BITRATE), orientationMode(m)
+		{}
+		ClrVideoEncoderConfiguration(
+			int width, int height, FrameRate f,
+			int b, OrientationMode m)
+			: dimensions(width, height), frameRate(f), bitrate(b),
+			minBitrate(DEFAULT_MIN_BITRATE), orientationMode(m)
+		{}
+		ClrVideoEncoderConfiguration()
+			: dimensions(640, 480)
+			, frameRate(FrameRate::FRAME_RATE_FPS_15)
+			, bitrate(STANDARD_BITRATE)
+			, minBitrate(DEFAULT_MIN_BITRATE)
+			, orientationMode(OrientationMode::ORIENTATION_MODE_ADAPTIVE)
+		{}
+
+		void writeRaw(VideoEncoderConfiguration& raw) {
+			raw.bitrate = this->bitrate;
+			raw.dimensions = VideoDimensions(dimensions.width, dimensions.height);
+			raw.frameRate = (FRAME_RATE)this->frameRate;
+			raw.minBitrate = this->minBitrate;
+			raw.orientationMode = (ORIENTATION_MODE)this->orientationMode;
+		}
+	};
+
+	public enum class VideoBufferType
+	{
+		/** 1: The video buffer in the format of raw data.
+		 */
+		VIDEO_BUFFER_RAW_DATA = 1,
+	};
+
+	/** The video pixel format.
+	 */
+	public enum class VideoPixelFormate
+	{
+		/** 0: The video pixel format is unknown.
+		 */
+		VIDEO_PIXEL_UNKNOWN = 0,
+		/** 1: The video pixel format is I420.
+		 */
+		VIDEO_PIXEL_I420 = 1,
+		/** 2: The video pixel format is BGRA.
+		 */
+		VIDEO_PIXEL_BGRA = 2,
+		/** 8: The video pixel format is NV12.
+		 */
+		VIDEO_PIXEL_NV12 = 8,
+	};
+
+	public ref class ClrExternalVideoFrame
+	{
+	public:
+		VideoBufferType type;
+		VideoPixelFormate format;
+	    array<Byte>^ buffer;
+		int stride;
+		int height;
+		int cropLeft;
+		int cropTop;
+		int cropRight;
+		int cropBottom;
+		int rotation;
+		long long timestamp;
+
+
+		ExternalVideoFrame* toRaw() {
+			ExternalVideoFrame* result = new ExternalVideoFrame();
+			result->type = (ExternalVideoFrame::VIDEO_BUFFER_TYPE) type;
+			result->format = (ExternalVideoFrame::VIDEO_PIXEL_FORMAT) format;
+			result->stride = stride;
+			result->height = height;
+			result->cropLeft = cropLeft;
+			result->cropTop = cropTop;
+			result->cropRight = cropRight;
+			result->cropBottom = cropBottom;
+			result->rotation = rotation;
+			result->timestamp = timestamp;
+			result->buffer = Marshal::AllocHGlobal(buffer->LongLength * sizeof(Byte)).ToPointer();
+			Marshal::Copy(buffer, 0, (IntPtr)result->buffer, buffer->LongLength);
+			return result;
+		}
+
+	};
+
+	public ref class ClrRtcImage {
+	public:
+		ClrRtcImage() :
+			url(nullptr),
+			x(0),
+			y(0),
+			width(0),
+			height(0)
+		{}
+		/** URL address of the image on the broadcasting video. */
+	    String^ url;
+		/** Horizontal position of the image from the upper left of the broadcasting video. */
+		int x;
+		/** Vertical position of the image from the upper left of the broadcasting video. */
+		int y;
+		/** Width of the image on the broadcasting video. */
+		int width;
+		/** Height of the image on the broadcasting video. */
+		int height;
+
+		void writeRaw(RtcImage& raw) {
+			raw.x = x;
+			raw.y = y;
+			raw.width = width;
+			raw.height = height;
+			raw.url = MarshalString(url).c_str();
+		}
+	};
+
+	public enum class StreamFallbackOptions
+	{
+		STREAM_FALLBACK_OPTION_DISABLED = 0,
+		STREAM_FALLBACK_OPTION_VIDEO_STREAM_LOW = 1,
+		STREAM_FALLBACK_OPTION_AUDIO_ONLY = 2,
+	};
+
+	public enum class RemoteVideoState
+	{
+		REMOTE_VIDEO_STATE_RUNNING = 1,  // Running state, remote video can be displayed normally
+		REMOTE_VIDEO_STATE_FROZEN = 2,    // Remote video is frozen, probably due to network issue.
+	};
+
+	public ref class ClrRemoteAudioStats
+	{
+	public:
+		int uid;
+		int quality;
+		int networkTransportDelay;
+		int jitterBufferDelay;
+		int audioLossRate;
+
+		ClrRemoteAudioStats() {}
+
+		ClrRemoteAudioStats(const RemoteAudioStats& raw): 
+			uid(raw.uid), 
+			quality(raw.quality), 
+			networkTransportDelay(raw.networkTransportDelay), 
+			jitterBufferDelay(raw.jitterBufferDelay),
+			audioLossRate(raw.audioLossRate)
+		{}
+
+		void writeRaw(RemoteAudioStats& raw) {
+			raw.uid = uid;
+			raw.quality = quality;
+			raw.networkTransportDelay = networkTransportDelay;
+			raw.jitterBufferDelay = jitterBufferDelay;
+			raw.audioLossRate = audioLossRate;
+		}
+	};
+
 
 	//RtcEngineEventHandler Part
 	public delegate void onJoinChannelSuccess(String ^channel, int uid, int elapsed);
@@ -717,9 +934,29 @@ namespace AgoraClrLibrary {
 	public delegate void onClientRoleChanged(ClientRoleType, ClientRoleType);
 	public delegate void onAudioDeviceVolumeChanged(MediaDeviceType, int, bool);
 
-	public delegate void onStreamUrlUnpublished(String ^url);
+	public delegate void onStreamUnpublished(String ^url);
 	public delegate void onStreamPublished(String ^url, int error);
 	public delegate void onTranscodingUpdated();
+
+	public delegate void onConnectionStateChanged(ConnectionStateType state, ConnectionChangedReasonType reason);
+	public delegate void onTokenPrivilegeWillExpire(String^ token);
+	public delegate void onFirstLocalAudioFrame(int elapsed);
+	public delegate void onFirstRemoteAudioFrame(int uid, int elapsed);
+	public delegate void onUserEnableLocalVideo(int uid, bool enabled);
+	public delegate void onVideoSizeChanged(int uid, int width, int height, int rotation);
+	public delegate void onRemoteVideoStateChanged(int uid, RemoteVideoState state);
+	public delegate void onLocalPublishFallbackToAudioOnly(bool);
+	public delegate void onRemoteSubscribeFallbackToAudioOnly(int uid, bool isFallbackOrRecover);
+	public delegate void onCameraFocusAreaChanged(int x, int y, int width, int height);
+	public delegate void onRemoteAudioStats(ClrRemoteAudioStats^ stats);
+	public delegate void onRemoteAudioTransportStats(int uid, short delay, short lost, short rxKBitRate);
+	public delegate void onRemoteVideoTransportStats(int uid, short delay, short lost, short rxKBitRate);
+	public delegate void onAudioMixingBegin();
+	public delegate void onAudioMixingEnd();
+	public delegate void onAudioEffectFinished(int soundId);
+	public delegate void onStreamInjectedStatus(String^ url, int uid, int status);
+	public delegate void onMediaEngineLoadSuccess();
+	public delegate void onMediaEngineStartCallSuccess();
 
 	//PacketObserver Part
 	public delegate bool onSendAudioPacket(ClrPacket^ packet);
@@ -735,6 +972,7 @@ namespace AgoraClrLibrary {
 
 	public delegate bool onCaptureVideoFrame(ClrVideoFrame^ frame);
 	public delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^ frame);
+
 
 	public ref class AgoraClr
 	{
@@ -805,7 +1043,7 @@ namespace AgoraClrLibrary {
 		int muteRemoteAudioStream(int uid, bool mute);
 		int muteLocalVideoStream(bool mute);
 		int enableLocalVideo(bool enabled);
-		int muteAllRemoteVideoStream(bool mute);
+		int muteAllRemoteVideoStreams(bool mute);
 		int muteRemoteVideoStream(int uid, bool mute);
 		int setPlaybackDeviceVolume(int volume);
 		int setLocalRenderMode(RenderMode mode);
@@ -824,9 +1062,6 @@ namespace AgoraClrLibrary {
 		int setAudioProfile(AudioProfileType profile, AudioScenarioType scenario);
 		int setLogFile(String ^path);
 		int setLogFilter(unsigned int filter);
-		int startRecordingService(String ^key);
-		int stopRecordingService(String ^key);
-		int refreshRecordingServiceStatus();
 		int adjustRecordingSignalVolumne(int volume);
 		int adjustPlaybackSignalVolume(int volume);
 
@@ -848,6 +1083,37 @@ namespace AgoraClrLibrary {
 		int setLiveTranscoding(ClrLiveTranscoding ^transcoding);
 		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig ^config);
 		int removeInjectStreamUrl(String^ url);
+
+		int getEffectsVolume();
+		int setEffectsVolume(int volume);
+		int setVolumeOfEffect(int soundId, int volume);
+		int playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish);
+		int stopEffect(int soundId);
+		int stopAllEffects();
+		int preloadEffect(int soundId, String^ file);
+		int unloadEffect(int soundId);
+		int pauseEffect(int soundId);
+		int pauseAllEffects();
+		int resumeEffect(int soundId);
+		int resumeAllEffects();
+
+		//2.3
+		ConnectionStateType getConnectionState();
+		int setDefaultMuteAllRemoteAudioStreams(bool mute);
+		int setVideoEncoderConfiguration(ClrVideoEncoderConfiguration^ config);
+		int setDefaultMuteAllRemoteVideoStreams(bool mute);
+		int adjustAudioMixingPlayoutVolume(int volume);
+		int adjustAudioMixingPublishVolume(int volume);
+		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
+		int setExternalVideoSource(bool enabled, bool useTexture);
+		int pushVideoFrame(ClrExternalVideoFrame^ frame);
+		int addVideoWatermark(ClrRtcImage^ image);
+		int clearVideoWatermark();
+
+		int setLocalPublishFallbackOption(StreamFallbackOptions option);
+		int setRemoteSubscribeFallbackOption(StreamFallbackOptions option);
+		int setRemoteDefaultVideoStreamType(RemoteVideoStreamType type);
+		String^ getErrorDescription(int code);
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
 		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
@@ -882,7 +1148,6 @@ namespace AgoraClrLibrary {
 		onConnectionLost ^onConnectionLost;
 		onConnectionBanned ^onConnectionBanned;
 
-		onRefreshRecordingServiceStatus ^onRefreshRecordingServiceStatus;
 		onApiCallExecuted ^onApiCallExecuted;
 		onStreamMessage ^onStreamMessage;
 		onStreamMessageError ^onStreamMessageError;
@@ -895,9 +1160,29 @@ namespace AgoraClrLibrary {
 		onClientRoleChanged^ onClientRoleChanged;
 		onAudioDeviceVolumeChanged^ onAudioDeviceVolumeChanged;
 
-		onStreamUrlUnpublished^ onStreamUrlUnpublished;
+		onStreamUnpublished^ onStreamUnpublished;
 		onStreamPublished^ onStreamPublished;
 		onTranscodingUpdated^ onTranscodingUpdated;
+
+		onConnectionStateChanged ^onConnectionStateChanged;
+		onTokenPrivilegeWillExpire^ onTokenPrivilegeWillExpire;
+		onFirstLocalAudioFrame^ onFirstLocalAudioFrame;
+		onFirstRemoteAudioFrame^ onFirstRemoteAudioFrame;
+		onUserEnableLocalVideo^ onUserEnableLocalVideo;
+		onVideoSizeChanged^ onVideoSizeChanged;
+		onRemoteVideoStateChanged^ onRemoteVideoStateChanged;
+		onLocalPublishFallbackToAudioOnly^ onLocalPublishFallbackToAudioOnly;
+		onRemoteSubscribeFallbackToAudioOnly^ onRemoteSubscribeFallbackToAudioOnly;
+		onCameraFocusAreaChanged^ onCameraFocusAreaChanged;
+		onRemoteAudioStats^ onRemoteAudioStats;
+		onRemoteAudioTransportStats^ onRemoteAudioTransportStats;
+		onRemoteVideoTransportStats^ onRemoteVideoTransportStats;
+		onAudioMixingBegin^ onAudioMixingBegin;
+		onAudioMixingEnd^ onAudioMixingEnd;
+		onAudioEffectFinished^ onAudioEffectFinished;
+		onStreamInjectedStatus^ onStreamInjectedStatus;
+		onMediaEngineLoadSuccess^ onMediaEngineLoadSuccess;
+		onMediaEngineStartCallSuccess^ onMediaEngineStartCallSuccess;
 
 		//PacketObserver Part
 		onSendAudioPacket ^onSendAudioPacket;
@@ -913,6 +1198,7 @@ namespace AgoraClrLibrary {
 
 		onCaptureVideoFrame ^onCaptureVideoFrame;
 		onRenderVideoFrame ^onRenderVideoFrame;
+
 
 	private:
 		agora::rtc::IRtcEngine *rtcEngine;
@@ -954,7 +1240,6 @@ namespace AgoraClrLibrary {
 		void NativeOnConnectionBanned();
 
 		void NativeOnConnectionInterrupted();
-		void NativeOnRefreshRecordingServiceStatus(int status);
 		void NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length);
 		void NativeOnStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached);
 		void NativeOnRequestChannelKey();
@@ -967,9 +1252,30 @@ namespace AgoraClrLibrary {
 		void NativeOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole);
 		void NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, int volume, bool muted);
 
-		void NativeOnStreamUrlUnpublished(const char* url);
+		void NativeOnStreamUnpublished(const char* url);
 		void NativeOnStreamPublished(const char* url, int error);
 		void NativeOnTranscodingUpdated();
+
+		void NativeOnConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason);
+		void NativeOnTokenPrivilegeWilExpire(const char* token);
+		void NativeOnFirstLocalAudioFrame(int elapsed);
+		void NativeOnFirstRemoteAudioFrame(uid_t uid, int elapsed);
+		void NativeOnUserEnableLocalVideo(uid_t uid, bool enabled);
+		void NativeOnVideoSizeChanged(uid_t uid, int width, int height, int rotation);
+		void NativeOnRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state);
+		void NativeOnLocalPublishFallbackToAudioOnly(bool);
+		void NativeOnRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover);
+		void NativeOnCameraFocusAreaChanged(int x, int y, int width, int height);
+		void NativeOnRemoteAudioStats(const RemoteAudioStats& stats);
+		void NativeOnRemoteAudioTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+		void NativeOnRemoteVideoTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
+		void NativeOnAudioMixingBegin();
+		void NativeOnAudioMixingEnd();
+		void NativeOnAudioEffectFinished(int soundId);
+		void NativeOnStreamInjectedStatus(const char* url, uid_t uid, int status);
+		void NativeOnMediaEngineLoadSuccess();
+		void NativeOnMediaEngineStartCallSuccess();
+
 
 		bool NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet);
 		bool NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet);
@@ -988,8 +1294,6 @@ namespace AgoraClrLibrary {
 		void initializePacketObserver();
 		void initializeRawFrameObserver();
 		void* regEvent(Object^ obj);
-
-
 
 	};
 }

@@ -1,3 +1,4 @@
+#include "../../agorasdk/include/agora_sig.h"
 #include "stdafx.h"
 #include "AgoraClrSignal.h"
 #include "AgoraClrLibrary.h"
@@ -24,6 +25,7 @@ AgoraClrLibrary::AgoraClrSignal::~AgoraClrSignal()
 
 AgoraClrLibrary::AgoraClrSignal::!AgoraClrSignal()
 {
+	signal->destroy();
 }
 
 void AgoraClrLibrary::AgoraClrSignal::login(String ^ appId, String ^ account, String ^ token, String ^ device)
@@ -98,10 +100,10 @@ void AgoraClrLibrary::AgoraClrSignal::channelInviteDTMF(String ^ channelID, Stri
 	signal->channelInviteDTMF(channel.c_str(), channel.length(), phoneStr.c_str(), phoneStr.length(), dtmfStr.c_str(), dtmfStr.length());
 }
 
-void AgoraClrLibrary::AgoraClrSignal::channelInviteAccept(String ^ channelID, String ^ account)
+void AgoraClrLibrary::AgoraClrSignal::channelInviteAccept(String ^ channelID, String ^ account, String^ extra)
 {
-	std::string channel = MarshalString(channelID), accountStr = MarshalString(account);
-	signal->channelInviteAccept(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length(), 0);
+	std::string channel = MarshalString(channelID), accountStr = MarshalString(account), extraStr = MarshalString(extra);
+	signal->channelInviteAccept(channel.c_str(), channel.length(), accountStr.c_str(), accountStr.length(), 0, extraStr.c_str(), extraStr.length());
 }
 
 void AgoraClrLibrary::AgoraClrSignal::channelInviteRefuse(String ^ channelID, String ^ account, String^ extra)
