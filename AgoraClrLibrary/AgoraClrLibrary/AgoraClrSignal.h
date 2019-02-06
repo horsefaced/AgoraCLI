@@ -36,12 +36,12 @@ namespace AgoraClrLibrary {
 	public delegate void onMessageInstantReceive(String^ account, int uid, String^ msg);
 	public delegate void onMessageChannelReceive(String^ channelId, String^ account, int uid, String^ msg);
 	public delegate void onLog(String^ txt);
-	public delegate void onInvokeRet(String^ name, int ofu, String^ reason, String^ resp);
-	public delegate void onMsg(String^ from, String^ t, String^ msg);
 	public delegate void onUserAttrResult(String^ account, String^ name, String^ value);
 	public delegate void onUserAttrAllResult(String^ account, String^ value);
 	public delegate void onSignalError(String^ name, int ecode, String^ desc);
 	public delegate void onQueryUserStatusResult(String^ name, String^ status);
+	public delegate void onInvokeRet(String^ name, int ofu, String^ reason, String^ resp);
+	public delegate void onMsg(String^ from, String^ t, String^ msg);
 
 
 	public ref class AgoraClrSignal

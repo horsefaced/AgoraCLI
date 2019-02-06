@@ -25,6 +25,7 @@ AgoraClrLibrary::AgoraClrSignal::~AgoraClrSignal()
 
 AgoraClrLibrary::AgoraClrSignal::!AgoraClrSignal()
 {
+	signal->destroy();
 }
 
 void AgoraClrLibrary::AgoraClrSignal::login(String ^ appId, String ^ account, String ^ token, String ^ device)
