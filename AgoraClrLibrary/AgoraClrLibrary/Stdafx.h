@@ -6,7 +6,5 @@
 #include "../../agorasdk/include/AgoraBase.h"
 #include "../../agorasdk/include/IAgoraMediaEngine.h"
 #include "../../agorasdk/include/IAgoraRtcEngine.h"
-#include "../../agorasdk/include/agora_sig.h"
 #pragma comment(lib, "../../agorasdk/lib/agora_rtc_sdk.lib")
-#pragma comment(lib, "../../agorasdk/lib/agora_sig_sdk.lib")
 
