@@ -54,7 +54,7 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnFirstRemoteAudioFrame)(uid_t uid, int elapsed);
 	typedef void(__stdcall * PFOnUserEnableLocalVideo)(uid_t uid, bool enabled);
 	typedef void(__stdcall * PFOnVideoSizeChanged)(uid_t uid, int width, int height, int rotation);
-	typedef void(__stdcall * PFOnRemoteVideoStateChanged)(uid_t uid, REMOTE_VIDEO_STATE state);
+	typedef void(__stdcall * PFOnRemoteVideoStateChanged)(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON, int);
 	typedef void(__stdcall * PFOnLocalPublishFallbackToAudioOnly)(bool);
 	typedef void(__stdcall * PFOnRemoteSubscribeFallbackToAudioOnly)(uid_t, bool);
 	typedef void(__stdcall * PFOnCameraFocusAreaChanged)(int, int, int, int);
@@ -67,7 +67,12 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnStreamInjectedStatus)(const char*, uid_t, int);
 	typedef void(__stdcall * PFOnMediaEngineLoadSuccess)();
 	typedef void(__stdcall * PFOnMediaEngineStartCallSuccess)();
-
+	typedef void(__stdcall * PFOnNetworkTypeChanged)(NETWORK_TYPE);
+	typedef void(__stdcall * PFOnLocalAudioStateChanged)(LOCAL_AUDIO_STREAM_STATE, LOCAL_AUDIO_STREAM_ERROR);
+	typedef void(__stdcall* PFOnLocalVideoStateChanged)(LOCAL_VIDEO_STREAM_STATE, LOCAL_VIDEO_STREAM_ERROR);
+	typedef void(__stdcall* PFOnRemoteAudioStateChanged)(uid_t, REMOTE_AUDIO_STATE, REMOTE_AUDIO_STATE_REASON, int);
+	typedef void(__stdcall* PFOnFirstRemoteAudioDecoded)(uid_t, int);
+	typedef void(__stdcall* PFOnLocalAudioStats)(const LocalAudioStats&);
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
 	delegate void NativeOnRejoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -118,7 +123,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnFirstRemoteAudioFrameDelegate(uid_t uid, int elapsed);
 	delegate void NativeOnUserEnableLocalVideoDelegate(uid_t uid, bool enabled);
 	delegate void NativeOnVideoSizeChangedDelegate(uid_t uid, int width, int height, int rotation);
-	delegate void NativeOnRemoteVideoStateChangedDelegate(uid_t uid, REMOTE_VIDEO_STATE state);
+	delegate void NativeOnRemoteVideoStateChangedDelegate(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed);
 	delegate void NativeOnLocalPublishFallbackToAudioOnlyDelegate(bool);
 	delegate void NativeOnRemoteSubscribeFallbackToAudioOnlyDelegate(uid_t, bool);
 	delegate void NativeOnCameraFocusAreaChangedDelegate(int, int, int, int);
@@ -131,6 +136,13 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnStreamInjectedStatusDelegate(const char*, uid_t, int);
 	delegate void NativeOnMediaEngineLoadSuccessDelegate();
 	delegate void NativeOnMediaEngineStartCallSuccessDelegate();
+
+	delegate void NativeOnNetworkTypeChangedDelegate(NETWORK_TYPE type);
+	delegate void NativeOnLocalAudioStateChangedDelegate(LOCAL_AUDIO_STREAM_STATE, LOCAL_AUDIO_STREAM_ERROR);
+	delegate void NativeOnLocalVideoStateChangedDelegate(LOCAL_VIDEO_STREAM_STATE, LOCAL_VIDEO_STREAM_ERROR);
+	delegate void NativeOnRemoteAudioStateChangedDelegate(uid_t, REMOTE_AUDIO_STATE, REMOTE_AUDIO_STATE_REASON, int);
+	delegate void NativeOnFirstRemoteAudioDecodedDelegate(uid_t, int);
+	delegate void NativeOnLocalAudioStatsDelegate(const LocalAudioStats&);
 
 	public class AgoraClrEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
@@ -200,6 +212,13 @@ namespace AgoraClrLibrary {
 		PFOnStreamInjectedStatus onStreamInjectedStatusEvent = 0;
 		PFOnMediaEngineLoadSuccess onMediaEngineLoadSuccessEvent = 0;
 		PFOnMediaEngineStartCallSuccess onMediaEngineStartCallSuccessEvent = 0;
+		PFOnNetworkTypeChanged onNetworkTypeChangedEvent = 0;
+
+		PFOnLocalAudioStateChanged onLocalAudioStateChangedEvent = 0;
+		PFOnLocalVideoStateChanged onLocalVideoStateChangedEvent = 0;
+		PFOnRemoteAudioStateChanged onRemoteAudioStateChangedEvent = 0;
+		PFOnFirstRemoteAudioDecoded onFirstRemoteAudioDecodedEvent = 0;
+		PFOnLocalAudioStats onLocalAudioStatsEvent = 0
 
 		virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
@@ -250,7 +269,7 @@ namespace AgoraClrLibrary {
 		virtual void onFirstRemoteAudioFrame(uid_t uid, int elapsed);
 		virtual void onUserEnableLocalVideo(uid_t uid, bool enabled);
 		virtual void onVideoSizeChanged(uid_t uid, int width, int height, int rotation);
-		virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state);
+		virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed);
 		virtual void onLocalPublishFallbackToAudioOnly(bool);
 		virtual void onRemoteSubscribeFallbackToAudioOnly(uid_t, bool);
 		virtual void onCameraFocusAreaChanged(int x, int y, int width, int height);
@@ -263,6 +282,13 @@ namespace AgoraClrLibrary {
 		virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status);
 		virtual void onMediaEngineLoadSuccess();
 		virtual void onMediaEngineStartCallSuccess();
+
+		virtual void onNetworkTypeChanged(NETWORK_TYPE type);
+		virtual void onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error);
+		virtual void onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE state, LOCAL_VIDEO_STREAM_ERROR error);
+		virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed);
+		virtual void onFirstRemoteAudioDecoded(uid_t uid, int elapsed);
+		virtual void onLocalAudioStats(const LocalAudioStats& stats);
 	};
 
 }

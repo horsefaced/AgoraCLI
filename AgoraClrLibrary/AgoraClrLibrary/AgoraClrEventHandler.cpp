@@ -183,9 +183,9 @@ void AgoraClrLibrary::AgoraClrEventHandler::onVideoSizeChanged(uid_t uid, int wi
 	if (onVideoSizeChangedEvent) onVideoSizeChangedEvent(uid, width, height, rotation);
 }
 
-void AgoraClrLibrary::AgoraClrEventHandler::onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state)
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
 {
-	if (onRemoteVideoStateChangedEvent) onRemoteVideoStateChangedEvent(uid, state);
+	if (onRemoteVideoStateChangedEvent) onRemoteVideoStateChangedEvent(uid, state, reason, elapsed);
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onLocalPublishFallbackToAudioOnly(bool fallbackOrRecover)
@@ -246,4 +246,34 @@ void AgoraClrLibrary::AgoraClrEventHandler::onMediaEngineLoadSuccess()
 void AgoraClrLibrary::AgoraClrEventHandler::onMediaEngineStartCallSuccess()
 {
 	if (onMediaEngineStartCallSuccessEvent) onMediaEngineStartCallSuccessEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onNetworkTypeChanged(NETWORK_TYPE type)
+{
+	if (onNetworkTypeChangedEvent) onNetworkTypeChangedEvent(type);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error)
+{
+	if (onLocalAudioStateChangedEvent) onLocalAudioStateChangedEvent(state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE state, LOCAL_VIDEO_STREAM_ERROR error)
+{
+	if (onLocalVideoStateChangedEvent) onLocalVideoStateChangedEvent(state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed)
+{
+	if (onRemoteAudioStateChangedEvent) onRemoteAudioStateChangedEvent(uid, state, reason, elapsed);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onFirstRemoteAudioDecoded(uid_t uid, int elapsed)
+{
+	if (onFirstRemoteAudioDecodedEvent) onFirstRemoteAudioDecodedEvent(uid, elapsed);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLocalAudioStats(const LocalAudioStats& stats)
+{
+	if (onLocalAudioStatsEvent) onLocalAudioStatsEvent(stats);
 }
