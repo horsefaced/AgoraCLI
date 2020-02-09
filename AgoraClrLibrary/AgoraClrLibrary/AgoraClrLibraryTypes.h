@@ -207,19 +207,24 @@ namespace AgoraClrLibrary {
 	ref class ClrAudioFrame
 	{
 	public:
-		ClrAudioFrameType type;
-		int samples;		//number of samples in this frame
-		int bytesPerSample; //number of bytes per sample: 2 for PCM16
-		int channels;		//ÉùµÀÊý
-		int samplesPerSec;  //²ÉÑùÂÊ
+		EnumAudioFrameType type;
+		int samples;		
+		int bytesPerSample; 
+		int channels;		
+		int samplesPerSec;  
 		array<Byte>^ data;
 		int64_t renderTimeMs;
+		int avsync_type;
 
-		ClrAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& raw)
+		ClrAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& raw):
+			type(static_cast<EnumAudioFrameType>(raw.type)),
+			samples(raw.samples),
+			bytesPerSample(raw.bytesPerSample),
+			channels(raw.channels),
+			samplesPerSec(raw.samplesPerSec),
+			renderTimeMs(raw.renderTimeMs),
+			avsync_type(raw.avsync_type)
 		{
-			type = (ClrAudioFrameType)raw.type, samples = raw.samples, bytesPerSample = raw.bytesPerSample, channels = raw.channels,
-				samplesPerSec = raw.samplesPerSec, renderTimeMs = raw.renderTimeMs;
-
 			data = gcnew array<Byte>(samples * bytesPerSample);
 			Marshal::Copy(IntPtr(raw.buffer), data, 0, samples * bytesPerSample);
 		}
@@ -227,15 +232,21 @@ namespace AgoraClrLibrary {
 		void writeRaw(agora::media::IAudioFrameObserver::AudioFrame& raw)
 		{
 			bool sizeModified = (samples * bytesPerSample) != (raw.samples * raw.bytesPerSample);
-			raw.type = (agora::media::IAudioFrameObserver::AUDIO_FRAME_TYPE)type, raw.samples = samples, raw.bytesPerSample = bytesPerSample,
-				raw.channels = channels, raw.samplesPerSec = samplesPerSec, raw.renderTimeMs = renderTimeMs;
-			if (sizeModified)
+			raw.type = (agora::media::IAudioFrameObserver::AUDIO_FRAME_TYPE)type;
+			raw.samples = samples;
+			raw.bytesPerSample = bytesPerSample;
+			raw.channels = channels;
+			raw.samplesPerSec = samplesPerSec;
+			raw.renderTimeMs = renderTimeMs;
+			raw.avsync_type = avsync_type;
+			if (sizeModified) {
+				delete raw.buffer;
 				raw.buffer = Marshal::AllocHGlobal(samples * bytesPerSample).ToPointer();
+			}
 			Marshal::Copy(data, 0, IntPtr(raw.buffer), samples * bytesPerSample);
 		}
 
-		agora::media::IAudioFrameObserver::AudioFrame* toRaw()
-		{
+		operator IAudioFrameObserver::AudioFrame* () {
 			agora::media::IAudioFrameObserver::AudioFrame* raw = new agora::media::IAudioFrameObserver::AudioFrame();
 			writeRaw(*raw);
 			return raw;
@@ -247,7 +258,7 @@ namespace AgoraClrLibrary {
 	ref class ClrVideoFrame
 	{
 	public:
-		ClrVideoFrameType type;
+		EnumVideoFrameType type;
 		int width;   //width of video frame
 		int height;  //height of video frame
 		int yStride; //stride of Y data buffer
@@ -258,13 +269,19 @@ namespace AgoraClrLibrary {
 		array<Byte>^ vbuffer;
 		int rotation; // rotation of this frame (0, 90, 180, 270)
 		int64_t renderTimeMs;
+		int avsync_type;
 
-		ClrVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& raw)
+		ClrVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& raw):
+			type(static_cast<EnumVideoFrameType>(raw.type)),
+			width(raw.width),
+			height(raw.height),
+			yStride(raw.yStride),
+			uStride(raw.uStride),
+			vStride(raw.vStride),
+			rotation(raw.rotation),
+			renderTimeMs(raw.renderTimeMs),
+			avsync_type(raw.avsync_type)
 		{
-			type = (ClrVideoFrameType)raw.type;
-			width = raw.width, height = raw.height, yStride = raw.yStride, uStride = raw.uStride, vStride = raw.vStride;
-			rotation = raw.rotation, renderTimeMs = raw.renderTimeMs;
-
 			int size = width * height;
 			ybuffer = gcnew array<Byte>(size);
 			Marshal::Copy(IntPtr(raw.yBuffer), ybuffer, 0, size);
@@ -276,12 +293,19 @@ namespace AgoraClrLibrary {
 
 		void writeRaw(agora::media::IVideoFrameObserver::VideoFrame& raw)
 		{
-			int sizeModified = (raw.width * raw.height) != (width * height);
-
-			raw.type = (agora::media::IVideoFrameObserver::VIDEO_FRAME_TYPE)type, raw.width = width, raw.height = height;
-			raw.yStride = yStride, raw.uStride = uStride, raw.vStride = vStride, raw.rotation = rotation, raw.renderTimeMs = renderTimeMs;
-
 			int size = width * height;
+			int sizeModified = (raw.width * raw.height) != size;
+
+			raw.type = static_cast<IVideoFrameObserver::VIDEO_FRAME_TYPE>(type);
+			raw.width = width;
+			raw.height = height;
+			raw.yStride = yStride;
+			raw.uStride = uStride;
+			raw.vStride = vStride;
+			raw.rotation = rotation;
+			raw.renderTimeMs = renderTimeMs;
+			raw.avsync_type = avsync_type;
+
 			if (sizeModified)
 			{
 				raw.yBuffer = Marshal::AllocHGlobal(size).ToPointer();
@@ -584,13 +608,13 @@ namespace AgoraClrLibrary {
 
 	public ref class ClrScreenCaptureParameters {
 	public:
-		ClrVideoDimensions dimensions;
+		ClrVideoDimensions^ dimensions;
 		int frameRate;
 		int bitrate;
 		bool captureMouseCursor;
 
 		ClrScreenCaptureParameters() : dimensions(), frameRate(5), bitrate(0), captureMouseCursor(false) {}
-		operator agora::rtc::ScreenCaptureParameters() { return agora::rtc::ScreenCaptureParameters(dimensions.width, dimensions.height, frameRate, bitrate, captureMouseCursor); }
+		operator agora::rtc::ScreenCaptureParameters() { return agora::rtc::ScreenCaptureParameters(dimensions->width, dimensions->height, frameRate, bitrate, captureMouseCursor); }
 	};
 
 
@@ -666,8 +690,7 @@ namespace AgoraClrLibrary {
 		int rotation;
 		long long timestamp;
 
-		ExternalVideoFrame* toRaw()
-		{
+		operator ExternalVideoFrame* () {
 			ExternalVideoFrame* result = new ExternalVideoFrame();
 			result->type = (ExternalVideoFrame::VIDEO_BUFFER_TYPE)type;
 			result->format = (ExternalVideoFrame::VIDEO_PIXEL_FORMAT)format;
@@ -717,6 +740,8 @@ namespace AgoraClrLibrary {
 			raw->url = MarshalString(url).c_str();
 			return raw;
 		}
+
+
 	};
 
 
@@ -849,16 +874,16 @@ namespace AgoraClrLibrary {
 	public ref class ClrLastmileProbeResult {
 	public:
 		LastmileProbeResultState state;
-		ClrLastmileProbeOneWayResult uplinkReport;
-		ClrLastmileProbeOneWayResult downlinkReport;
+		ClrLastmileProbeOneWayResult^ uplinkReport;
+		ClrLastmileProbeOneWayResult^ downlinkReport;
 		unsigned int rtt;
 
 		ClrLastmileProbeResult() {}
 
 		ClrLastmileProbeResult(const LastmileProbeResult& val) :
 			state(static_cast<LastmileProbeResultState>(val.state)),
-			uplinkReport(val.uplinkReport),
-			downlinkReport(val.downlinkReport),
+			uplinkReport(gcnew ClrLastmileProbeOneWayResult(val.uplinkReport)),
+			downlinkReport(gcnew ClrLastmileProbeOneWayResult(val.downlinkReport)),
 			rtt(val.rtt)
 		{
 
@@ -867,10 +892,47 @@ namespace AgoraClrLibrary {
 		operator LastmileProbeResult() {
 			LastmileProbeResult result;
 			result.state = static_cast<LASTMILE_PROBE_RESULT_STATE>(state);
-			result.uplinkReport = static_cast<LastmileProbeOneWayResult>(uplinkReport);
-			result.downlinkReport = static_cast<LastmileProbeOneWayResult>(downlinkReport);
+			result.uplinkReport = uplinkReport->operator LastmileProbeOneWayResult();
+			result.downlinkReport = downlinkReport->operator agora::rtc::LastmileProbeOneWayResult();
 			result.rtt = rtt;
 			return result;
 		}
+	};
+
+	public ref class ClrMetadata {
+	public:
+		uid_t uid;
+		array<Byte>^ buffer;
+		long long timeStampMs;
+
+		ClrMetadata(const IMetadataObserver::Metadata& data):
+			uid(data.uid),
+			timeStampMs(data.timeStampMs)
+		{
+			buffer = gcnew array<Byte>(data.size);
+			Marshal::Copy(IntPtr(data.buffer), buffer, 0, data.size);
+		}
+	};
+
+	public ref class ClrWatermarkOptions {
+	public:
+		bool visibleInPreview;
+		ClrRectangle^ positionInLandscapeMode;
+		ClrRectangle^ positionInPortraitMode;
+
+		ClrWatermarkOptions():
+			visibleInPreview(false),
+			positionInLandscapeMode(gcnew ClrRectangle()),
+			positionInPortraitMode(gcnew ClrRectangle())
+		{}
+
+		operator WatermarkOptions() {
+			WatermarkOptions options;
+			options.visibleInPreview = visibleInPreview;
+			options.positionInLandscapeMode = positionInLandscapeMode->operator agora::rtc::Rectangle();
+			options.positionInPortraitMode = positionInPortraitMode->operator agora::rtc::Rectangle();
+			return options;
+		}
+
 	};
 }

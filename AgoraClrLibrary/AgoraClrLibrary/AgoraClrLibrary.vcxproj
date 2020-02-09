@@ -138,6 +138,7 @@
     <ClInclude Include="AgoraClrLibraryDelegates.h" />
     <ClInclude Include="AgoraClrLibraryEnum.h" />
     <ClInclude Include="AgoraClrLibraryTypes.h" />
+    <ClInclude Include="AgoraClrMetadataObserver.h" />
     <ClInclude Include="AgoraClrPacketObserver.h" />
     <ClInclude Include="AgoraClrRawFrameObserver.h" />
     <ClInclude Include="AgoraClrSignal.h" />
@@ -150,6 +151,7 @@
     <ClCompile Include="AgoraClrAudioDeviceManager.cpp" />
     <ClCompile Include="AgoraClrEventHandler.cpp" />
     <ClCompile Include="AgoraClrLibrary.cpp" />
+    <ClCompile Include="AgoraClrMetadataObserver.cpp" />
     <ClCompile Include="AgoraClrSignal.cpp" />
     <ClCompile Include="AgoraClrSignalCallback.cpp" />
     <ClCompile Include="AgoraClrVideoDeviceManager.cpp" />

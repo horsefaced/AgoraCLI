@@ -10,6 +10,7 @@
 #include "AgoraClrLibraryEnum.h"
 #include "AgoraClrLibraryTypes.h"
 #include "AgoraClrLibraryDelegates.h"
+#include "AgoraClrMetadataObserver.h"
 
 #include <string>
 
@@ -222,8 +223,47 @@ namespace AgoraClrLibrary
 		onLastmileQuality^ onLastmileQuality;
 		Action<ClrLastmileProbeResult^>^ onLastmileProbeResult;
 
-		//视频自采集
-		//todo: this 
+		//音视频自采集
+		int setExternalVideoSource(bool enabled, bool useTexture);
+		int pushVideoFrame(ClrExternalVideoFrame^ frame);
+		int setExternalAudioSource(bool enabled, int sampleRate, int channels);
+		int pushAudioFrame(ClrAudioFrame^ frame);
+		
+		//音视频自渲染
+		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
+		int pullAudioFrame(ClrAudioFrame^ frame);
+
+		//原始音频数据
+		int setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
+		int setPlaybackAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
+		int setMixedAudioFrameParameters(int sampleRate, int samplesPerCall);
+
+		//原始音频数据事件
+		onRecordAudioFrame^ onRecordAudioFrame;
+		onPlaybackAudioFrame^ onPlaybackAudioFrame;
+		onPlaybackAudioFrameBeforeMixing^ onPlaybackAudioFrameBeforeMixing;
+		onMixedAudioFrame^ onMixedAudioFrame;
+
+		//原始视频数据
+		onCaptureVideoFrame^ onCaptureVideoFrame;
+		onRenderVideoFrame^ onRenderVideoFrame;
+		property VideoFrameType VideoFormatPreference;
+		property bool IsVideoRotationApplied;
+		property bool IsVideoMirrorApplied;
+
+		//媒体附属信息
+		property int MaxMetadataSize;
+		Func<ClrMetadata^, bool>^ onReadyToSendMetadata;
+		Action<ClrMetadata^>^ onMetadataReceived;
+
+		//直播水印
+		int addVideoWatermark(String^ url, ClrWatermarkOptions^ options);
+		int clearVideoWatermarks();
+
+		//加密
+
+		//todo:jiami
+
 
 		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
 
@@ -249,9 +289,6 @@ namespace AgoraClrLibrary
 
 		//Ô­Ê¼Êý¾ÝAPI
 		//RtcEngineParameters Part
-		int setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
-		int setPlaybackAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
-		int setMixedAudioFrameParameters(int sampleRate, int samplesPerCall);
 
 		int setPlaybackDeviceVolume(int volume);
 		int startAudioRecording(String^ path, AudioRecordingQualityType quality);
@@ -261,22 +298,16 @@ namespace AgoraClrLibrary
 		int setLogFilter(unsigned int filter);
 
 
-		int setExternalAudioSource(bool enabled, int sampleRate, int channels);
 
 		int setLocalVideoMirrorMode(VideoMirrorModeType mode);
 		String^ getVersion(int% build);
 		int enableLoopbackRecording(bool enabled);
-
-		int pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame^ frame, bool wrap);
 
 		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig^ config);
 		int removeInjectStreamUrl(String^ url);
 
 		//2.3
 
-		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
-		int setExternalVideoSource(bool enabled, bool useTexture);
-		int pushVideoFrame(ClrExternalVideoFrame^ frame);
 		int addVideoWatermark(ClrRtcImage^ image);
 		int clearVideoWatermark();
 
@@ -334,13 +365,7 @@ namespace AgoraClrLibrary
 		onReceiveVideoPacket^ onReceiveVideoPacket;
 
 		//Raw data Part
-		onRecordAudioFrame^ onRecordAudioFrame;
-		onPlaybackAudioFrame^ onPlaybackAudioFrame;
-		onPlaybackAudioFrameBeforeMixing^ onPlaybackAudioFrameBeforeMixing;
-		onMixedAudioFrame^ onMixedAudioFrame;
 
-		onCaptureVideoFrame^ onCaptureVideoFrame;
-		onRenderVideoFrame^ onRenderVideoFrame;
 
 	private:
 		agora::rtc::IRtcEngine* rtcEngine;
@@ -348,6 +373,8 @@ namespace AgoraClrLibrary
 		AgoraClrEventHandler* agoraEventHandler;
 		AgoraClrPacketObserver* agoraPacketObserver;
 		AgoraClrRawFrameObserver* agoraRawObserver;
+		AgoraClrMetadataObserver* agoraMetadataObserver;
+
 		agora::media::IMediaEngine* agoraMediaEngine;
 
 		List<GCHandle>^ gchs;
@@ -429,7 +456,10 @@ namespace AgoraClrLibrary
 		bool NativeOnMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
 
 		bool NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame);
-		bool NativeOnRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
+		bool NativeOnRenderVideoFrame(uid_t uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
+		IVideoFrameObserver::VIDEO_FRAME_TYPE NativeOnGetVideoFormatPreference();
+		bool NativeOnGetRotationApplied();
+		bool NativeOnGetMirrorApplied();
 
 		void NativeOnNetworkTypeChanged(agora::rtc::NETWORK_TYPE type);
 		void NativeOnLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);
@@ -444,10 +474,15 @@ namespace AgoraClrLibrary
 		void NativeOnChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error);
 		void NativeOnChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event);
 		void NativeOnLastmileProbeResult(const LastmileProbeResult& result);
+		
+		int NativeGetMaxMetadataSize();
+		bool NativeOnReadyToSendMetadata(IMetadataObserver::Metadata& metadata);
+		void NativeOnMetadataReceived(const IMetadataObserver::Metadata& metadata);
 
 		void initializeEventHandler();
 		void initializePacketObserver();
 		void initializeRawFrameObserver();
+		void initializeMetaObserver();
 		void* regEvent(Object^ obj);
 	};
 } // namespace AgoraClrLibrary

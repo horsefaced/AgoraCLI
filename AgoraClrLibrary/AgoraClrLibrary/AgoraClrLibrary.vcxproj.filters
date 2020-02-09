@@ -54,6 +54,9 @@
     <ClInclude Include="AgoraClrLibraryDelegates.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AgoraClrMetadataObserver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AgoraClrLibrary.cpp">
@@ -84,6 +87,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AgoraClrSignal.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraClrMetadataObserver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -11,6 +11,9 @@ namespace AgoraClrLibrary {
 
 	typedef bool(__stdcall * PFOnCaptureVideoFrame)(IVideoFrameObserver::VideoFrame & videoFrame);
 	typedef bool(__stdcall * PFOnRenderVideoFrame)(unsigned int uid, IVideoFrameObserver::VideoFrame & videoFrame);
+	typedef IVideoFrameObserver::VIDEO_FRAME_TYPE(__stdcall * PFOnGetVideoFormatePreference)();
+	typedef bool(__stdcall* PFOnGetRotationApplied)();
+	typedef bool(__stdcall* PFOnGetMirrorApplied)();
 
 	delegate bool NativeOnRecordAudioFrameDelegate(IAudioFrameObserver::AudioFrame & audioFrame);
 	delegate bool NativeOnMixedAudioFrameDelegate(IAudioFrameObserver::AudioFrame & audioFrame);
@@ -18,6 +21,10 @@ namespace AgoraClrLibrary {
 	delegate bool NativeOnPlaybackAudioFrameBeforeMixingDelegate(unsigned int uid, IAudioFrameObserver::AudioFrame & audioFrame);
 	delegate bool NativeOnCaptureVideoFrameDelegate(IVideoFrameObserver::VideoFrame & videoFrame);
 	delegate bool NativeOnRenderVideoFrameDelegate(unsigned int uid, IVideoFrameObserver::VideoFrame & videoFrame);
+	delegate IVideoFrameObserver::VIDEO_FRAME_TYPE NativeOnGetVideoFormatePreferenceDelegate();
+	delegate bool NativeOnGetRotationAppliedDelegate();
+	delegate bool NativeOnGetMirrorAppliedDelegate();
+
 
 	public class AgoraClrRawFrameObserver : public IAudioFrameObserver, public IVideoFrameObserver
 	{
@@ -31,6 +38,9 @@ namespace AgoraClrLibrary {
 
 		PFOnCaptureVideoFrame onCaptureVideoFrameEvent = 0;
 		PFOnRenderVideoFrame onRenderVideoFrameEvent = 0;
+		PFOnGetVideoFormatePreference onGetVideoFormatePreferenceEvent = 0;
+		PFOnGetRotationApplied onGetRotationAppliedEvent = 0;
+		PFOnGetMirrorApplied onGetMirrorAppliedEvent = 0;
 
 		// Inherited via IAudioFrameObserver
 		virtual bool onRecordAudioFrame(AudioFrame & audioFrame) override;
@@ -41,6 +51,9 @@ namespace AgoraClrLibrary {
 		// Inherited via IVideoFrameObserver
 		virtual bool onCaptureVideoFrame(VideoFrame & videoFrame) override;
 		virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame & videoFrame) override;
+		virtual VIDEO_FRAME_TYPE getVideoFormatPreference() override;
+		virtual bool getRotationApplied() override;
+		virtual bool getMirrorApplied() override;
 	};
 
 }

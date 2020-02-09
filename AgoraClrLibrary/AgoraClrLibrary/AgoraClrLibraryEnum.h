@@ -166,13 +166,13 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-		enum class ClrAudioFrameType
+		enum class EnumAudioFrameType
 	{
 		FRAME_TYPE_PCM16 = 0, //PCM 16bit little endian
 	};
 
 	public
-		enum class ClrVideoFrameType
+		enum class EnumVideoFrameType
 	{
 		FRAME_TYPE_YUV420 = 0, //YUV 420 format
 	};
@@ -773,5 +773,20 @@ namespace AgoraClrLibrary {
 		LASTMILE_PROBE_RESULT_INCOMPLETE_NO_BWE = 2,
 		/** 3: The last-mile network probe test is not carried out, probably due to poor network conditions. */
 		LASTMILE_PROBE_RESULT_UNAVAILABLE = 3
+	};
+
+	public enum class VideoFrameType {
+		/**
+ * 0: YUV420
+ */
+		FRAME_TYPE_YUV420 = 0,  // YUV 420 format
+		/**
+		 * 1: YUV422
+		 */
+		 FRAME_TYPE_YUV422 = 1,  // YUV 422 format
+		 /**
+		  * 2: RGBA
+		  */
+		  FRAME_TYPE_RGBA = 2,    // RGBA format
 	};
 }
