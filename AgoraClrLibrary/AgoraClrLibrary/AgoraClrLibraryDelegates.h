@@ -29,7 +29,7 @@ namespace AgoraClrLibrary {
 	public
 		delegate void onAudioQuality(int uid, int quality, unsigned short delay, unsigned short lost);
 	public
-		delegate void onAudioVolumeIndication(List<AudioVolumeInfo^>^ speakers, int totalVolume);
+		delegate void onAudioVolumeIndication(List<ClrAudioVolumeInfo^>^ speakers, int totalVolume);
 	public
 		delegate void onLeaveChannel(RtcStats^ stat);
 	public

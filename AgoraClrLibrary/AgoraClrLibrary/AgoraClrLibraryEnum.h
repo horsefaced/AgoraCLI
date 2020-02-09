@@ -756,4 +756,22 @@ namespace AgoraClrLibrary {
 				   */
 				   RELAY_EVENT_VIDEO_PROFILE_UPDATE = 11,
 	};
+
+	public enum class PriorityType {
+		/** 50: The user's priority is high.
+ */
+		PRIORITY_HIGH = 50,
+		/** 100: (Default) The user's priority is normal.
+		*/
+		PRIORITY_NORMAL = 100,
+	};
+
+	public enum class LastmileProbeResultState {
+		/** 1: The last-mile network probe test is complete. */
+		LASTMILE_PROBE_RESULT_COMPLETE = 1,
+		/** 2: The last-mile network probe test is incomplete and the bandwidth estimation is not available, probably due to limited test resources. */
+		LASTMILE_PROBE_RESULT_INCOMPLETE_NO_BWE = 2,
+		/** 3: The last-mile network probe test is not carried out, probably due to poor network conditions. */
+		LASTMILE_PROBE_RESULT_UNAVAILABLE = 3
+	};
 }

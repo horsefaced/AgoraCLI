@@ -84,6 +84,7 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall* PFOnChannelMediaRelayStateChanged)(CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR);
 
 	using PFOnChannelMediaRelayEvent = stdTemplateCall<CHANNEL_MEDIA_RELAY_EVENT>;
+	using PFOnLastmileProbeResult = stdTemplateCall<const LastmileProbeResult&>;
 
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -159,6 +160,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnRtmpStreamingStateChangedDelegate(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR);
 	delegate void NativeOnChannelMediaRelayStateChangedDelegate(CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR);
 	delegate void NativeOnChannelMediaRelayEventDelegate(CHANNEL_MEDIA_RELAY_EVENT);
+	delegate void NativeOnLastmileProbeResultDelegate(const LastmileProbeResult&);
 
 	public class AgoraClrEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
@@ -241,6 +243,7 @@ namespace AgoraClrLibrary {
 		PFOnRtmpStreamingStateChanged onRtmpStreamingStateChangedEvent = 0;
 		PFOnChannelMediaRelayStateChanged onChannelMediaRelayStateChangedEvent = 0;
 		PFOnChannelMediaRelayEvent onChannelMediaRelayEventEvnet = 0;
+		PFOnLastmileProbeResult onLastmileProbeResultEvent = 0;
 
 		virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
@@ -317,6 +320,7 @@ namespace AgoraClrLibrary {
 		virtual void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error);
 		virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error);
 		virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event);
+		virtual void onLastmileProbeResult(const LastmileProbeResult& result);
 	};
 
 }

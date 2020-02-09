@@ -237,9 +237,9 @@ int AgoraClr::complain(String^ callid, String^ desc)
 	return rtcEngine->complain(MarshalString(callid).c_str(), MarshalString(desc).c_str());
 }
 
-int AgoraClr::startEchoTest()
+int AgoraClr::startEchoTest(int intervalInSeconds)
 {
-	return rtcEngine->startEchoTest();
+	return rtcEngine->startEchoTest(intervalInSeconds);
 }
 
 int AgoraClr::stopEchoTest()
@@ -255,6 +255,16 @@ int AgoraClr::enableLastmileTest()
 int AgoraClr::disableLastmileTest()
 {
 	return rtcEngine->disableLastmileTest();
+}
+
+int AgoraClrLibrary::AgoraClr::startLastmileProbeTest(ClrLastmileProbeConfig^ config)
+{
+	return rtcEngine->startLastmileProbeTest(config);
+}
+
+int AgoraClrLibrary::AgoraClr::stopLastmileProbeTest()
+{
+	return rtcEngine->stopLastmileProbeTest();
 }
 
 int AgoraClr::setVideoProfile(VideoProfile profile, bool swapWidthAndHeight)
@@ -274,14 +284,12 @@ int AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, int uid)
 
 int AgoraClr::enableDualStreamMode(bool enabled)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.enableDualStreamMode(enabled);
+	return rtcEngine->enableDualStreamMode(enabled);
 }
 
 int AgoraClr::setRemoteVideoStreamType(int uid, RemoteVideoStreamType type)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setRemoteVideoStreamType(uid, (REMOTE_VIDEO_STREAM_TYPE)type);
+	return rtcEngine->setRemoteVideoStreamType(uid, static_cast<REMOTE_VIDEO_STREAM_TYPE>(type));
 }
 
 int AgoraClr::setVideoQualityParameters(bool preferFrameRateOverImageQuality)
@@ -405,10 +413,9 @@ int AgoraClr::setRemoteRenderMode(int uid, RenderMode mode)
 	return rtcEngine->setRemoteRenderMode(uid, (agora::rtc::RENDER_MODE_TYPE)mode);
 }
 
-int AgoraClr::enableAudioVolumeIndication(int interval, int smooth)
+int AgoraClr::enableAudioVolumeIndication(int interval, int smooth, bool report_vad)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.enableAudioVolumeIndication(interval, smooth);
+	return rtcEngine->enableAudioVolumeIndication(interval, smooth, report_vad);
 }
 
 int AgoraClr::startAudioRecording(String^ path, AudioRecordingQualityType quality)
@@ -729,20 +736,22 @@ int AgoraClr::clearVideoWatermark()
 
 int AgoraClr::setLocalPublishFallbackOption(StreamFallbackOptions option)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setLocalPublishFallbackOption((STREAM_FALLBACK_OPTIONS)option);
+	return rtcEngine->setLocalPublishFallbackOption(static_cast<STREAM_FALLBACK_OPTIONS>(option));
 }
 
 int AgoraClr::setRemoteSubscribeFallbackOption(StreamFallbackOptions option)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setRemoteSubscribeFallbackOption((STREAM_FALLBACK_OPTIONS)option);
+	return rtcEngine->setRemoteSubscribeFallbackOption(static_cast<STREAM_FALLBACK_OPTIONS>(option));
+}
+
+int AgoraClrLibrary::AgoraClr::setRemoteUserPriority(uid_t uid, PriorityType priority)
+{
+	return rtcEngine->setRemoteUserPriority(uid, static_cast<PRIORITY_TYPE>(priority));
 }
 
 int AgoraClr::setRemoteDefaultVideoStreamType(RemoteVideoStreamType type)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setRemoteDefaultVideoStreamType((REMOTE_VIDEO_STREAM_TYPE)type);
+	return rtcEngine->setRemoteDefaultVideoStreamType(static_cast<REMOTE_VIDEO_STREAM_TYPE>(type));
 }
 
 String^ AgoraClr::getErrorDescription(int code)
@@ -829,11 +838,11 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onAudioMixingStateChangedEvent = PFOnAudioMixingStateChanged(regEvent(gcnew NativeOnAudioMixingStateChangedDelegate(this, &AgoraClr::NativeOnAudioMixingStateChanged)));
 	agoraEventHandler->onRemoteAudioMixingBeginEvent = PFOnRemoteAudioMixingBegin(regEvent(gcnew Action(this, &AgoraClr::NativeOnRemoteAudioMixingBegin)));
 
-	//试一下C++的新功能
 	agoraEventHandler->onRemoteAudioMixingEndEvent = reinterpret_cast<stdCall>(regEvent(gcnew Action(this, &AgoraClr::NativeOnRemoteAudioMixingEnd)));
 	agoraEventHandler->onRtmpStreamingStateChangedEvent = reinterpret_cast<PFOnRtmpStreamingStateChanged>(regEvent(gcnew NativeOnRtmpStreamingStateChangedDelegate(this, &AgoraClr::NativeOnRtmpStreamingStateChanged)));
 	agoraEventHandler->onChannelMediaRelayStateChangedEvent = reinterpret_cast<PFOnChannelMediaRelayStateChanged>(regEvent(gcnew NativeOnChannelMediaRelayStateChangedDelegate(this, &AgoraClr::NativeOnChannelMediaRelayStateChanged)));
 	agoraEventHandler->onChannelMediaRelayEventEvnet = reinterpret_cast<PFOnChannelMediaRelayEvent>(regEvent(gcnew NativeOnChannelMediaRelayEventDelegate(this, &AgoraClr::NativeOnChannelMediaRelayEvent)));
+	agoraEventHandler->onLastmileProbeResultEvent = reinterpret_cast<PFOnLastmileProbeResult>(regEvent(gcnew NativeOnLastmileProbeResultDelegate(this, &AgoraClr::NativeOnLastmileProbeResult)));
 
 }
 
@@ -911,14 +920,10 @@ void AgoraClr::NativeOnAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* 
 {
 	if (onAudioVolumeIndication)
 	{
-		List<AudioVolumeInfo^>^ list = gcnew List<AudioVolumeInfo^>();
+		List<ClrAudioVolumeInfo^>^ list = gcnew List<ClrAudioVolumeInfo^>();
 		for (unsigned int i = 0; i < speakerNumber; i++)
-		{
-			AudioVolumeInfo^ info = gcnew AudioVolumeInfo();
-			info->uid = speakers[i].uid;
-			info->volume = speakers[i].volume;
-			list->Add(info);
-		}
+			list->Add(gcnew ClrAudioVolumeInfo(speakers[i]));
+
 		onAudioVolumeIndication(list, totalVolume);
 	}
 }
@@ -1134,6 +1139,11 @@ void AgoraClrLibrary::AgoraClr::NativeOnChannelMediaRelayStateChanged(CHANNEL_ME
 void AgoraClrLibrary::AgoraClr::NativeOnChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event)
 {
 	if (onChannelMediaRelayEvent) onChannelMediaRelayEvent(static_cast<ChannelMediaRelayEvent>(event));
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnLastmileProbeResult(const LastmileProbeResult& result)
+{
+	if (onLastmileProbeResult) onLastmileProbeResult(gcnew ClrLastmileProbeResult(result));
 }
 
 void AgoraClr::NativeOnUserMuteAudio(uid_t uid, bool muted)

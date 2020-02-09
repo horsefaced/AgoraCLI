@@ -307,3 +307,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onChannelMediaRelayEvent(CHANNEL_MED
 {
 	if (onChannelMediaRelayEventEvnet) onChannelMediaRelayEventEvnet(event);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLastmileProbeResult(const LastmileProbeResult& result)
+{
+	if (onLastmileProbeResultEvent) onLastmileProbeResultEvent(result);
+}

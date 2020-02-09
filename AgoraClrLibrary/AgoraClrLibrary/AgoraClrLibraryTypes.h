@@ -28,11 +28,22 @@ namespace AgoraClrLibrary {
 	}
 
 	public
-	ref class AudioVolumeInfo
+	ref class ClrAudioVolumeInfo
 	{
 	public:
 		int uid;
 		unsigned int volume; // [0,255]
+		unsigned int vad;
+
+		ClrAudioVolumeInfo() {}
+
+		ClrAudioVolumeInfo(const AudioVolumeInfo& info) :
+			uid(info.uid),
+			volume(info.volume),
+			vad(info.vad)
+		{
+
+		}
 	};
 
 	public
@@ -765,7 +776,7 @@ namespace AgoraClrLibrary {
 		ClrLocalAudioStats(const LocalAudioStats& stats) : numChannels(stats.numChannels), sentSampleRate(stats.sentSampleRate), sentBitrate(stats.sentBitrate) {}
 	};
 
-	public ref struct ClrChannelMediaRelayConfiguration {
+	public ref class ClrChannelMediaRelayConfiguration {
 	public:
 		ClrChannelMediaInfo^ src;
 		ClrChannelMediaInfo^ dest;
@@ -780,7 +791,8 @@ namespace AgoraClrLibrary {
 		}
 	};
 
-	public ref struct ClrChannelMediaInfo {
+	public ref class ClrChannelMediaInfo {
+	public:
 		String^ channel;
 		String^ token;
 		uid_t uid;
@@ -791,6 +803,74 @@ namespace AgoraClrLibrary {
 			info->token = MarshalString(token).c_str();
 			info->uid = uid;
 			return info;
+		}
+	};
+
+	public ref class ClrLastmileProbeConfig {
+	public:
+		bool probeUplink;
+		bool probeDownlink;
+		unsigned int expectedUplinkBitrate;
+		unsigned int expectedDownlinkBitrate;
+
+		operator LastmileProbeConfig() {
+			LastmileProbeConfig config;
+			config.probeUplink = probeUplink;
+			config.probeDownlink = probeDownlink;
+			config.expectedUplinkBitrate = expectedUplinkBitrate;
+			config.expectedDownlinkBitrate = expectedDownlinkBitrate;
+			return config;
+		}
+	};
+
+	public ref class ClrLastmileProbeOneWayResult {
+	public:
+		unsigned int packetLossRate;
+		unsigned int jitter;
+		unsigned int availableBandwidth;
+
+		ClrLastmileProbeOneWayResult() {}
+
+		ClrLastmileProbeOneWayResult(const LastmileProbeOneWayResult& val):
+			packetLossRate(val.packetLossRate),
+			jitter(val.jitter),
+			availableBandwidth(val.availableBandwidth)
+		{}
+	
+		operator LastmileProbeOneWayResult() {
+			LastmileProbeOneWayResult result;
+			result.packetLossRate = packetLossRate;
+			result.jitter = jitter;
+			result.availableBandwidth = availableBandwidth;
+			return result;
+		}
+	};
+
+	public ref class ClrLastmileProbeResult {
+	public:
+		LastmileProbeResultState state;
+		ClrLastmileProbeOneWayResult uplinkReport;
+		ClrLastmileProbeOneWayResult downlinkReport;
+		unsigned int rtt;
+
+		ClrLastmileProbeResult() {}
+
+		ClrLastmileProbeResult(const LastmileProbeResult& val) :
+			state(static_cast<LastmileProbeResultState>(val.state)),
+			uplinkReport(val.uplinkReport),
+			downlinkReport(val.downlinkReport),
+			rtt(val.rtt)
+		{
+
+		}
+
+		operator LastmileProbeResult() {
+			LastmileProbeResult result;
+			result.state = static_cast<LASTMILE_PROBE_RESULT_STATE>(state);
+			result.uplinkReport = static_cast<LastmileProbeOneWayResult>(uplinkReport);
+			result.downlinkReport = static_cast<LastmileProbeOneWayResult>(downlinkReport);
+			result.rtt = rtt;
+			return result;
 		}
 	};
 }

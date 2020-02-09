@@ -184,6 +184,46 @@ namespace AgoraClrLibrary
 		Action<ChannelMediaRelayEvent>^ onChannelMediaRelayEvent;
 
 		//音量提示
+		int enableAudioVolumeIndication(int interval, int smooth, bool report_vad);
+
+		//音量提示事件
+		onAudioVolumeIndication^ onAudioVolumeIndication;
+		onActiveSpeaker^ onActiveSpeaker;
+
+		//音频播放路由及其事件
+		//这个部分2.9.1只用在Android与iOS上, 所以没有添加
+
+		//耳返控制, 这个函数现在在2.9.1上只在Android与iOS上提供, 请不要调用
+		[[deprecated]] int setInEarMonitoringVolume(int volume); 
+
+		//视频双流模式
+		int enableDualStreamMode(bool enabled);
+		int setRemoteVideoStreamType(int uid, RemoteVideoStreamType type);
+		int setRemoteDefaultVideoStreamType(RemoteVideoStreamType type);
+
+		//直播音视频回退
+		int setLocalPublishFallbackOption(StreamFallbackOptions option);
+		int setRemoteSubscribeFallbackOption(StreamFallbackOptions option);
+		int setRemoteUserPriority(uid_t uid, PriorityType priority);
+
+		//直播音视频回退事件
+		onLocalPublishFallbackToAudioOnly^ onLocalPublishFallbackToAudioOnly;
+		onRemoteSubscribeFallbackToAudioOnly^ onRemoteSubscribeFallbackToAudioOnly;
+
+		//通话前网络测试
+		int startEchoTest(int intervalInSeconds);
+		int stopEchoTest();
+		int enableLastmileTest();
+		int disableLastmileTest();
+		int startLastmileProbeTest(ClrLastmileProbeConfig^ config);
+		int stopLastmileProbeTest();
+
+		//通话前网络测试事件
+		onLastmileQuality^ onLastmileQuality;
+		Action<ClrLastmileProbeResult^>^ onLastmileProbeResult;
+
+		//视频自采集
+		//todo: this 
 
 		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
 
@@ -196,15 +236,9 @@ namespace AgoraClrLibrary
 		int getCallId(String^% callid);
 		int rate(String^ callid, int rating, String^ desc);
 		int complain(String^ callid, String^ desc);
-		int startEchoTest();
-		int stopEchoTest();
-		int enableLastmileTest();
-		int disableLastmileTest();
 
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
 
-		int enableDualStreamMode(bool enabled);
-		int setRemoteVideoStreamType(int uid, RemoteVideoStreamType type);
 		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
 		int setVideoCompositingLayout(ClrVideoCompositingLayout^ sei);
 		int clearVideoCompositingLayout();
@@ -220,14 +254,12 @@ namespace AgoraClrLibrary
 		int setMixedAudioFrameParameters(int sampleRate, int samplesPerCall);
 
 		int setPlaybackDeviceVolume(int volume);
-		int enableAudioVolumeIndication(int interval, int smooth);
 		int startAudioRecording(String^ path, AudioRecordingQualityType quality);
 		int stopAudioRecording();
 
 		int setLogFile(String^ path);
 		int setLogFilter(unsigned int filter);
 
-		int setInEarMonitoringVolume(int volume);
 
 		int setExternalAudioSource(bool enabled, int sampleRate, int channels);
 
@@ -248,9 +280,6 @@ namespace AgoraClrLibrary
 		int addVideoWatermark(ClrRtcImage^ image);
 		int clearVideoWatermark();
 
-		int setLocalPublishFallbackOption(StreamFallbackOptions option);
-		int setRemoteSubscribeFallbackOption(StreamFallbackOptions option);
-		int setRemoteDefaultVideoStreamType(RemoteVideoStreamType type);
 		String^ getErrorDescription(int code);
 
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
@@ -262,13 +291,11 @@ namespace AgoraClrLibrary
 		onWarning^ onWarning;
 		onError^ onError;
 		onAudioQuality^ onAudioQuality;
-		onAudioVolumeIndication^ onAudioVolumeIndication;
 
 
 		onFirstRemoteVideoDecoded^ onFirstRemoteVideoDecoded;
 		onAudioDeviceStateChanged^ onAudioDeviceStateChanged;
 		onVideoDeviceStateChanged^ onVideoDeviceStateChanged;
-		onLastmileQuality^ onLastmileQuality;
 		onUserEnableVideo^ onUserEnableVideo;
 		onCameraReady^ onCameraReady;
 		onVideoStopped^ onVideoStopped;
@@ -282,7 +309,6 @@ namespace AgoraClrLibrary
 
 		onAudioMixingFinished^ onAudioMixingFinished;
 
-		onActiveSpeaker^ onActiveSpeaker;
 
 		onAudioDeviceVolumeChanged^ onAudioDeviceVolumeChanged;
 
@@ -291,8 +317,6 @@ namespace AgoraClrLibrary
 
 		onUserEnableLocalVideo^ onUserEnableLocalVideo;
 		onVideoSizeChanged^ onVideoSizeChanged;
-		onLocalPublishFallbackToAudioOnly^ onLocalPublishFallbackToAudioOnly;
-		onRemoteSubscribeFallbackToAudioOnly^ onRemoteSubscribeFallbackToAudioOnly;
 		onCameraFocusAreaChanged^ onCameraFocusAreaChanged;
 
 		onRemoteAudioTransportStats^ onRemoteAudioTransportStats;
@@ -419,6 +443,7 @@ namespace AgoraClrLibrary
 		void NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error);
 		void NativeOnChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error);
 		void NativeOnChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event);
+		void NativeOnLastmileProbeResult(const LastmileProbeResult& result);
 
 		void initializeEventHandler();
 		void initializePacketObserver();
