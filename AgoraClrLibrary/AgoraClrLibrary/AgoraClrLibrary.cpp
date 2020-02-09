@@ -114,6 +114,41 @@ int AgoraClrLibrary::AgoraClr::updateScreenCaptureParameters(ClrScreenCapturePar
 	return rtcEngine->updateScreenCaptureParameters(params);
 }
 
+int AgoraClrLibrary::AgoraClr::setLocalVoiceChanger(VoiceChangerPreset changer)
+{
+	return rtcEngine->setLocalVoiceChanger(static_cast<VOICE_CHANGER_PRESET>(changer));
+}
+
+int AgoraClrLibrary::AgoraClr::setLocalVoiceReverbPreset(AudioReverbPreset preset)
+{
+	return rtcEngine->setLocalVoiceReverbPreset(static_cast<AUDIO_REVERB_PRESET>(preset));
+}
+
+int AgoraClrLibrary::AgoraClr::enableSoundPositionIndication(bool enabled)
+{
+	return rtcEngine->enableSoundPositionIndication(enabled);
+}
+
+int AgoraClrLibrary::AgoraClr::setRemoteVoicePosition(uid_t uid, double pan, double gain)
+{
+	return rtcEngine->setRemoteVoicePosition(uid, pan, gain);
+}
+
+int AgoraClrLibrary::AgoraClr::startChannelMediaRelay(ClrChannelMediaRelayConfiguration^ config)
+{
+	return rtcEngine->startChannelMediaRelay(config);
+}
+
+int AgoraClrLibrary::AgoraClr::updateChannelMediaRelay(ClrChannelMediaRelayConfiguration^ config)
+{
+	return rtcEngine->updateChannelMediaRelay(config);
+}
+
+int AgoraClrLibrary::AgoraClr::stopChannelMediaRelay()
+{
+	return rtcEngine->stopChannelMediaRelay();
+}
+
 int AgoraClr::setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate)
 {
 	RtcEngineParameters params(*rtcEngine);
@@ -461,8 +496,7 @@ int AgoraClr::enableLocalAudio(bool enabled) {
 
 int AgoraClr::setLocalVoicePitch(double pitch)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setLocalVoicePitch(pitch);
+	return rtcEngine->setLocalVoicePitch(pitch);
 }
 
 int AgoraClr::setInEarMonitoringVolume(int volume)
@@ -479,14 +513,12 @@ int AgoraClr::setExternalAudioSource(bool enabled, int sampleRate, int channels)
 
 int AgoraClr::setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setLocalVoiceEqualization((AUDIO_EQUALIZATION_BAND_FREQUENCY)freq, bandGain);
+	return rtcEngine->setLocalVoiceEqualization(static_cast<AUDIO_EQUALIZATION_BAND_FREQUENCY>(freq), bandGain));
 }
 
 int AgoraClr::setLocalVoiceReverb(AudioReverbType type, int value)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setLocalVoiceReverb((AUDIO_REVERB_TYPE)type, value);
+	return rtcEngine->setLocalVoiceReverb(static_cast<AUDIO_REVERB_TYPE>(type), value);
 }
 
 int AgoraClr::setLocalVideoMirrorMode(VideoMirrorModeType mode)
@@ -529,9 +561,7 @@ int AgoraClr::removePublishStreamUrl(String^ url)
 
 int AgoraClr::setLiveTranscoding(ClrLiveTranscoding^ transcoding)
 {
-	LiveTranscoding lt;
-	transcoding->writeRaw(lt);
-	return rtcEngine->setLiveTranscoding(lt);
+	return rtcEngine->setLiveTranscoding(transcoding);
 }
 
 int AgoraClr::addInjectStreamUrl(String^ url, ClrInjectStreamConfig^ config)
@@ -798,7 +828,12 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onLocalAudioStatsEvent = PFOnLocalAudioStats(regEvent(gcnew NativeOnLocalAudioStatsDelegate(this, &AgoraClr::NativeOnLocalAudioStats)));
 	agoraEventHandler->onAudioMixingStateChangedEvent = PFOnAudioMixingStateChanged(regEvent(gcnew NativeOnAudioMixingStateChangedDelegate(this, &AgoraClr::NativeOnAudioMixingStateChanged)));
 	agoraEventHandler->onRemoteAudioMixingBeginEvent = PFOnRemoteAudioMixingBegin(regEvent(gcnew Action(this, &AgoraClr::NativeOnRemoteAudioMixingBegin)));
-	agoraEventHandler->onRemoteAudioMixingEndEvent = PFActionCall(regEvent(gcnew Action(this, &AgoraClr::NativeOnRemoteAudioMixingEnd)));
+
+	//试一下C++的新功能
+	agoraEventHandler->onRemoteAudioMixingEndEvent = reinterpret_cast<stdCall>(regEvent(gcnew Action(this, &AgoraClr::NativeOnRemoteAudioMixingEnd)));
+	agoraEventHandler->onRtmpStreamingStateChangedEvent = reinterpret_cast<PFOnRtmpStreamingStateChanged>(regEvent(gcnew NativeOnRtmpStreamingStateChangedDelegate(this, &AgoraClr::NativeOnRtmpStreamingStateChanged)));
+	agoraEventHandler->onChannelMediaRelayStateChangedEvent = reinterpret_cast<PFOnChannelMediaRelayStateChanged>(regEvent(gcnew NativeOnChannelMediaRelayStateChangedDelegate(this, &AgoraClr::NativeOnChannelMediaRelayStateChanged)));
+	agoraEventHandler->onChannelMediaRelayEventEvnet = reinterpret_cast<PFOnChannelMediaRelayEvent>(regEvent(gcnew NativeOnChannelMediaRelayEventDelegate(this, &AgoraClr::NativeOnChannelMediaRelayEvent)));
 
 }
 
@@ -1084,6 +1119,21 @@ void AgoraClrLibrary::AgoraClr::NativeOnRemoteAudioMixingBegin()
 void AgoraClrLibrary::AgoraClr::NativeOnRemoteAudioMixingEnd()
 {
 	if (onRemoteAudioMixingEnd) onRemoteAudioMixingEnd();
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error)
+{
+	if (onRtmpStreamingStateChanged) onRtmpStreamingStateChanged(gcnew String(url), static_cast<RtmpStreamPublishState>(state), static_cast<RtmpStreamPublishError>(error));
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error)
+{
+	if (onChannelMediaRelayStateChanged) onChannelMediaRelayStateChanged(static_cast<ChannelMediaRelayState>(state), static_cast<ChannelMediaRelayError>(error));
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event)
+{
+	if (onChannelMediaRelayEvent) onChannelMediaRelayEvent(static_cast<ChannelMediaRelayEvent>(event));
 }
 
 void AgoraClr::NativeOnUserMuteAudio(uid_t uid, bool muted)

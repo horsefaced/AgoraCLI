@@ -5,6 +5,11 @@ using namespace agora::rtc;
 
 namespace AgoraClrLibrary {
 	//Native Function Pointer
+	using stdCall = void(__stdcall*)();
+
+	template<typename ...T>
+	using stdTemplateCall = void(__stdcall*)(T...);
+
 	typedef void(__stdcall * PFOnJoinChannelSuccess)(const char* channel, uid_t uid, int elapsed);
 	typedef void(__stdcall * PFOnRejoinChannelSuccess)(const char* channel, uid_t uid, int elapsed);
 	typedef void(__stdcall * PFOnWarning)(int warn, const char* msg);
@@ -75,7 +80,10 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall* PFOnLocalAudioStats)(const LocalAudioStats&);
 	typedef void(__stdcall* PFOnAudioMixingStateChanged)(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_ERROR_TYPE);
 	typedef void(__stdcall* PFOnRemoteAudioMixingBegin)();
-	typedef void(__stdcall* PFActionCall)();
+	typedef void(__stdcall* PFOnRtmpStreamingStateChanged)(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR);
+	typedef void(__stdcall* PFOnChannelMediaRelayStateChanged)(CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR);
+
+	using PFOnChannelMediaRelayEvent = stdTemplateCall<CHANNEL_MEDIA_RELAY_EVENT>;
 
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -148,6 +156,9 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnFirstRemoteAudioDecodedDelegate(uid_t, int);
 	delegate void NativeOnLocalAudioStatsDelegate(const LocalAudioStats&);
 	delegate void NativeOnAudioMixingStateChangedDelegate(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_ERROR_TYPE);
+	delegate void NativeOnRtmpStreamingStateChangedDelegate(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR);
+	delegate void NativeOnChannelMediaRelayStateChangedDelegate(CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR);
+	delegate void NativeOnChannelMediaRelayEventDelegate(CHANNEL_MEDIA_RELAY_EVENT);
 
 	public class AgoraClrEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
@@ -226,7 +237,10 @@ namespace AgoraClrLibrary {
 		PFOnLocalAudioStats onLocalAudioStatsEvent = 0;
 		PFOnAudioMixingStateChanged onAudioMixingStateChangedEvent = 0;
 		PFOnRemoteAudioMixingBegin onRemoteAudioMixingBeginEvent = 0;
-		PFActionCall onRemoteAudioMixingEndEvent = 0;
+		stdCall onRemoteAudioMixingEndEvent = 0;
+		PFOnRtmpStreamingStateChanged onRtmpStreamingStateChangedEvent = 0;
+		PFOnChannelMediaRelayStateChanged onChannelMediaRelayStateChangedEvent = 0;
+		PFOnChannelMediaRelayEvent onChannelMediaRelayEventEvnet = 0;
 
 		virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
@@ -300,6 +314,9 @@ namespace AgoraClrLibrary {
 		virtual void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error);
 		virtual void onRemoteAudioMixingBegin();
 		virtual void onRemoteAudioMixingEnd();
+		virtual void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error);
+		virtual void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error);
+		virtual void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event);
 	};
 
 }

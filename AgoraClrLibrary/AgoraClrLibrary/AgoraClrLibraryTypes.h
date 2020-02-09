@@ -452,7 +452,7 @@ namespace AgoraClrLibrary {
 		{
 		}
 
-		TranscodingUser* toRaw()
+		operator TranscodingUser*() 
 		{
 			TranscodingUser* result = new TranscodingUser();
 			result->uid = uid;
@@ -476,42 +476,47 @@ namespace AgoraClrLibrary {
 		int height;
 		int videoBitrate;
 		int videoFramerate;
-
 		bool lowLatency;
-
 		int videoGop;
 		VideoCodecProfileType videoCodecProfile;
 		unsigned int backgroundColor;
 		unsigned int userCount;
 		ClrTranscodingUser^ transcodingUsers;
-
 		String^ transcodingExtraInfo;
-
+		String^ metadata;
+		ClrRtcImage^ watermark;
+		ClrRtcImage^ backgroundImage;
 		AudioSampleRateType audioSampleRate;
 		int audioBitrate;
 		int audioChannels;
+		AudioCodecProfileType audioCodecProfile;
 
 		ClrLiveTranscoding()
 			: width(360), height(640), videoBitrate(400), videoFramerate(15), lowLatency(false), backgroundColor(0x000000), videoGop(30), videoCodecProfile(VideoCodecProfileType::VIDEO_CODEC_PROFILE_HIGH), userCount(0), transcodingUsers(), transcodingExtraInfo(nullptr), audioSampleRate(AudioSampleRateType::AUDIO_SAMPLE_RATE_48000), audioBitrate(48), audioChannels(1)
 		{
 		}
 
-		void writeRaw(LiveTranscoding& raw)
-		{
+		operator LiveTranscoding() {
+			LiveTranscoding raw;
 			raw.width = width;
 			raw.height = height;
 			raw.videoBitrate = videoBitrate;
 			raw.videoFramerate = videoFramerate;
 			raw.lowLatency = lowLatency;
 			raw.videoGop = videoGop;
-			raw.videoCodecProfile = (VIDEO_CODEC_PROFILE_TYPE)videoCodecProfile;
+			raw.videoCodecProfile = static_cast<VIDEO_CODEC_PROFILE_TYPE>(videoCodecProfile);
 			raw.backgroundColor = backgroundColor;
 			raw.userCount = userCount;
-			raw.transcodingUsers = transcodingUsers->toRaw();
+			raw.transcodingUsers = transcodingUsers;
 			raw.transcodingExtraInfo = MarshalString(transcodingExtraInfo).c_str();
-			raw.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
+			raw.metadata = MarshalString(metadata).c_str();
+			raw.watermark = watermark;
+			raw.backgroundImage = backgroundImage;
+			raw.audioSampleRate = static_cast<AUDIO_SAMPLE_RATE_TYPE>(audioSampleRate);
 			raw.audioBitrate = audioBitrate;
 			raw.audioChannels = audioChannels;
+			raw.audioCodecProfile = static_cast<AUDIO_CODEC_PROFILE_TYPE>(audioCodecProfile);
+			return raw;
 		}
 	};
 
@@ -691,13 +696,15 @@ namespace AgoraClrLibrary {
 		/** Height of the image on the broadcasting video. */
 		int height;
 
-		void writeRaw(RtcImage& raw)
+		operator RtcImage*()
 		{
-			raw.x = x;
-			raw.y = y;
-			raw.width = width;
-			raw.height = height;
-			raw.url = MarshalString(url).c_str();
+			RtcImage* raw = new RtcImage();
+			raw->x = x;
+			raw->y = y;
+			raw->width = width;
+			raw->height = height;
+			raw->url = MarshalString(url).c_str();
+			return raw;
 		}
 	};
 
@@ -758,4 +765,32 @@ namespace AgoraClrLibrary {
 		ClrLocalAudioStats(const LocalAudioStats& stats) : numChannels(stats.numChannels), sentSampleRate(stats.sentSampleRate), sentBitrate(stats.sentBitrate) {}
 	};
 
+	public ref struct ClrChannelMediaRelayConfiguration {
+	public:
+		ClrChannelMediaInfo^ src;
+		ClrChannelMediaInfo^ dest;
+		int destCount;
+
+		ClrChannelMediaRelayConfiguration() : src(nullptr), dest(nullptr), destCount(0) {}
+		operator ChannelMediaRelayConfiguration() {
+			ChannelMediaRelayConfiguration config;
+			config.srcInfo = src;
+			config.destInfos = dest;
+			config.destCount = destCount;
+		}
+	};
+
+	public ref struct ClrChannelMediaInfo {
+		String^ channel;
+		String^ token;
+		uid_t uid;
+
+		operator ChannelMediaInfo* () {
+			ChannelMediaInfo *info = new ChannelMediaInfo();
+			info->channelName = MarshalString(channel).c_str();
+			info->token = MarshalString(token).c_str();
+			info->uid = uid;
+			return info;
+		}
+	};
 }

@@ -292,3 +292,18 @@ void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioMixingEnd()
 {
 	if (onRemoteAudioMixingEndEvent) onRemoteAudioMixingEndEvent();
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error)
+{
+	if (onRtmpStreamingStateChangedEvent) onRtmpStreamingStateChangedEvent(url, state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error)
+{
+	if (onChannelMediaRelayStateChangedEvent) onChannelMediaRelayStateChangedEvent(state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event)
+{
+	if (onChannelMediaRelayEventEvnet) onChannelMediaRelayEventEvnet(event);
+}

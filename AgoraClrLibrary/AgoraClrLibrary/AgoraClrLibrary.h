@@ -154,9 +154,36 @@ namespace AgoraClrLibrary
 		onAudioEffectFinished^ onAudioEffectFinished;
 
 		//变声与混响
+		int setLocalVoiceChanger(VoiceChangerPreset changer);
+		int setLocalVoiceReverbPreset(AudioReverbPreset preset);
+		int setLocalVoicePitch(double pitch);
+		int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
+		int setLocalVoiceReverb(AudioReverbType type, int value);
+
+		//听声辩位
+		int enableSoundPositionIndication(bool enabled);
+		int setRemoteVoicePosition(uid_t uid, double pan, double gain);
 
 
+		//CDN推流
+		int setLiveTranscoding(ClrLiveTranscoding^ transcoding);
+		int addPublishStreamUrl(String^ url, bool transcodingEnabled);
+		int removePublishStreamUrl(String^ url);
 
+		//CDN推流事件
+		Action<String^, RtmpStreamPublishState, RtmpStreamPublishError>^ onRtmpStreamingStateChanged;
+		onTranscodingUpdated^ onTranscodingUpdated;
+
+		//跨频道媒体流转发
+		int startChannelMediaRelay(ClrChannelMediaRelayConfiguration^ config);
+		int updateChannelMediaRelay(ClrChannelMediaRelayConfiguration^ config);
+		int stopChannelMediaRelay();
+
+		//跨频道媒体流转发事件
+		Action<ChannelMediaRelayState, ChannelMediaRelayError>^ onChannelMediaRelayStateChanged;
+		Action<ChannelMediaRelayEvent>^ onChannelMediaRelayEvent;
+
+		//音量提示
 
 		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
 
@@ -200,22 +227,16 @@ namespace AgoraClrLibrary
 		int setLogFile(String^ path);
 		int setLogFilter(unsigned int filter);
 
-		int setLocalVoicePitch(double pitch);
 		int setInEarMonitoringVolume(int volume);
 
 		int setExternalAudioSource(bool enabled, int sampleRate, int channels);
 
-		int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
-		int setLocalVoiceReverb(AudioReverbType type, int value);
 		int setLocalVideoMirrorMode(VideoMirrorModeType mode);
 		String^ getVersion(int% build);
 		int enableLoopbackRecording(bool enabled);
 
 		int pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame^ frame, bool wrap);
 
-		int addPublishStreamUrl(String^ url, bool transcodingEnabled);
-		int removePublishStreamUrl(String^ url);
-		int setLiveTranscoding(ClrLiveTranscoding^ transcoding);
 		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig^ config);
 		int removeInjectStreamUrl(String^ url);
 
@@ -267,7 +288,6 @@ namespace AgoraClrLibrary
 
 		onStreamUnpublished^ onStreamUnpublished;
 		onStreamPublished^ onStreamPublished;
-		onTranscodingUpdated^ onTranscodingUpdated;
 
 		onUserEnableLocalVideo^ onUserEnableLocalVideo;
 		onVideoSizeChanged^ onVideoSizeChanged;
@@ -396,6 +416,9 @@ namespace AgoraClrLibrary
 		void NativeOnAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error);
 		void NativeOnRemoteAudioMixingBegin();
 		void NativeOnRemoteAudioMixingEnd();
+		void NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error);
+		void NativeOnChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error);
+		void NativeOnChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event);
 
 		void initializeEventHandler();
 		void initializePacketObserver();

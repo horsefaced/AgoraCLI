@@ -206,6 +206,12 @@ namespace AgoraClrLibrary {
 		AUDIO_SAMPLE_RATE_48000 = 48000,
 	};
 
+	public enum class AudioCodecProfileType
+	{
+		AUDIO_CODEC_PROFILE_LC_AAC = 0,
+		AUDIO_CODEC_PROFILE_HE_AAC = 1,
+	};
+
 	public
 		enum class AudioProfileType // sample rate, bit rate, mono/stereo, speech/music codec
 	{
@@ -560,5 +566,194 @@ namespace AgoraClrLibrary {
 		 /** 0: The SDK can open the audio mixing file.
 		 */
 		 AUDIO_MIXING_ERROR_OK = 0,
+	};
+
+	public enum class VoiceChangerPreset {
+		/** 0: The original voice (no local voice change).
+*/
+		VOICE_CHANGER_OFF = 0, //Turn off the voice changer
+		/** 1: An old man's voice.
+		*/
+		VOICE_CHANGER_OLDMAN = 1,
+		/** 2: A little boy's voice.
+		*/
+		VOICE_CHANGER_BABYBOY = 2,
+		/** 3: A little girl's voice.
+		*/
+		VOICE_CHANGER_BABYGIRL = 3,
+		/** 4: The voice of a growling bear.
+		*/
+		VOICE_CHANGER_ZHUBAJIE = 4,
+		/** 5: Ethereal vocal effects.
+		*/
+		VOICE_CHANGER_ETHEREAL = 5,
+		/** 6: Hulk's voice.
+		*/
+		VOICE_CHANGER_HULK = 6
+
+	};
+
+	public enum class AudioReverbPreset {
+		/** 0: The original voice (no local voice reverberation).
+*/
+		AUDIO_REVERB_OFF = 0, // Turn off audio reverb
+		/** 1: Pop music.
+		*/
+		AUDIO_REVERB_POPULAR = 1,
+		/** 2: R&B.
+		*/
+		AUDIO_REVERB_RNB = 2,
+		/** 3: Rock music.
+		*/
+		AUDIO_REVERB_ROCK = 3,
+		/** 4: Hip-hop.
+		*/
+		AUDIO_REVERB_HIPHOP = 4,
+		/** 5: Pop concert.
+		*/
+		AUDIO_REVERB_VOCAL_CONCERT = 5,
+		/** 6: Karaoke.
+		*/
+		AUDIO_REVERB_KTV = 6,
+		/** 7: Recording studio.
+		*/
+		AUDIO_REVERB_STUDIO = 7
+
+	};
+
+	public enum class RtmpStreamPublishState {
+		RTMP_STREAM_PUBLISH_STATE_IDLE = 0,
+		RTMP_STREAM_PUBLISH_STATE_CONNECTING = 1,
+		RTMP_STREAM_PUBLISH_STATE_RUNNING = 2,
+		RTMP_STREAM_PUBLISH_STATE_RECOVERING = 3,
+		RTMP_STREAM_PUBLISH_STATE_FAILURE = 4,
+	};
+
+	public enum class RtmpStreamPublishError {
+		/** The RTMP streaming publishes successfully. */
+		RTMP_STREAM_PUBLISH_ERROR_OK = 0,
+		/** Invalid argument used. If, for example, you do not call the \ref IRtcEngine::setLiveTranscoding "setLiveTranscoding" method to configure the LiveTranscoding parameters before calling the addPublishStreamUrl method, the SDK returns this error. Check whether you set the parameters in the *setLiveTranscoding* method properly. */
+		RTMP_STREAM_PUBLISH_ERROR_INVALID_ARGUMENT = 1,
+		/** The RTMP streaming is encrypted and cannot be published. */
+		RTMP_STREAM_PUBLISH_ERROR_ENCRYPTED_STREAM_NOT_ALLOWED = 2,
+		/** Timeout for the RTMP streaming. Call the \ref IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" method to publish the streaming again. */
+		RTMP_STREAM_PUBLISH_ERROR_CONNECTION_TIMEOUT = 3,
+		/** An error occurs in Agora's streaming server. Call the addPublishStreamUrl method to publish the streaming again. */
+		RTMP_STREAM_PUBLISH_ERROR_INTERNAL_SERVER_ERROR = 4,
+		/** An error occurs in the RTMP server. */
+		RTMP_STREAM_PUBLISH_ERROR_RTMP_SERVER_ERROR = 5,
+		/** The RTMP streaming publishes too frequently. */
+		RTMP_STREAM_PUBLISH_ERROR_TOO_OFTEN = 6,
+		/** The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones. */
+		RTMP_STREAM_PUBLISH_ERROR_REACH_LIMIT = 7,
+		/** The host manipulates other hosts' URLs. Check your app logic. */
+		RTMP_STREAM_PUBLISH_ERROR_NOT_AUTHORIZED = 8,
+		/** Agora's server fails to find the RTMP streaming. */
+		RTMP_STREAM_PUBLISH_ERROR_STREAM_NOT_FOUND = 9,
+		/** The format of the RTMP streaming URL is not supported. Check whether the URL format is correct. */
+		RTMP_STREAM_PUBLISH_ERROR_FORMAT_NOT_SUPPORTED = 10,
+	};
+
+	public enum class ChannelMediaRelayState {
+		/** 0: The SDK is initializing.
+ */
+		RELAY_STATE_IDLE = 0,
+		/** 1: The SDK tries to relay the media stream to the destination channel.
+		 */
+		 RELAY_STATE_CONNECTING = 1,
+		 /** 2: The SDK successfully relays the media stream to the destination
+		  * channel.
+		  */
+		  RELAY_STATE_RUNNING = 2,
+		  /** 3: A failure occurs. See the details in code.
+		   */
+		   RELAY_STATE_FAILURE = 3,
+
+	};
+
+	public enum class ChannelMediaRelayError {
+		/** 0: The state is normal.
+ */
+		RELAY_OK = 0,
+		/** 1: An error occurs in the server response.
+		 */
+		 RELAY_ERROR_SERVER_ERROR_RESPONSE = 1,
+		 /** 2: No server response. You can call the
+		  * \ref agora::rtc::IRtcEngine::leaveChannel "leaveChannel" method to
+		  * leave the channel.
+		  */
+		  RELAY_ERROR_SERVER_NO_RESPONSE = 2,
+		  /** 3: The SDK fails to access the service, probably due to limited
+		   * resources of the server.
+		   */
+		   RELAY_ERROR_NO_RESOURCE_AVAILABLE = 3,
+		   /** 4: The server fails to join the source channel.
+			*/
+			RELAY_ERROR_FAILED_JOIN_SRC = 4,
+			/** 5: The server fails to join the destination channel.
+			 */
+			 RELAY_ERROR_FAILED_JOIN_DEST = 5,
+			 /** 6: The server fails to receive the data from the source channel.
+			  */
+			  RELAY_ERROR_FAILED_PACKET_RECEIVED_FROM_SRC = 6,
+			  /** 7: The source channel fails to transmit data.
+			   */
+			   RELAY_ERROR_FAILED_PACKET_SENT_TO_DEST = 7,
+			   /** 8: The SDK disconnects from the server due to poor network
+				* connections. You can call the \ref agora::rtc::IRtcEngine::leaveChannel
+				* "leaveChannel" method to leave the channel.
+				*/
+				RELAY_ERROR_SERVER_CONNECTION_LOST = 8,
+				/** 9: An internal error occurs in the server.
+				 */
+				 RELAY_ERROR_INTERNAL_ERROR = 9,
+				 /** 10: The token of the source channel has expired.
+				  */
+				  RELAY_ERROR_SRC_TOKEN_EXPIRED = 10,
+				  /** 11: The token of the destination channel has expired.
+				   */
+				   RELAY_ERROR_DEST_TOKEN_EXPIRED = 11,
+
+	};
+
+	public enum class ChannelMediaRelayEvent {
+		/** 0: The user disconnects from the server due to poor network
+	 * connections.
+	 */
+		RELAY_EVENT_NETWORK_DISCONNECTED = 0,
+		/** 1: The network reconnects.
+		 */
+		 RELAY_EVENT_NETWORK_CONNECTED = 1,
+		 /** 2: The user joins the source channel.
+		  */
+		  RELAY_EVENT_PACKET_JOINED_SRC_CHANNEL = 2,
+		  /** 3: The user joins the destination channel.
+		   */
+		   RELAY_EVENT_PACKET_JOINED_DEST_CHANNEL = 3,
+		   /** 4: The SDK starts relaying the media stream to the destination channel.
+			*/
+			RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL = 4,
+			/** 5: The server receives the video stream from the source channel.
+			 */
+			 RELAY_EVENT_PACKET_RECEIVED_VIDEO_FROM_SRC = 5,
+			 /** 6: The server receives the audio stream from the source channel.
+			  */
+			  RELAY_EVENT_PACKET_RECEIVED_AUDIO_FROM_SRC = 6,
+			  /** 7: The destination channel is updated.
+			   */
+			   RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL = 7,
+			   /** 8: The destination channel update fails due to internal reasons.
+				*/
+				RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_REFUSED = 8,
+				/** 9: The destination channel does not change, which means that the
+				 * destination channel fails to be updated.
+				 */
+				 RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_NOT_CHANGE = 9,
+				 /** 10: The destination channel name is NULL.
+				  */
+				  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_IS_NULL = 10,
+				  /** 11: The video profile is sent to the server.
+				   */
+				   RELAY_EVENT_VIDEO_PROFILE_UPDATE = 11,
 	};
 }
