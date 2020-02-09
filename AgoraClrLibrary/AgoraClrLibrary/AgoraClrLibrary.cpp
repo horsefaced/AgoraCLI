@@ -9,7 +9,12 @@ using namespace AgoraClrLibrary;
 using namespace System;
 using namespace System::Runtime::InteropServices;
 
-AgoraClr::AgoraClr() : rtcEngine(nullptr) : gchs(gcnew List<GCHandle>()) : agoraEventHandler(new AgoraClrEventHandler()) : agoraPacketObserver(new AgoraClrPacketObserver()) : agoraRawObserver(new AgoraClrRawFrameObserver)
+AgoraClr::AgoraClr() :
+	rtcEngine(nullptr),
+	gchs(gcnew List<GCHandle>()),
+	agoraEventHandler(new AgoraClrEventHandler()),
+	agoraPacketObserver(new AgoraClrPacketObserver()),
+	agoraRawObserver(new AgoraClrRawFrameObserver)
 {
 	initializeEventHandler();
 	initializePacketObserver();
@@ -19,14 +24,14 @@ AgoraClr::AgoraClr() : rtcEngine(nullptr) : gchs(gcnew List<GCHandle>()) : agora
 AgoraClr::~AgoraClr()
 {
 	this->release();
-	for (GCHandle handle : gchs) handle.Free();
+	for each (GCHandle handle in gchs) handle.Free();
 }
 
 AgoraClr::!AgoraClr()
 {
 }
 
-int AgoraClr::initialize(String ^ vendorkey)
+int AgoraClr::initialize(String^ vendorkey)
 {
 	if (rtcEngine)
 		return 0;
@@ -36,15 +41,15 @@ int AgoraClr::initialize(String ^ vendorkey)
 		return -1;
 
 	std::string middlestr = MarshalString(vendorkey);
-	
-	agora::rtc::RtcEngineContext context{.appId = middlestr.c_str, .eventHandler = agoraEventHandler};
+
+	agora::rtc::RtcEngineContext context{ .appId = middlestr.c_str, .eventHandler = agoraEventHandler };
 
 	int result = rtcEngine->initialize(context);
 	if (result == 0)
 	{
 		rtcEngine->registerPacketObserver(agoraPacketObserver);
 		agoraMediaEngine = nullptr;
-		if (!rtcEngine->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, reinterpret_cast<void **>(&agoraMediaEngine)))
+		if (!rtcEngine->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, reinterpret_cast<void**>(&agoraMediaEngine)))
 		{
 			agoraMediaEngine->registerAudioFrameObserver(agoraRawObserver);
 			agoraMediaEngine->registerVideoFrameObserver(agoraRawObserver);
@@ -89,6 +94,26 @@ int AgoraClr::disableAudio()
 	return rtcEngine->disableAudio();
 }
 
+int AgoraClrLibrary::AgoraClr::startScreenCaptureByScreenRect(ClrRectangle^ screenRect, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params)
+{
+	return rtcEngine->startScreenCaptureByScreenRect(screenRect, regionRect, params);
+}
+
+int AgoraClrLibrary::AgoraClr::startScreenCaptureByWindowId(IntPtr windowId, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params)
+{
+	return rtcEngine->startScreenCaptureByWindowId(windowId.ToPointer(), regionRect, params);
+}
+
+int AgoraClrLibrary::AgoraClr::setScreenCaptureContentHint(ClrVideoContentHint hint)
+{
+	return rtcEngine->setScreenCaptureContentHint((VideoContentHint)hint);
+}
+
+int AgoraClrLibrary::AgoraClr::updateScreenCaptureParameters(ClrScreenCaptureParameters^ params)
+{
+	return rtcEngine->updateScreenCaptureParameters(params);
+}
+
 int AgoraClr::setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate)
 {
 	RtcEngineParameters params(*rtcEngine);
@@ -110,7 +135,7 @@ int AgoraClr::enableWebSdkInteroperability(bool enabled)
 	return rtcEngine->enableWebSdkInteroperability(enabled);
 }
 
-int AgoraClr::joinChannel(String ^ token, String ^ channelName, String ^ channelInfo, int uid)
+int AgoraClr::joinChannel(String^ token, String^ channelName, String^ channelInfo, int uid)
 {
 	return rtcEngine->joinChannel(MarshalString(token).c_str(), MarshalString(channelName).c_str(), MarshalString(channelInfo).c_str(), uid);
 }
@@ -124,7 +149,7 @@ int AgoraClr::leaveChannel()
 	return rtcEngine->leaveChannel();
 }
 
-int AgoraClr::startScreenCapture(IntPtr windowId, int captureFreq, ClrRect ^ rect, int bitrate)
+int AgoraClr::startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate)
 {
 	return rtcEngine->startScreenCapture((HWND)windowId.ToPointer(), captureFreq, rect->toRaw(), bitrate);
 }
@@ -134,28 +159,28 @@ int AgoraClr::stopScreenCapture()
 	return rtcEngine->stopScreenCapture();
 }
 
-int AgoraClr::updateScreenCaptureRegion(ClrRect ^ rect)
+int AgoraClr::updateScreenCaptureRegion(ClrRectangle^ rect)
 {
-	return rtcEngine->updateScreenCaptureRegion(rect->toRaw());
+	return rtcEngine->updateScreenCaptureRegion(rect);
 }
 
-int AgoraClr::renewToken(String ^ token)
+int AgoraClr::renewToken(String^ token)
 {
 	return rtcEngine->renewToken(MarshalString(token).c_str());
 }
 
-int AgoraClr::setEncryptionSecret(String ^ key)
+int AgoraClr::setEncryptionSecret(String^ key)
 {
 	std::string screte = MarshalString(key);
 	return rtcEngine->setEncryptionSecret(screte.c_str());
 }
 
-int AgoraClr::setEncryptionMode(String ^ mode)
+int AgoraClr::setEncryptionMode(String^ mode)
 {
 	return rtcEngine->setEncryptionMode(MarshalString(mode).c_str());
 }
 
-int AgoraClr::getCallId(String ^ % id)
+int AgoraClr::getCallId(String^% id)
 {
 	agora::util::AString callid;
 	int result = rtcEngine->getCallId(callid);
@@ -167,12 +192,12 @@ int AgoraClr::getCallId(String ^ % id)
 	return result;
 }
 
-int AgoraClr::rate(String ^ callid, int rating, String ^ desc)
+int AgoraClr::rate(String^ callid, int rating, String^ desc)
 {
 	return rtcEngine->rate(MarshalString(callid).c_str(), rating, MarshalString(desc).c_str());
 }
 
-int AgoraClr::complain(String ^ callid, String ^ desc)
+int AgoraClr::complain(String^ callid, String^ desc)
 {
 	return rtcEngine->complain(MarshalString(callid).c_str(), MarshalString(desc).c_str());
 }
@@ -230,7 +255,7 @@ int AgoraClr::setVideoQualityParameters(bool preferFrameRateOverImageQuality)
 	return params.setVideoQualityParameters(preferFrameRateOverImageQuality);
 }
 
-int AgoraClr::setVideoCompositingLayout(ClrVideoCompositingLayout ^ sei)
+int AgoraClr::setVideoCompositingLayout(ClrVideoCompositingLayout^ sei)
 {
 	if (sei == nullptr)
 		return rtcEngine->setVideoCompositingLayout(VideoCompositingLayout());
@@ -243,7 +268,7 @@ int AgoraClr::clearVideoCompositingLayout()
 	return rtcEngine->clearVideoCompositingLayout();
 }
 
-int AgoraClr::configPublisher(ClrPublisherConfiguration ^ config)
+int AgoraClr::configPublisher(ClrPublisherConfiguration^ config)
 {
 #if defined(_WIN32)
 	return rtcEngine->configPublisher(*config->toRaw());
@@ -262,7 +287,7 @@ int AgoraClr::setClientRole(ClientRoleType role)
 	return rtcEngine->setClientRole((CLIENT_ROLE_TYPE)role);
 }
 
-int AgoraClr::createDataStream(int % id)
+int AgoraClr::createDataStream(int% id)
 {
 	int streamId;
 	int result = rtcEngine->createDataStream(&streamId, true, true);
@@ -270,7 +295,7 @@ int AgoraClr::createDataStream(int % id)
 	return result;
 }
 
-int AgoraClr::sendStreamMessage(int id, String ^ data)
+int AgoraClr::sendStreamMessage(int id, String^ data)
 {
 	std::string dataStr = MarshalString(data);
 	return rtcEngine->sendStreamMessage(id, dataStr.c_str(), dataStr.length());
@@ -351,7 +376,7 @@ int AgoraClr::enableAudioVolumeIndication(int interval, int smooth)
 	return params.enableAudioVolumeIndication(interval, smooth);
 }
 
-int AgoraClr::startAudioRecording(String ^ path, AudioRecordingQualityType quality)
+int AgoraClr::startAudioRecording(String^ path, AudioRecordingQualityType quality)
 {
 	agora::rtc::RtcEngineParameters param(*rtcEngine);
 	return param.startAudioRecording(MarshalString(path).c_str(), (agora::rtc::AUDIO_RECORDING_QUALITY_TYPE)quality);
@@ -365,50 +390,42 @@ int AgoraClr::stopAudioRecording()
 
 int AgoraClr::pauseAudioMixing()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.pauseAudioMixing();
+	return rtcEngine->pauseAudioMixing();
 }
 
 int AgoraClr::resumeAudioMixing()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.resumeAudioMixing();
+	return rtcEngine->resumeAudioMixing();
 }
 
 int AgoraClr::adjustAudioMixingVolume(int volume)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.adjustAudioMixingVolume(volume);
+	return rtcEngine->adjustAudioMixingVolume(volume);
 }
 
 int AgoraClr::getAudioMixingDuration()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.getAudioMixingDuration();
+	return rtcEngine->getAudioMixingDuration();
 }
 
 int AgoraClr::getAudioMixingCurrentPosition()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.getAudioMixingCurrentPosition();
+	return rtcEngine->getAudioMixingCurrentPosition();
 }
 
 int AgoraClr::setAudioMixingPosition(int pos)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setAudioMixingPosition(pos);
+	return rtcEngine->setAudioMixingPosition(pos);
 }
 
-int AgoraClr::startAudioMixing(String ^ path, bool loop, bool replace, int cycle)
+int AgoraClr::startAudioMixing(String^ path, bool loop, bool replace, int cycle)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.startAudioMixing(MarshalString(path).c_str(), loop, replace, cycle);
+	return rtcEngine->startAudioMixing(MarshalString(path).c_str(), loop, replace, cycle);
 }
 
 int AgoraClr::stopAudioMixing()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.stopAudioMixing();
+	return rtcEngine->stopAudioMixing();
 }
 
 int AgoraClr::setAudioProfile(AudioProfileType profile, AudioScenarioType scenario)
@@ -416,7 +433,7 @@ int AgoraClr::setAudioProfile(AudioProfileType profile, AudioScenarioType scenar
 	return rtcEngine->setAudioProfile((agora::rtc::AUDIO_PROFILE_TYPE)profile, (agora::rtc::AUDIO_SCENARIO_TYPE)scenario);
 }
 
-int AgoraClr::setLogFile(String ^ path)
+int AgoraClr::setLogFile(String^ path)
 {
 	RtcEngineParameters params(*rtcEngine);
 	return params.setLogFile(MarshalString(path).c_str());
@@ -478,10 +495,10 @@ int AgoraClr::setLocalVideoMirrorMode(VideoMirrorModeType mode)
 	return params.setLocalVideoMirrorMode((VIDEO_MIRROR_MODE_TYPE)mode);
 }
 
-String ^ AgoraClr::getVersion(int % build)
+String^ AgoraClr::getVersion(int% build)
 {
 	int version;
-	String ^ result = gcnew String(rtcEngine->getVersion(&version));
+	String^ result = gcnew String(rtcEngine->getVersion(&version));
 	build = version;
 	return result;
 }
@@ -492,7 +509,7 @@ int AgoraClr::enableLoopbackRecording(bool enabled)
 	return params.enableLoopbackRecording(enabled);
 }
 
-int AgoraClr::pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame ^ frame, bool wrap)
+int AgoraClr::pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame^ frame, bool wrap)
 {
 	if (agoraMediaEngine)
 		return agoraMediaEngine->pushAudioFrame((agora::media::MEDIA_SOURCE_TYPE)type, frame->toRaw(), wrap);
@@ -500,31 +517,31 @@ int AgoraClr::pushAudioFrame(ClrAudioFrameType type, ClrAudioFrame ^ frame, bool
 		return -1;
 }
 
-int AgoraClr::addPublishStreamUrl(String ^ url, bool transcodingEnabled)
+int AgoraClr::addPublishStreamUrl(String^ url, bool transcodingEnabled)
 {
 	return rtcEngine->addPublishStreamUrl(MarshalString(url).c_str(), transcodingEnabled);
 }
 
-int AgoraClr::removePublishStreamUrl(String ^ url)
+int AgoraClr::removePublishStreamUrl(String^ url)
 {
 	return rtcEngine->removePublishStreamUrl(MarshalString(url).c_str());
 }
 
-int AgoraClr::setLiveTranscoding(ClrLiveTranscoding ^ transcoding)
+int AgoraClr::setLiveTranscoding(ClrLiveTranscoding^ transcoding)
 {
 	LiveTranscoding lt;
 	transcoding->writeRaw(lt);
 	return rtcEngine->setLiveTranscoding(lt);
 }
 
-int AgoraClr::addInjectStreamUrl(String ^ url, ClrInjectStreamConfig ^ config)
+int AgoraClr::addInjectStreamUrl(String^ url, ClrInjectStreamConfig^ config)
 {
 	InjectStreamConfig raw;
 	config->writeRaw(raw);
 	return rtcEngine->addInjectStreamUrl(MarshalString(url).c_str(), raw);
 }
 
-int AgoraClr::removeInjectStreamUrl(String ^ url)
+int AgoraClr::removeInjectStreamUrl(String^ url)
 {
 	return rtcEngine->removeInjectStreamUrl(MarshalString(url).c_str());
 }
@@ -547,7 +564,7 @@ int AgoraClr::setVolumeOfEffect(int soundId, int volume)
 	return params.setVolumeOfEffect(soundId, volume);
 }
 
-int AgoraClr::playEffect(int soundId, String ^ file, int loopCount, double pitch, double pan, int gain, bool publish)
+int AgoraClr::playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish)
 {
 	RtcEngineParameters params(*rtcEngine);
 	return params.playEffect(soundId, MarshalString(file).c_str(), loopCount, pitch, pan, gain, publish);
@@ -565,11 +582,11 @@ int AgoraClr::stopAllEffects()
 	return params.stopAllEffects();
 }
 
-int AgoraClr::preloadEffect(int soundId, String ^ file)
+int AgoraClr::preloadEffect(int soundId, String^ file)
 {
 	RtcEngineParameters params(*rtcEngine);
 	std::string str = MarshalString(file);
-	char *cstr = new char[str.length() + 1];
+	char* cstr = new char[str.length() + 1];
 	strcpy(cstr, str.c_str());
 	int result = params.preloadEffect(soundId, cstr);
 	delete cstr;
@@ -616,11 +633,9 @@ int AgoraClr::setDefaultMuteAllRemoteAudioStreams(bool mute)
 	return rtcEngine->setDefaultMuteAllRemoteAudioStreams(mute);
 }
 
-int AgoraClr::setVideoEncoderConfiguration(ClrVideoEncoderConfiguration ^ config)
+int AgoraClr::setVideoEncoderConfiguration(ClrVideoEncoderConfiguration^ config)
 {
-	VideoEncoderConfiguration configuration;
-	config->writeRaw(configuration);
-	return rtcEngine->setVideoEncoderConfiguration(configuration);
+	return rtcEngine->setVideoEncoderConfiguration(config);
 }
 
 int AgoraClr::setDefaultMuteAllRemoteVideoStreams(bool mute)
@@ -630,14 +645,22 @@ int AgoraClr::setDefaultMuteAllRemoteVideoStreams(bool mute)
 
 int AgoraClr::adjustAudioMixingPlayoutVolume(int volume)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.adjustAudioMixingPlayoutVolume(volume);
+	return rtcEngine->adjustAudioMixingPlayoutVolume(volume);
 }
 
 int AgoraClr::adjustAudioMixingPublishVolume(int volume)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.adjustAudioMixingPublishVolume(volume);
+	return rtcEngine->adjustAudioMixingPublishVolume(volume);
+}
+
+int AgoraClrLibrary::AgoraClr::getAudioMixingPlayoutVolume()
+{
+	return rtcEngine->getAudioMixingPlayoutVolume();
+}
+
+int AgoraClrLibrary::AgoraClr::getAudioMixingPublishVolume()
+{
+	return rtcEngine->getAudioMixingPublishVolume();
 }
 
 int AgoraClr::setExternalAudioSink(bool enabled, int sampleRate, int channels)
@@ -654,7 +677,7 @@ int AgoraClr::setExternalVideoSource(bool enabled, bool useTexture)
 		return -1;
 }
 
-int AgoraClr::pushVideoFrame(ClrExternalVideoFrame ^ frame)
+int AgoraClr::pushVideoFrame(ClrExternalVideoFrame^ frame)
 {
 	if (agoraMediaEngine)
 		return agoraMediaEngine->pushVideoFrame(frame->toRaw());
@@ -662,7 +685,7 @@ int AgoraClr::pushVideoFrame(ClrExternalVideoFrame ^ frame)
 		return -1;
 }
 
-int AgoraClr::addVideoWatermark(ClrRtcImage ^ image)
+int AgoraClr::addVideoWatermark(ClrRtcImage^ image)
 {
 	RtcImage i;
 	image->writeRaw(i);
@@ -692,12 +715,12 @@ int AgoraClr::setRemoteDefaultVideoStreamType(RemoteVideoStreamType type)
 	return params.setRemoteDefaultVideoStreamType((REMOTE_VIDEO_STREAM_TYPE)type);
 }
 
-String ^ AgoraClr::getErrorDescription(int code)
+String^ AgoraClr::getErrorDescription(int code)
 {
 	return gcnew String(rtcEngine->getErrorDescription(code));
 }
 
-void *AgoraClr::regEvent(Object ^ obj)
+void* AgoraClr::regEvent(Object^ obj)
 {
 	gchs->Add(GCHandle::Alloc(obj));
 	return Marshal::GetFunctionPointerForDelegate(obj).ToPointer();
@@ -773,6 +796,9 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onRemoteAudioStateChangedEvent = PFOnRemoteAudioStateChanged(regEvent(gcnew NativeOnRemoteAudioStateChangedDelegate(this, &AgoraClr::NativeOnRemoteAudioStateChanged)));
 	agoraEventHandler->onFirstRemoteAudioDecodedEvent = PFOnFirstRemoteAudioDecoded(regEvent(gcnew NativeOnFirstRemoteAudioDecodedDelegate(this, &AgoraClr::NativeOnFirstRemoteAudioDecoded)));
 	agoraEventHandler->onLocalAudioStatsEvent = PFOnLocalAudioStats(regEvent(gcnew NativeOnLocalAudioStatsDelegate(this, &AgoraClr::NativeOnLocalAudioStats)));
+	agoraEventHandler->onAudioMixingStateChangedEvent = PFOnAudioMixingStateChanged(regEvent(gcnew NativeOnAudioMixingStateChangedDelegate(this, &AgoraClr::NativeOnAudioMixingStateChanged)));
+	agoraEventHandler->onRemoteAudioMixingBeginEvent = PFOnRemoteAudioMixingBegin(regEvent(gcnew Action(this, &AgoraClr::NativeOnRemoteAudioMixingBegin)));
+	agoraEventHandler->onRemoteAudioMixingEndEvent = PFActionCall(regEvent(gcnew Action(this, &AgoraClr::NativeOnRemoteAudioMixingEnd)));
 
 }
 
@@ -795,22 +821,22 @@ void AgoraClr::initializeRawFrameObserver()
 	agoraRawObserver->onRenderVideoFrameEvent = PFOnRenderVideoFrame(regEvent(gcnew NativeOnRenderVideoFrameDelegate(this, &AgoraClr::NativeOnRenderVideoFrame)));
 }
 
-AgoraClrAudioDeviceManager ^ AgoraClr::getAudioDeviceManager()
+AgoraClrAudioDeviceManager^ AgoraClr::getAudioDeviceManager()
 {
 	return gcnew AgoraClrAudioDeviceManager(this);
 }
 
-AgoraClrVideoDeviceManager ^ AgoraClr::getVideoDeviceManager()
+AgoraClrVideoDeviceManager^ AgoraClr::getVideoDeviceManager()
 {
 	return gcnew AgoraClrVideoDeviceManager(this);
 }
 
-IRtcEngine *AgoraClr::getEngine()
+IRtcEngine* AgoraClr::getEngine()
 {
 	return this->rtcEngine;
 }
 
-void AgoraClr::NativeOnJoinChannelSuccess(const char *channel, uid_t uid, int elapsed)
+void AgoraClr::NativeOnJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
 {
 	if (onJoinChannelSuccess)
 	{
@@ -818,7 +844,7 @@ void AgoraClr::NativeOnJoinChannelSuccess(const char *channel, uid_t uid, int el
 	}
 }
 
-void AgoraClr::NativeOnRejoinChannelSuccess(const char *channel, uid_t uid, int elapsed)
+void AgoraClr::NativeOnRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
 {
 	if (onRejoinChannelSuccess)
 	{
@@ -826,7 +852,7 @@ void AgoraClr::NativeOnRejoinChannelSuccess(const char *channel, uid_t uid, int 
 	}
 }
 
-void AgoraClr::NativeOnWarning(int warn, const char *msg)
+void AgoraClr::NativeOnWarning(int warn, const char* msg)
 {
 	if (onWarning)
 	{
@@ -834,7 +860,7 @@ void AgoraClr::NativeOnWarning(int warn, const char *msg)
 	}
 }
 
-void AgoraClr::NativeOnError(int err, const char *msg)
+void AgoraClr::NativeOnError(int err, const char* msg)
 {
 	if (onError)
 		onError(err, gcnew String(msg));
@@ -846,14 +872,14 @@ void AgoraClr::NativeOnAudioQuality(uid_t uid, int quality, unsigned short delay
 		onAudioQuality(uid, quality, delay, lost);
 }
 
-void AgoraClr::NativeOnAudioVolumeIndication(const agora::rtc::AudioVolumeInfo *speakers, unsigned int speakerNumber, int totalVolume)
+void AgoraClr::NativeOnAudioVolumeIndication(const agora::rtc::AudioVolumeInfo* speakers, unsigned int speakerNumber, int totalVolume)
 {
 	if (onAudioVolumeIndication)
 	{
-		List<AudioVolumeInfo ^> ^ list = gcnew List<AudioVolumeInfo ^>();
+		List<AudioVolumeInfo^>^ list = gcnew List<AudioVolumeInfo^>();
 		for (unsigned int i = 0; i < speakerNumber; i++)
 		{
-			AudioVolumeInfo ^ info = gcnew AudioVolumeInfo();
+			AudioVolumeInfo^ info = gcnew AudioVolumeInfo();
 			info->uid = speakers[i].uid;
 			info->volume = speakers[i].volume;
 			list->Add(info);
@@ -862,28 +888,28 @@ void AgoraClr::NativeOnAudioVolumeIndication(const agora::rtc::AudioVolumeInfo *
 	}
 }
 
-void AgoraClr::NativeOnLeaveChannel(const agora::rtc::RtcStats &stats)
+void AgoraClr::NativeOnLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	if (onLeaveChannel)
 		onLeaveChannel(gcnew RtcStats(stats));
 }
 
-void AgoraClr::NativeOnRtcStats(const agora::rtc::RtcStats &stats)
+void AgoraClr::NativeOnRtcStats(const agora::rtc::RtcStats& stats)
 {
 	if (onRtcStats)
 	{
-		RtcStats ^ rtc = gcnew RtcStats(stats);
+		RtcStats^ rtc = gcnew RtcStats(stats);
 		onRtcStats(rtc);
 	}
 }
 
-void AgoraClr::NativeOnAudioDeviceStateChanged(const char *deviceId, int deviceType, int deviceState)
+void AgoraClr::NativeOnAudioDeviceStateChanged(const char* deviceId, int deviceType, int deviceState)
 {
 	if (onAudioDeviceStateChanged)
 		onAudioDeviceStateChanged(gcnew String(deviceId), deviceType, deviceState);
 }
 
-void AgoraClr::NativeOnVideoDeviceStateChanged(const char *deviceId, int deviceType, int deviceState)
+void AgoraClr::NativeOnVideoDeviceStateChanged(const char* deviceId, int deviceType, int deviceState)
 {
 	if (onVideoDeviceStateChanged)
 		onVideoDeviceStateChanged(gcnew String(deviceId), deviceType, deviceState);
@@ -913,13 +939,13 @@ void AgoraClr::NativeOnAudioDeviceVolumeChanged(MEDIA_DEVICE_TYPE deviceType, in
 		onAudioDeviceVolumeChanged((MediaDeviceType)deviceType, volume, muted);
 }
 
-void AgoraClr::NativeOnStreamUnpublished(const char *url)
+void AgoraClr::NativeOnStreamUnpublished(const char* url)
 {
 	if (onStreamUnpublished)
 		onStreamUnpublished(gcnew String(url));
 }
 
-void AgoraClr::NativeOnStreamPublished(const char *url, int error)
+void AgoraClr::NativeOnStreamPublished(const char* url, int error)
 {
 	if (onStreamPublished)
 		onStreamPublished(gcnew String(url), error);
@@ -937,7 +963,7 @@ void AgoraClr::NativeOnConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNE
 		onConnectionStateChanged((ConnectionStateType)state, (ConnectionChangedReasonType)reason);
 }
 
-void AgoraClr::NativeOnTokenPrivilegeWillExpire(const char *token)
+void AgoraClr::NativeOnTokenPrivilegeWillExpire(const char* token)
 {
 	if (onTokenPrivilegeWillExpire)
 		onTokenPrivilegeWillExpire(gcnew String(token));
@@ -1015,7 +1041,7 @@ void AgoraClr::NativeOnUserOffline(uid_t uid, USER_OFFLINE_REASON_TYPE reason)
 		onUserOffline(uid, (UserOfflineType)reason);
 }
 
-void AgoraClr::NativeOnNetworkTypeChanged(NETWORK_TYPE type) 
+void AgoraClr::NativeOnNetworkTypeChanged(NETWORK_TYPE type)
 {
 	if (onNetworkTypeChanged) onNetworkTypeChanged((NetworkType)type);
 }
@@ -1045,6 +1071,21 @@ void AgoraClrLibrary::AgoraClr::NativeOnLocalAudioStats(const LocalAudioStats& s
 	if (onLocalAudioStats) onLocalAudioStats(gcnew ClrLocalAudioStats(stats));
 }
 
+void AgoraClrLibrary::AgoraClr::NativeOnAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error)
+{
+	if (onAudioMixingStateChanged) onAudioMixingStateChanged(static_cast<AudioMixingStateType>(state), static_cast<AudioMixingErrorType>(error));
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnRemoteAudioMixingBegin()
+{
+	if (onRemoteAudioMixingBegin) onRemoteAudioMixingBegin();
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnRemoteAudioMixingEnd()
+{
+	if (onRemoteAudioMixingEnd) onRemoteAudioMixingEnd();
+}
+
 void AgoraClr::NativeOnUserMuteAudio(uid_t uid, bool muted)
 {
 	if (onUserMuteAudio)
@@ -1063,23 +1104,23 @@ void AgoraClr::NativeOnUserEnableVideo(uid_t uid, bool enabled)
 		onUserEnableVideo(uid, enabled);
 }
 
-void AgoraClr::NativeOnApiCallExecuted(const char *api, int error)
+void AgoraClr::NativeOnApiCallExecuted(const char* api, int error)
 {
 	if (onApiCallExecuted)
 		onApiCallExecuted(gcnew String(api), error);
 }
 
-void AgoraClr::NativeOnLocalVideoStats(const agora::rtc::LocalVideoStats &stats)
+void AgoraClr::NativeOnLocalVideoStats(const agora::rtc::LocalVideoStats& stats)
 {
 	if (onLocalVideoStats)
 		onLocalVideoStats(gcnew ClrLocalVideoStats(stats));
 }
 
-void AgoraClr::NativeOnRemoteVideoStats(const agora::rtc::RemoteVideoStats &stats)
+void AgoraClr::NativeOnRemoteVideoStats(const agora::rtc::RemoteVideoStats& stats)
 {
 	if (onRemoteVideoStats)
 	{
-		RemoteVideoStats ^ s = gcnew RemoteVideoStats(stats);
+		RemoteVideoStats^ s = gcnew RemoteVideoStats(stats);
 
 		onRemoteVideoStats(s);
 	}
@@ -1115,7 +1156,7 @@ void AgoraClr::NativeOnConnectionInterrupted()
 		onConnectionInterrupted();
 }
 
-void AgoraClr::NativeOnStreamMessage(uid_t uid, int streamId, const char *data, size_t length)
+void AgoraClr::NativeOnStreamMessage(uid_t uid, int streamId, const char* data, size_t length)
 {
 	if (onStreamMessage)
 		onStreamMessage(uid, streamId, gcnew String(data));
@@ -1157,7 +1198,7 @@ void AgoraClr::NativeOnCameraFocusAreaChanged(int x, int y, int width, int heigh
 		onCameraFocusAreaChanged(x, y, width, height);
 }
 
-void AgoraClr::NativeOnRemoteAudioStats(const RemoteAudioStats &stats)
+void AgoraClr::NativeOnRemoteAudioStats(const RemoteAudioStats& stats)
 {
 	if (onRemoteAudioStats)
 		onRemoteAudioStats(gcnew ClrRemoteAudioStats(stats));
@@ -1193,7 +1234,7 @@ void AgoraClr::NativeOnAudioEffectFinished(int soundId)
 		onAudioEffectFinished(soundId);
 }
 
-void AgoraClr::NativeOnStreamInjectedStatus(const char *url, uid_t uid, int status)
+void AgoraClr::NativeOnStreamInjectedStatus(const char* url, uid_t uid, int status)
 {
 	if (onStreamInjectedStatus)
 		onStreamInjectedStatus(gcnew String(url), uid, status);
@@ -1211,12 +1252,12 @@ void AgoraClr::NativeOnMediaEngineStartCallSuccess()
 		onMediaEngineStartCallSuccess();
 }
 
-bool AgoraClr::NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet &packet)
+bool AgoraClr::NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	bool result = true;
 	if (onSendAudioPacket)
 	{
-		ClrPacket ^ managedPacket = gcnew ClrPacket(packet);
+		ClrPacket^ managedPacket = gcnew ClrPacket(packet);
 		result = onSendAudioPacket(managedPacket);
 		if (result)
 			managedPacket->writePacket(packet);
@@ -1224,12 +1265,12 @@ bool AgoraClr::NativeOnSendAudioPacket(agora::rtc::IPacketObserver::Packet &pack
 	return result;
 }
 
-bool AgoraClr::NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet &packet)
+bool AgoraClr::NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	bool result = true;
 	if (onSendVideoPacket)
 	{
-		ClrPacket ^ managedPacket = gcnew ClrPacket(packet);
+		ClrPacket^ managedPacket = gcnew ClrPacket(packet);
 		result = onSendVideoPacket(managedPacket);
 		if (result)
 			managedPacket->writePacket(packet);
@@ -1237,12 +1278,12 @@ bool AgoraClr::NativeOnSendVideoPacket(agora::rtc::IPacketObserver::Packet &pack
 	return result;
 }
 
-bool AgoraClr::NativeOnReceiveAudioPacket(agora::rtc::IPacketObserver::Packet &packet)
+bool AgoraClr::NativeOnReceiveAudioPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	bool result = true;
 	if (onSendVideoPacket)
 	{
-		ClrPacket ^ managedPacket = gcnew ClrPacket(packet);
+		ClrPacket^ managedPacket = gcnew ClrPacket(packet);
 		result = onReceiveAudioPacket(managedPacket);
 		if (result)
 			managedPacket->writePacket(packet);
@@ -1250,12 +1291,12 @@ bool AgoraClr::NativeOnReceiveAudioPacket(agora::rtc::IPacketObserver::Packet &p
 	return result;
 }
 
-bool AgoraClr::NativeOnReceiveVideoPacket(agora::rtc::IPacketObserver::Packet &packet)
+bool AgoraClr::NativeOnReceiveVideoPacket(agora::rtc::IPacketObserver::Packet& packet)
 {
 	bool result = true;
 	if (onSendVideoPacket)
 	{
-		ClrPacket ^ managedPacket = gcnew ClrPacket(packet);
+		ClrPacket^ managedPacket = gcnew ClrPacket(packet);
 		result = onReceiveVideoPacket(managedPacket);
 		if (result)
 			managedPacket->writePacket(packet);
@@ -1263,12 +1304,12 @@ bool AgoraClr::NativeOnReceiveVideoPacket(agora::rtc::IPacketObserver::Packet &p
 	return result;
 }
 
-bool AgoraClr::NativeOnRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame &frame)
+bool AgoraClr::NativeOnRecordAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame)
 {
 	bool result = true;
 	if (onRecordAudioFrame)
 	{
-		ClrAudioFrame ^ clrFrame = gcnew ClrAudioFrame(frame);
+		ClrAudioFrame^ clrFrame = gcnew ClrAudioFrame(frame);
 		result = onRecordAudioFrame(clrFrame);
 		if (result)
 			clrFrame->writeRaw(frame);
@@ -1276,12 +1317,12 @@ bool AgoraClr::NativeOnRecordAudioFrame(agora::media::IAudioFrameObserver::Audio
 	return result;
 }
 
-bool AgoraClr::NativeOnPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame &frame)
+bool AgoraClr::NativeOnPlaybackAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame)
 {
 	bool result = true;
 	if (onPlaybackAudioFrame)
 	{
-		ClrAudioFrame ^ clrFrame = gcnew ClrAudioFrame(frame);
+		ClrAudioFrame^ clrFrame = gcnew ClrAudioFrame(frame);
 		result = onPlaybackAudioFrame(clrFrame);
 		if (result)
 			clrFrame->writeRaw(frame);
@@ -1289,12 +1330,12 @@ bool AgoraClr::NativeOnPlaybackAudioFrame(agora::media::IAudioFrameObserver::Aud
 	return result;
 }
 
-bool AgoraClr::NativeOnPlaybackAudioFrameBeforeMixing(unsigned int uid, agora::media::IAudioFrameObserver::AudioFrame &frame)
+bool AgoraClr::NativeOnPlaybackAudioFrameBeforeMixing(unsigned int uid, agora::media::IAudioFrameObserver::AudioFrame& frame)
 {
 	bool result = true;
 	if (onPlaybackAudioFrameBeforeMixing)
 	{
-		ClrAudioFrame ^ clrFrame = gcnew ClrAudioFrame(frame);
+		ClrAudioFrame^ clrFrame = gcnew ClrAudioFrame(frame);
 		result = onPlaybackAudioFrameBeforeMixing(uid, clrFrame);
 		if (result)
 			clrFrame->writeRaw(frame);
@@ -1302,12 +1343,12 @@ bool AgoraClr::NativeOnPlaybackAudioFrameBeforeMixing(unsigned int uid, agora::m
 	return result;
 }
 
-bool AgoraClr::NativeOnMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame &frame)
+bool AgoraClr::NativeOnMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame)
 {
 	bool result = true;
 	if (onMixedAudioFrame)
 	{
-		ClrAudioFrame ^ clrFrame = gcnew ClrAudioFrame(frame);
+		ClrAudioFrame^ clrFrame = gcnew ClrAudioFrame(frame);
 		result = onMixedAudioFrame(clrFrame);
 		if (result)
 			clrFrame->writeRaw(frame);
@@ -1315,12 +1356,12 @@ bool AgoraClr::NativeOnMixedAudioFrame(agora::media::IAudioFrameObserver::AudioF
 	return result;
 }
 
-bool AgoraClr::NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame &frame)
+bool AgoraClr::NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame)
 {
 	bool result = true;
 	if (onCaptureVideoFrame)
 	{
-		ClrVideoFrame ^ clrFrame = gcnew ClrVideoFrame(frame);
+		ClrVideoFrame^ clrFrame = gcnew ClrVideoFrame(frame);
 		result = onCaptureVideoFrame(clrFrame);
 		if (result)
 			clrFrame->writeRaw(frame);
@@ -1328,12 +1369,12 @@ bool AgoraClr::NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::Vide
 	return result;
 }
 
-bool AgoraClr::NativeOnRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame &frame)
+bool AgoraClr::NativeOnRenderVideoFrame(unsigned int uid, agora::media::IVideoFrameObserver::VideoFrame& frame)
 {
 	bool result = true;
 	if (onRenderVideoFrame)
 	{
-		ClrVideoFrame ^ clrFrame = gcnew ClrVideoFrame(frame);
+		ClrVideoFrame^ clrFrame = gcnew ClrVideoFrame(frame);
 		result = onRenderVideoFrame(uid, clrFrame);
 		if (result)
 			clrFrame->writeRaw(frame);

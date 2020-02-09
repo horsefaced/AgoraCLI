@@ -277,3 +277,18 @@ void AgoraClrLibrary::AgoraClrEventHandler::onLocalAudioStats(const LocalAudioSt
 {
 	if (onLocalAudioStatsEvent) onLocalAudioStatsEvent(stats);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error)
+{
+	if (onAudioMixingStateChangedEvent) onAudioMixingStateChangedEvent(state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioMixingBegin()
+{
+	if (onRemoteAudioMixingBeginEvent) onRemoteAudioMixingBeginEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioMixingEnd()
+{
+	if (onRemoteAudioMixingEndEvent) onRemoteAudioMixingEndEvent();
+}

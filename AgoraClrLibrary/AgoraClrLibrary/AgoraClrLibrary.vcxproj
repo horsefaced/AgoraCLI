@@ -135,6 +135,9 @@
     <ClInclude Include="AgoraClrAudioDeviceManager.h" />
     <ClInclude Include="AgoraClrEventHandler.h" />
     <ClInclude Include="AgoraClrLibrary.h" />
+    <ClInclude Include="AgoraClrLibraryDelegates.h" />
+    <ClInclude Include="AgoraClrLibraryEnum.h" />
+    <ClInclude Include="AgoraClrLibraryTypes.h" />
     <ClInclude Include="AgoraClrPacketObserver.h" />
     <ClInclude Include="AgoraClrRawFrameObserver.h" />
     <ClInclude Include="AgoraClrSignal.h" />

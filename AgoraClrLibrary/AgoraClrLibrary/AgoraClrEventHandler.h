@@ -73,6 +73,10 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall* PFOnRemoteAudioStateChanged)(uid_t, REMOTE_AUDIO_STATE, REMOTE_AUDIO_STATE_REASON, int);
 	typedef void(__stdcall* PFOnFirstRemoteAudioDecoded)(uid_t, int);
 	typedef void(__stdcall* PFOnLocalAudioStats)(const LocalAudioStats&);
+	typedef void(__stdcall* PFOnAudioMixingStateChanged)(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_ERROR_TYPE);
+	typedef void(__stdcall* PFOnRemoteAudioMixingBegin)();
+	typedef void(__stdcall* PFActionCall)();
+
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
 	delegate void NativeOnRejoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -143,6 +147,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnRemoteAudioStateChangedDelegate(uid_t, REMOTE_AUDIO_STATE, REMOTE_AUDIO_STATE_REASON, int);
 	delegate void NativeOnFirstRemoteAudioDecodedDelegate(uid_t, int);
 	delegate void NativeOnLocalAudioStatsDelegate(const LocalAudioStats&);
+	delegate void NativeOnAudioMixingStateChangedDelegate(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_ERROR_TYPE);
 
 	public class AgoraClrEventHandler : public agora::rtc::IRtcEngineEventHandler
 	{
@@ -218,7 +223,10 @@ namespace AgoraClrLibrary {
 		PFOnLocalVideoStateChanged onLocalVideoStateChangedEvent = 0;
 		PFOnRemoteAudioStateChanged onRemoteAudioStateChangedEvent = 0;
 		PFOnFirstRemoteAudioDecoded onFirstRemoteAudioDecodedEvent = 0;
-		PFOnLocalAudioStats onLocalAudioStatsEvent = 0
+		PFOnLocalAudioStats onLocalAudioStatsEvent = 0;
+		PFOnAudioMixingStateChanged onAudioMixingStateChangedEvent = 0;
+		PFOnRemoteAudioMixingBegin onRemoteAudioMixingBeginEvent = 0;
+		PFActionCall onRemoteAudioMixingEndEvent = 0;
 
 		virtual void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
 		virtual void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
@@ -289,6 +297,9 @@ namespace AgoraClrLibrary {
 		virtual void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed);
 		virtual void onFirstRemoteAudioDecoded(uid_t uid, int elapsed);
 		virtual void onLocalAudioStats(const LocalAudioStats& stats);
+		virtual void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error);
+		virtual void onRemoteAudioMixingBegin();
+		virtual void onRemoteAudioMixingEnd();
 	};
 
 }
