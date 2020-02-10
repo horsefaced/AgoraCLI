@@ -17,21 +17,29 @@ namespace AgoraClrLibrary {
 		int getCount();
 		int getDevice(int index, String^% deviceName, String^% deviceId);
 		int setDevice(String^ deviceId);
-		void release();
+		int setApplicationVolume(int volume);
+		int getApplicationVolume(int% volume);
+		int setApplicationMute(bool mute);
+		int isApplicationMute(bool% mute);
 	private:
 		IAudioDeviceCollection* raw;
+
+		void release();
 	};
 
 	public ref class AgoraClrAudioDeviceManager
 	{
 	public:
-		AgoraClrAudioDeviceManager(AgoraClr^ engine);
+		AgoraClrAudioDeviceManager(IRtcEngine* engine);
 
 		ClrAudioDeviceCollection^ enumeratePlaybackDevices();
 		ClrAudioDeviceCollection^ enumerateRecordingDevices();
 
 		int setPlaybackDevice(String^ deviceId);
 		int setRecordingDevice(String^ deviceId);
+
+		int startPlaybackDeviceTest(String^ path);
+		int stopPlaybackDeviceTest();
 
 		int setPlaybackDeviceVolume(int volume);
 		int getPlaybackDeviceVolume(int %volume);
@@ -40,18 +48,24 @@ namespace AgoraClrLibrary {
 		int getRecordingDeviceVolume(int %volume);
 
 		int setPlaybackDeviceMute(bool mute);
-		int getPlaybackDeviceMute(bool %mute);
+		int getPlaybackDeviceMute(bool% mute);
 
 		int setRecordingDeviceMute(bool mute);
-		int getRecordingDeviceMute(bool &mute);
+		int getRecordingDeviceMute(bool& mute);
 
-		int startPlaybackDeviceTest(String^ path);
-		int stopPlaybackDeviceTest();
 		int startRecordingDeviceTest(int indicationInterval);
 		int stopRecordingDeviceTest();
 
+		int getPlaybackDevice(String^% deviceId);
+		int getPlaybackDeviceInfo(String^% deviceId, String^% deviceName);
+
+		int getRecordingDevice(String^% deviceId);
+		int getRecordingDeviceInfo(String^% deviceId, String^% deviceName);
+
+		int startAudioDeviceLoopbackTest(int interval);
+		int stopAudioDeviceLoopbackTest();
 	private:
-		AgoraClr^ engine;
+		IRtcEngine* engine;
 
 	};
 

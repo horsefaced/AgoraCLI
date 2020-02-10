@@ -789,4 +789,5 @@ namespace AgoraClrLibrary {
 		  */
 		  FRAME_TYPE_RGBA = 2,    // RGBA format
 	};
+
 }

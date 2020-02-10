@@ -575,8 +575,8 @@ namespace AgoraClrLibrary {
 		{
 		}
 
-		void writeRaw(InjectStreamConfig& raw)
-		{
+		operator InjectStreamConfig() {
+			InjectStreamConfig raw;
 			raw.width = width;
 			raw.height = height;
 			raw.videoGop = videoGop;
@@ -585,6 +585,7 @@ namespace AgoraClrLibrary {
 			raw.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
 			raw.audioBitrate = audioBitrate;
 			raw.audioChannels = audioChannels;
+			return raw;
 		}
 	};
 

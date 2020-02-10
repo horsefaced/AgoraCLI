@@ -195,7 +195,7 @@ namespace AgoraClrLibrary
 		//这个部分2.9.1只用在Android与iOS上, 所以没有添加
 
 		//耳返控制, 这个函数现在在2.9.1上只在Android与iOS上提供, 请不要调用
-		[[deprecated]] int setInEarMonitoringVolume(int volume); 
+		[[DEPRECATED]] int setInEarMonitoringVolume(int volume); 
 
 		//视频双流模式
 		int enableDualStreamMode(bool enabled);
@@ -261,17 +261,46 @@ namespace AgoraClrLibrary
 		int clearVideoWatermarks();
 
 		//加密
+		int setEncryptionSecret(String^ key);
+		int setEncryptionMode(String^ mode);
 
-		//todo:jiami
+		//音频录制
+		int startAudioRecording(String^ path, int sampleRate, AudioRecordingQualityType quality);
+		int stopAudioRecording();
 
+		//直播导入在线媒体流
+		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig^ config);
+		int removeInjectStreamUrl(String^ url);
+		onStreamInjectedStatus^ onStreamInjectedStatus;
+
+		//摄像头控制, 只适用于Android与iOS,所以没有实现
+		[[DEPRECATED]] onCameraFocusAreaChanged^ onCameraFocusAreaChanged;
+
+		//设备管理, 设备管理的一部分接口是在这两个类里面的
+		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
+		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
+		onAudioDeviceStateChanged^ onAudioDeviceStateChanged;
+		onVideoDeviceStateChanged^ onVideoDeviceStateChanged;
+		onAudioDeviceVolumeChanged^ onAudioDeviceVolumeChanged;
+
+		//流消息
+		int createDataStream(int% id, bool reliable, bool ordered);
+		int sendStreamMessage(int id, String^ data);
+		onStreamMessage^ onStreamMessage;
+		onStreamMessageError^ onStreamMessageError;
+
+		//其他音频控制
+		int enableLoopbackRecording(bool enabled, String^ name);
+		//只在iOS上有
+		//int setAudioSessionOperationRestriction(EnumAudioSessionOperationRestriction restriction);
+
+		//todo: 其他视频控制
 
 		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
 
 
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
 
-		int setEncryptionSecret(String^ key);
-		int setEncryptionMode(String^ mode);
 
 		int getCallId(String^% callid);
 		int rate(String^ callid, int rating, String^ desc);
@@ -284,15 +313,11 @@ namespace AgoraClrLibrary
 		int clearVideoCompositingLayout();
 		int configPublisher(ClrPublisherConfiguration^ config);
 
-		int createDataStream(int% id);
-		int sendStreamMessage(int id, String^ data);
 
 		//Ô­Ê¼Êý¾ÝAPI
 		//RtcEngineParameters Part
 
 		int setPlaybackDeviceVolume(int volume);
-		int startAudioRecording(String^ path, AudioRecordingQualityType quality);
-		int stopAudioRecording();
 
 		int setLogFile(String^ path);
 		int setLogFilter(unsigned int filter);
@@ -301,10 +326,7 @@ namespace AgoraClrLibrary
 
 		int setLocalVideoMirrorMode(VideoMirrorModeType mode);
 		String^ getVersion(int% build);
-		int enableLoopbackRecording(bool enabled);
 
-		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig^ config);
-		int removeInjectStreamUrl(String^ url);
 
 		//2.3
 
@@ -312,10 +334,6 @@ namespace AgoraClrLibrary
 		int clearVideoWatermark();
 
 		String^ getErrorDescription(int code);
-
-		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
-		AgoraClrVideoDeviceManager^ getVideoDeviceManager();
-		IRtcEngine* getEngine();
 
 		//RtcEngineEventHandler Part
 
@@ -325,8 +343,6 @@ namespace AgoraClrLibrary
 
 
 		onFirstRemoteVideoDecoded^ onFirstRemoteVideoDecoded;
-		onAudioDeviceStateChanged^ onAudioDeviceStateChanged;
-		onVideoDeviceStateChanged^ onVideoDeviceStateChanged;
 		onUserEnableVideo^ onUserEnableVideo;
 		onCameraReady^ onCameraReady;
 		onVideoStopped^ onVideoStopped;
@@ -334,27 +350,22 @@ namespace AgoraClrLibrary
 		onConnectionBanned^ onConnectionBanned;
 
 		onApiCallExecuted^ onApiCallExecuted;
-		onStreamMessage^ onStreamMessage;
-		onStreamMessageError^ onStreamMessageError;
 		onRequestChannelKey^ onRequestChannelKey;
 
 		onAudioMixingFinished^ onAudioMixingFinished;
 
 
-		onAudioDeviceVolumeChanged^ onAudioDeviceVolumeChanged;
 
 		onStreamUnpublished^ onStreamUnpublished;
 		onStreamPublished^ onStreamPublished;
 
 		onUserEnableLocalVideo^ onUserEnableLocalVideo;
 		onVideoSizeChanged^ onVideoSizeChanged;
-		onCameraFocusAreaChanged^ onCameraFocusAreaChanged;
 
 		onRemoteAudioTransportStats^ onRemoteAudioTransportStats;
 		onRemoteVideoTransportStats^ onRemoteVideoTransportStats;
 		onAudioMixingBegin^ onAudioMixingBegin;
 		onAudioMixingEnd^ onAudioMixingEnd;
-		onStreamInjectedStatus^ onStreamInjectedStatus;
 		onMediaEngineLoadSuccess^ onMediaEngineLoadSuccess;
 		onMediaEngineStartCallSuccess^ onMediaEngineStartCallSuccess;
 

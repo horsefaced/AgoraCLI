@@ -228,8 +228,7 @@ int AgoraClr::renewToken(String^ token)
 
 int AgoraClr::setEncryptionSecret(String^ key)
 {
-	std::string screte = MarshalString(key);
-	return rtcEngine->setEncryptionSecret(screte.c_str());
+	return rtcEngine->setEncryptionSecret(MarshalString(key).c_str());
 }
 
 int AgoraClr::setEncryptionMode(String^ mode)
@@ -352,10 +351,10 @@ int AgoraClr::setClientRole(ClientRoleType role)
 	return rtcEngine->setClientRole((CLIENT_ROLE_TYPE)role);
 }
 
-int AgoraClr::createDataStream(int% id)
+int AgoraClr::createDataStream(int% id, bool reliable, bool ordered)
 {
 	int streamId;
-	int result = rtcEngine->createDataStream(&streamId, true, true);
+	int result = rtcEngine->createDataStream(&streamId, reliable, ordered);
 	id = streamId;
 	return result;
 }
@@ -437,16 +436,14 @@ int AgoraClr::enableAudioVolumeIndication(int interval, int smooth, bool report_
 	return rtcEngine->enableAudioVolumeIndication(interval, smooth, report_vad);
 }
 
-int AgoraClr::startAudioRecording(String^ path, AudioRecordingQualityType quality)
+int AgoraClr::startAudioRecording(String^ path, int sampleRate, AudioRecordingQualityType quality)
 {
-	agora::rtc::RtcEngineParameters param(*rtcEngine);
-	return param.startAudioRecording(MarshalString(path).c_str(), (agora::rtc::AUDIO_RECORDING_QUALITY_TYPE)quality);
+	return rtcEngine->startAudioRecording(MarshalString(path).c_str(), sampleRate, static_cast<AUDIO_RECORDING_QUALITY_TYPE>(quality));
 }
 
 int AgoraClr::stopAudioRecording()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.stopAudioRecording();
+	return rtcEngine->stopAudioRecording();
 }
 
 int AgoraClr::pauseAudioMixing()
@@ -565,10 +562,9 @@ String^ AgoraClr::getVersion(int% build)
 	return result;
 }
 
-int AgoraClr::enableLoopbackRecording(bool enabled)
+int AgoraClr::enableLoopbackRecording(bool enabled, String^ name)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.enableLoopbackRecording(enabled);
+	return rtcEngine->enableLoopbackRecording(enabled, MarshalString(name).c_str());
 }
 
 int AgoraClr::addPublishStreamUrl(String^ url, bool transcodingEnabled)
@@ -588,9 +584,7 @@ int AgoraClr::setLiveTranscoding(ClrLiveTranscoding^ transcoding)
 
 int AgoraClr::addInjectStreamUrl(String^ url, ClrInjectStreamConfig^ config)
 {
-	InjectStreamConfig raw;
-	config->writeRaw(raw);
-	return rtcEngine->addInjectStreamUrl(MarshalString(url).c_str(), raw);
+	return rtcEngine->addInjectStreamUrl(MarshalString(url).c_str(), config);
 }
 
 int AgoraClr::removeInjectStreamUrl(String^ url)
@@ -897,11 +891,6 @@ AgoraClrAudioDeviceManager^ AgoraClr::getAudioDeviceManager()
 AgoraClrVideoDeviceManager^ AgoraClr::getVideoDeviceManager()
 {
 	return gcnew AgoraClrVideoDeviceManager(this);
-}
-
-IRtcEngine* AgoraClr::getEngine()
-{
-	return this->rtcEngine;
 }
 
 void AgoraClr::NativeOnJoinChannelSuccess(const char* channel, uid_t uid, int elapsed)
