@@ -8,20 +8,32 @@
 #include "AgoraClrVideoDeviceManager.h"
 #include "AgoraClrLibraryEnum.h"
 
+#include <msclr/marshal_cppstd.h>
 #include <string>
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace System::Collections::Generic;
 using namespace agora::rtc;
+using namespace msclr::interop;
 
 namespace AgoraClrLibrary {
 
-	static std::string MarshalString(String^ s)
+	static char* strcopy(std::string& source) {
+		char* dest = reinterpret_cast<char*>(malloc(sizeof(char) * source.length() + 1));
+		if (dest == 0) return nullptr;
+		else {
+			strcpy(dest, source.c_str());
+			return dest;
+		}
+	}
+
+	static std::string MarshalString(String^ s, bool isUnicode = false)
 	{
-		if (s == nullptr)
-			return std::string();
-		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalUni(s);
+		if (s == nullptr) return std::string();
+
+		IntPtr middleStr = isUnicode ? Runtime::InteropServices::Marshal::StringToHGlobalUni(s) :
+			Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
 		std::string result(reinterpret_cast<char*>(middleStr.ToPointer()));
 		Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
 		return result;
@@ -318,116 +330,6 @@ namespace AgoraClrLibrary {
 		}
 	};
 
-	public
-	ref class ClrRegion
-	{
-	public:
-		int uid;
-		double x;	  //[0,1]
-		double y;	  //[0,1]
-		double width;  //[0,1]
-		double height; //[0,1]
-		int zOrder;	//optional, [0, 100] //0 (default): bottom most, 100: top most
-
-		//  Optional
-		//  [0, 1.0] where 0 denotes throughly transparent, 1.0 opaque
-		double alpha;
-
-		RenderMode renderMode; //RENDER_MODE_HIDDEN: Crop, RENDER_MODE_FIT: Zoom to fit
-
-		ClrRegion()
-			: uid(0), x(0), y(0), width(0), height(0), zOrder(0), alpha(1.0), renderMode(RenderMode::RENDER_MODE_HIDDEN)
-		{
-		}
-
-		agora::rtc::VideoCompositingLayout::Region* toRaw()
-		{
-			VideoCompositingLayout::Region* result = new VideoCompositingLayout::Region();
-			result->uid = uid, result->x = x, result->y = y, result->width = width, result->height = height;
-			result->zOrder = zOrder, result->alpha = alpha;
-			return result;
-		}
-
-		static agora::rtc::VideoCompositingLayout::Region* toRaws(List<ClrRegion^>^ region)
-		{
-			int size = sizeof(VideoCompositingLayout::Region) * region->Count;
-			VideoCompositingLayout::Region* result = static_cast<VideoCompositingLayout::Region*>(Marshal::AllocHGlobal(size).ToPointer());
-			for (int i = 0; i < region->Count; i++)
-			{
-				result[i] = *region[i]->toRaw();
-			}
-			return result;
-		}
-	};
-
-	public
-	ref class ClrVideoCompositingLayout
-	{
-	public:
-		int canvasWidth;
-		int canvasHeight;
-		String^ backgroundColor; //e.g. "#C0C0C0" in RGB
-		List<ClrRegion^>^ regions;
-		String^ appData;
-		ClrVideoCompositingLayout()
-			: canvasWidth(0), canvasHeight(0), backgroundColor(nullptr), regions(nullptr), appData(nullptr)
-		{
-		}
-
-		agora::rtc::VideoCompositingLayout* toRaw()
-		{
-			VideoCompositingLayout* result = new VideoCompositingLayout();
-			result->canvasHeight = canvasHeight, result->canvasWidth = canvasWidth;
-			result->backgroundColor = MarshalString(backgroundColor).c_str();
-			result->regions = ClrRegion::toRaws(regions), result->regionCount = regions->Count;
-			result->appData = MarshalString(appData).c_str(), result->appDataLength = appData->Length;
-			return result;
-		}
-	};
-
-	public
-	ref class ClrPublisherConfiguration
-	{
-	public:
-		int width;
-		int height;
-		int framerate;
-		int bitrate;
-		int defaultLayout;
-		RtmpStreamLifeCycleType lifecycle;
-		bool owner;
-		int injectStreamWidth = 0;
-		int injectStreamHeight = 0;
-		String^ injectStreamUrl = nullptr;
-		String^ publishUrl = nullptr;
-		String^ rawStreamUrl = nullptr;
-		String^ extraInfo = nullptr;
-
-		ClrPublisherConfiguration()
-			: width(640), height(360), framerate(15), bitrate(500), defaultLayout(1), lifecycle(RtmpStreamLifeCycleType::RTMP_STREAM_LIFE_CYCLE_BIND2CHANNEL), owner(true)
-		{
-		}
-
-		agora::rtc::PublisherConfiguration* toRaw()
-		{
-			PublisherConfiguration* result = new PublisherConfiguration();
-			result->width = width;
-			result->height = height;
-			result->framerate = framerate;
-			result->defaultLayout = defaultLayout;
-			result->lifecycle = (RTMP_STREAM_LIFE_CYCLE_TYPE)lifecycle;
-			result->owner = owner;
-			result->publishUrl = MarshalString(publishUrl).c_str();
-			result->injectStreamHeight = injectStreamHeight;
-			result->injectStreamWidth = injectStreamWidth;
-			result->injectStreamUrl = MarshalString(injectStreamUrl).c_str();
-			result->publishUrl = MarshalString(publishUrl).c_str();
-			result->rawStreamUrl = MarshalString(rawStreamUrl).c_str();
-			result->extraInfo = MarshalString(extraInfo).c_str();
-			return result;
-		}
-	};
-
 	public ref class ClrRectangle
 	{
 	public:
@@ -502,6 +404,42 @@ namespace AgoraClrLibrary {
 		}
 	};
 
+	public
+	ref class ClrRtcImage
+	{
+	public:
+		ClrRtcImage() : url(nullptr),
+			x(0),
+			y(0),
+			width(0),
+			height(0)
+		{
+		}
+		/** URL address of the image on the broadcasting video. */
+		String^ url;
+		/** Horizontal position of the image from the upper left of the broadcasting video. */
+		int x;
+		/** Vertical position of the image from the upper left of the broadcasting video. */
+		int y;
+		/** Width of the image on the broadcasting video. */
+		int width;
+		/** Height of the image on the broadcasting video. */
+		int height;
+
+		operator RtcImage* ()
+		{
+			RtcImage* raw = new RtcImage();
+			raw->x = x;
+			raw->y = y;
+			raw->width = width;
+			raw->height = height;
+			raw->url = strcopy(MarshalString(url));
+			return raw;
+		}
+
+
+	};
+
 
 	public
 	ref class ClrLiveTranscoding
@@ -543,8 +481,8 @@ namespace AgoraClrLibrary {
 			raw.backgroundColor = backgroundColor;
 			raw.userCount = userCount;
 			raw.transcodingUsers = transcodingUsers;
-			raw.transcodingExtraInfo = MarshalString(transcodingExtraInfo).c_str();
-			raw.metadata = MarshalString(metadata).c_str();
+			raw.transcodingExtraInfo = strcopy(MarshalString(transcodingExtraInfo));
+			raw.metadata = strcopy(MarshalString(metadata));
 			raw.watermark = watermark;
 			raw.backgroundImage = backgroundImage;
 			raw.audioSampleRate = static_cast<AUDIO_SAMPLE_RATE_TYPE>(audioSampleRate);
@@ -703,46 +641,10 @@ namespace AgoraClrLibrary {
 			result->cropBottom = cropBottom;
 			result->rotation = rotation;
 			result->timestamp = timestamp;
-			result->buffer = Marshal::AllocHGlobal(buffer->LongLength * sizeof(Byte)).ToPointer();
-			Marshal::Copy(buffer, 0, (IntPtr)result->buffer, buffer->LongLength);
+			result->buffer = Marshal::AllocHGlobal(static_cast<int>(buffer->LongLength * sizeof(Byte))).ToPointer();
+			Marshal::Copy(buffer, 0, (IntPtr)result->buffer, static_cast<int>(buffer->LongLength));
 			return result;
 		}
-	};
-
-	public
-	ref class ClrRtcImage
-	{
-	public:
-		ClrRtcImage() : url(nullptr),
-			x(0),
-			y(0),
-			width(0),
-			height(0)
-		{
-		}
-		/** URL address of the image on the broadcasting video. */
-		String^ url;
-		/** Horizontal position of the image from the upper left of the broadcasting video. */
-		int x;
-		/** Vertical position of the image from the upper left of the broadcasting video. */
-		int y;
-		/** Width of the image on the broadcasting video. */
-		int width;
-		/** Height of the image on the broadcasting video. */
-		int height;
-
-		operator RtcImage*()
-		{
-			RtcImage* raw = new RtcImage();
-			raw->x = x;
-			raw->y = y;
-			raw->width = width;
-			raw->height = height;
-			raw->url = MarshalString(url).c_str();
-			return raw;
-		}
-
-
 	};
 
 
@@ -802,21 +704,6 @@ namespace AgoraClrLibrary {
 		ClrLocalAudioStats(const LocalAudioStats& stats) : numChannels(stats.numChannels), sentSampleRate(stats.sentSampleRate), sentBitrate(stats.sentBitrate) {}
 	};
 
-	public ref class ClrChannelMediaRelayConfiguration {
-	public:
-		ClrChannelMediaInfo^ src;
-		ClrChannelMediaInfo^ dest;
-		int destCount;
-
-		ClrChannelMediaRelayConfiguration() : src(nullptr), dest(nullptr), destCount(0) {}
-		operator ChannelMediaRelayConfiguration() {
-			ChannelMediaRelayConfiguration config;
-			config.srcInfo = src;
-			config.destInfos = dest;
-			config.destCount = destCount;
-		}
-	};
-
 	public ref class ClrChannelMediaInfo {
 	public:
 		String^ channel;
@@ -824,11 +711,30 @@ namespace AgoraClrLibrary {
 		uid_t uid;
 
 		operator ChannelMediaInfo* () {
-			ChannelMediaInfo *info = new ChannelMediaInfo();
+			ChannelMediaInfo* info = new ChannelMediaInfo();
 			info->channelName = MarshalString(channel).c_str();
 			info->token = MarshalString(token).c_str();
 			info->uid = uid;
 			return info;
+		}
+	};
+
+	public ref class ClrChannelMediaRelayConfiguration {
+	public:
+		ClrChannelMediaInfo^ src;
+		ClrChannelMediaInfo^ dest;
+		int destCount;
+
+		ClrChannelMediaRelayConfiguration() : 
+			src(nullptr), 
+			dest(nullptr), 
+			destCount(0) {}
+		operator ChannelMediaRelayConfiguration() {
+			ChannelMediaRelayConfiguration config;
+			config.srcInfo = src;
+			config.destInfos = dest;
+			config.destCount = destCount;
+			return config;
 		}
 	};
 
@@ -944,6 +850,7 @@ namespace AgoraClrLibrary {
 		operator CameraCapturerConfiguration() {
 			CameraCapturerConfiguration config;
 			config.preference = static_cast<CAPTURER_OUTPUT_PREFERENCE>(preference);
+			return config;
 		}
 	};
 }

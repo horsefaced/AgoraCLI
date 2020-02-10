@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.10
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgoraClrDemo", "AgoraClrDemo\AgoraClrDemo.csproj", "{B7988AE7-0610-4FD2-83B3-4A60BC99CD68}"
 EndProject
@@ -18,7 +18,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{B7988AE7-0610-4FD2-83B3-4A60BC99CD68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B7988AE7-0610-4FD2-83B3-4A60BC99CD68}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7988AE7-0610-4FD2-83B3-4A60BC99CD68}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{B7988AE7-0610-4FD2-83B3-4A60BC99CD68}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{B7988AE7-0610-4FD2-83B3-4A60BC99CD68}.Debug|x64.Build.0 = Debug|Any CPU
@@ -31,6 +30,7 @@ Global
 		{B7988AE7-0610-4FD2-83B3-4A60BC99CD68}.Release|x86.ActiveCfg = Release|Any CPU
 		{B7988AE7-0610-4FD2-83B3-4A60BC99CD68}.Release|x86.Build.0 = Release|Any CPU
 		{271543C6-D538-42CA-A307-23A7263AD3B5}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{271543C6-D538-42CA-A307-23A7263AD3B5}.Debug|Any CPU.Build.0 = Debug|Win32
 		{271543C6-D538-42CA-A307-23A7263AD3B5}.Debug|x64.ActiveCfg = Debug|x64
 		{271543C6-D538-42CA-A307-23A7263AD3B5}.Debug|x64.Build.0 = Debug|x64
 		{271543C6-D538-42CA-A307-23A7263AD3B5}.Debug|x86.ActiveCfg = Debug|Win32

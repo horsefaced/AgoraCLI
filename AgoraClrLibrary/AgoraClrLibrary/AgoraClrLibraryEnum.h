@@ -184,7 +184,7 @@ namespace AgoraClrLibrary {
 		RTMP_STREAM_LIFE_CYCLE_BIND2OWNER = 2,
 	};
 
-	public enum class ClrVideoContentHint {
+	public enum class EnumVideoContentHint {
 		CONTENT_HINT_NONE,
 		CONTENT_HINT_MOTION,
 		CONTENT_HINT_DETAILS,
@@ -593,7 +593,7 @@ namespace AgoraClrLibrary {
 
 	};
 
-	public enum class AudioReverbPreset {
+	public enum class EnumAudioReverbPreset {
 		/** 0: The original voice (no local voice reverberation).
 */
 		AUDIO_REVERB_OFF = 0, // Turn off audio reverb

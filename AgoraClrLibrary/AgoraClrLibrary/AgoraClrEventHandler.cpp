@@ -108,11 +108,6 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessageError(uid_t uid, int 
 	if (onStreamMessageErrorEvent) onStreamMessageErrorEvent(uid, streamId, code, missed, cached);
 }
 
-void AgoraClrLibrary::AgoraClrEventHandler::onRequestChannelKey()
-{
-	if (onRequestChannelKeyEvent) onRequestChannelKeyEvent();
-}
-
 void AgoraClrLibrary::AgoraClrEventHandler::onRequestToken()
 {
 	if (onRequestTokenEvent) onRequestTokenEvent();
@@ -198,11 +193,6 @@ void AgoraClrLibrary::AgoraClrEventHandler::onRemoteSubscribeFallbackToAudioOnly
 	if (onRemoteSubscribeFallbackToAudioOnlyEvent) onRemoteSubscribeFallbackToAudioOnlyEvent(uid, isFallbackOrRecover);
 }
 
-void AgoraClrLibrary::AgoraClrEventHandler::onCameraFocusAreaChanged(int x, int y, int width, int height)
-{
-	if (onCameraFocusAreaChangedEvent) onCameraFocusAreaChangedEvent(x, y, width, height);
-}
-
 void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioStats(const RemoteAudioStats & stats)
 {
 	if (onRemoteAudioStatsEvent) onRemoteAudioStatsEvent(stats);
@@ -216,16 +206,6 @@ void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioTransportStats(uid_t ui
 void AgoraClrLibrary::AgoraClrEventHandler::onRemoteVideoTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
 {
 	if (onRemoteVideoTransportStatsEvent) onRemoteVideoTransportStatsEvent(uid, delay, lost, rxKBitRate);
-}
-
-void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingBegin()
-{
-	if (onAudioMixingBeginEvent) onAudioMixingBeginEvent();
-}
-
-void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingEnd()
-{
-	if (onAudioMixingEndEvent) onAudioMixingEndEvent();
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onAudioEffectFinished(int soundId)

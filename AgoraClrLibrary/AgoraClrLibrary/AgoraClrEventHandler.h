@@ -62,7 +62,6 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnRemoteVideoStateChanged)(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON, int);
 	typedef void(__stdcall * PFOnLocalPublishFallbackToAudioOnly)(bool);
 	typedef void(__stdcall * PFOnRemoteSubscribeFallbackToAudioOnly)(uid_t, bool);
-	typedef void(__stdcall * PFOnCameraFocusAreaChanged)(int, int, int, int);
 	typedef void(__stdcall * PFOnRemoteAudioStats)(const RemoteAudioStats&);
 	typedef void(__stdcall * PFOnRemoteAudioTransportStats)(uid_t, unsigned short, unsigned short, unsigned short);
 	typedef void(__stdcall * PFOnRemoteVideoTransportStats)(uid_t, unsigned short, unsigned short, unsigned short);
@@ -139,7 +138,6 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnRemoteVideoStateChangedDelegate(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed);
 	delegate void NativeOnLocalPublishFallbackToAudioOnlyDelegate(bool);
 	delegate void NativeOnRemoteSubscribeFallbackToAudioOnlyDelegate(uid_t, bool);
-	delegate void NativeOnCameraFocusAreaChangedDelegate(int, int, int, int);
 	delegate void NativeOnRemoteAudioStatsDelegate(const RemoteAudioStats&);
 	delegate void NativeOnRemoteAudioTransportStatsDelegate(uid_t, unsigned short, unsigned short, unsigned short);
 	delegate void NativeOnRemoteVideoTransportStatsDelegate(uid_t, unsigned short, unsigned short, unsigned short);
@@ -220,7 +218,6 @@ namespace AgoraClrLibrary {
 		PFOnRemoteVideoStateChanged onRemoteVideoStateChangedEvent = 0;
 		PFOnLocalPublishFallbackToAudioOnly onLocalPublishFallbackToAudioOnlyEvent = 0;
 		PFOnRemoteSubscribeFallbackToAudioOnly onRemoteSubscribeFallbackToAudioOnlyEvent = 0;
-		PFOnCameraFocusAreaChanged onCameraFocusAreaChangedEvent = 0;
 		PFOnRemoteAudioStats onRemoteAudioStatsEvent = 0;
 		PFOnRemoteAudioTransportStats onRemoteAudioTransportStatsEvent = 0;
 		PFOnRemoteVideoTransportStats onRemoteVideoTransportStatsEvent = 0;
@@ -276,7 +273,6 @@ namespace AgoraClrLibrary {
 
 		virtual void onStreamMessage(uid_t uid, int streamId, const char* data, size_t length) override;
 		virtual void onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) override;
-		virtual void onRequestChannelKey() override;
 		virtual void onRequestToken() override;
 
 		virtual void onAudioMixingFinished() override;
@@ -297,12 +293,9 @@ namespace AgoraClrLibrary {
 		virtual void onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override;
 		virtual void onLocalPublishFallbackToAudioOnly(bool) override;
 		virtual void onRemoteSubscribeFallbackToAudioOnly(uid_t, bool) override;
-		virtual void onCameraFocusAreaChanged(int x, int y, int width, int height) override;
 		virtual void onRemoteAudioStats(const RemoteAudioStats& stats) override;
 		virtual void onRemoteAudioTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate) override;
 		virtual void onRemoteVideoTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate) override;
-		virtual void onAudioMixingBegin() override;
-		virtual void onAudioMixingEnd() override;
 		virtual void onAudioEffectFinished(int soundId) override;
 		virtual void onStreamInjectedStatus(const char* url, uid_t uid, int status) override;
 		virtual void onMediaEngineLoadSuccess() override;

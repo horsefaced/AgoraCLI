@@ -186,4 +186,9 @@ namespace AgoraClrLibrary {
 	public delegate void onLocalAudioStats(ClrLocalAudioStats^ stats);
 
 	public delegate void onAudioMixingStateChanged(AudioMixingStateType state, AudioMixingErrorType error);
+
+	public delegate void onRtmpStreamingStateChanged(String^, RtmpStreamPublishState, RtmpStreamPublishError);
+
+	public delegate void onChannelMediaRelayStateChanged(ChannelMediaRelayState, ChannelMediaRelayError);
+
 }

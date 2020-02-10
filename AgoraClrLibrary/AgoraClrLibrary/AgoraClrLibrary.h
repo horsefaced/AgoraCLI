@@ -4,13 +4,13 @@
 #include "..\..\agorasdk\include\IAgoraRtcEngine.h"
 #include "AgoraClrAudioDeviceManager.h"
 #include "AgoraClrEventHandler.h"
+#include "AgoraClrLibraryDelegates.h"
+#include "AgoraClrLibraryEnum.h"
+#include "AgoraClrLibraryTypes.h"
+#include "AgoraClrMetadataObserver.h"
 #include "AgoraClrPacketObserver.h"
 #include "AgoraClrRawFrameObserver.h"
 #include "AgoraClrVideoDeviceManager.h"
-#include "AgoraClrLibraryEnum.h"
-#include "AgoraClrLibraryTypes.h"
-#include "AgoraClrLibraryDelegates.h"
-#include "AgoraClrMetadataObserver.h"
 
 #include <string>
 
@@ -113,7 +113,7 @@ namespace AgoraClrLibrary
 		//startScreenCaptureByDisplayId 只在macos上有效,所以不添加
 		int startScreenCaptureByScreenRect(ClrRectangle^ screenRect, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params);
 		int startScreenCaptureByWindowId(IntPtr windowId, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params);
-		int setScreenCaptureContentHint(ClrVideoContentHint hint);
+		int setScreenCaptureContentHint(EnumVideoContentHint hint);
 		int updateScreenCaptureParameters(ClrScreenCaptureParameters^ params);
 		int updateScreenCaptureRegion(ClrRectangle^ rect);
 		int stopScreenCapture();
@@ -156,7 +156,7 @@ namespace AgoraClrLibrary
 
 		//变声与混响
 		int setLocalVoiceChanger(VoiceChangerPreset changer);
-		int setLocalVoiceReverbPreset(AudioReverbPreset preset);
+		int setLocalVoiceReverbPreset(EnumAudioReverbPreset preset);
 		int setLocalVoicePitch(double pitch);
 		int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
 		int setLocalVoiceReverb(AudioReverbType type, int value);
@@ -165,14 +165,13 @@ namespace AgoraClrLibrary
 		int enableSoundPositionIndication(bool enabled);
 		int setRemoteVoicePosition(uid_t uid, double pan, double gain);
 
-
 		//CDN推流
 		int setLiveTranscoding(ClrLiveTranscoding^ transcoding);
 		int addPublishStreamUrl(String^ url, bool transcodingEnabled);
 		int removePublishStreamUrl(String^ url);
 
 		//CDN推流事件
-		Action<String^, RtmpStreamPublishState, RtmpStreamPublishError>^ onRtmpStreamingStateChanged;
+		onRtmpStreamingStateChanged^ onRtmpStreamingStateChanged;
 		onTranscodingUpdated^ onTranscodingUpdated;
 
 		//跨频道媒体流转发
@@ -181,7 +180,7 @@ namespace AgoraClrLibrary
 		int stopChannelMediaRelay();
 
 		//跨频道媒体流转发事件
-		Action<ChannelMediaRelayState, ChannelMediaRelayError>^ onChannelMediaRelayStateChanged;
+		onChannelMediaRelayStateChanged^ onChannelMediaRelayStateChanged;
 		Action<ChannelMediaRelayEvent>^ onChannelMediaRelayEvent;
 
 		//音量提示
@@ -195,7 +194,7 @@ namespace AgoraClrLibrary
 		//这个部分2.9.1只用在Android与iOS上, 所以没有添加
 
 		//耳返控制, 这个函数现在在2.9.1上只在Android与iOS上提供, 请不要调用
-		[[DEPRECATED]] int setInEarMonitoringVolume(int volume); 
+		//int setInEarMonitoringVolume(int volume);
 
 		//视频双流模式
 		int enableDualStreamMode(bool enabled);
@@ -228,7 +227,7 @@ namespace AgoraClrLibrary
 		int pushVideoFrame(ClrExternalVideoFrame^ frame);
 		int setExternalAudioSource(bool enabled, int sampleRate, int channels);
 		int pushAudioFrame(ClrAudioFrame^ frame);
-		
+
 		//音视频自渲染
 		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
 		int pullAudioFrame(ClrAudioFrame^ frame);
@@ -274,7 +273,7 @@ namespace AgoraClrLibrary
 		onStreamInjectedStatus^ onStreamInjectedStatus;
 
 		//摄像头控制, 只适用于Android与iOS,所以没有实现
-		[[DEPRECATED]] onCameraFocusAreaChanged^ onCameraFocusAreaChanged;
+		//onCameraFocusAreaChanged^ onCameraFocusAreaChanged;
 
 		//设备管理, 设备管理的一部分接口是在这两个类里面的
 		AgoraClrAudioDeviceManager^ getAudioDeviceManager();
@@ -316,79 +315,38 @@ namespace AgoraClrLibrary
 		//定制方法
 		//setParameters方法不实现
 
-
-
-		//以下是暂时没有地方认领的方法与事件
-		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
-
-
-		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
-
-
-
-		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
-
-		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
-		int setVideoCompositingLayout(ClrVideoCompositingLayout^ sei);
-		int clearVideoCompositingLayout();
-		int configPublisher(ClrPublisherConfiguration^ config);
-
-
-		//Ô­Ê¼Êý¾ÝAPI
-		//RtcEngineParameters Part
-
-		int setPlaybackDeviceVolume(int volume);
-
-
-
-
-
-
-		//2.3
-
-		int addVideoWatermark(ClrRtcImage^ image);
-		int clearVideoWatermark();
-
-
-		//RtcEngineEventHandler Part
-
-		onAudioQuality^ onAudioQuality;
-
-
-		onFirstRemoteVideoDecoded^ onFirstRemoteVideoDecoded;
-		onUserEnableVideo^ onUserEnableVideo;
-		onCameraReady^ onCameraReady;
-		onVideoStopped^ onVideoStopped;
-		onConnectionInterrupted^ onConnectionInterrupted;
-		onConnectionBanned^ onConnectionBanned;
-
-		onRequestChannelKey^ onRequestChannelKey;
-
-		onAudioMixingFinished^ onAudioMixingFinished;
-
-
-
-		onStreamUnpublished^ onStreamUnpublished;
-		onStreamPublished^ onStreamPublished;
-
-		onUserEnableLocalVideo^ onUserEnableLocalVideo;
-		onVideoSizeChanged^ onVideoSizeChanged;
-
-		onRemoteAudioTransportStats^ onRemoteAudioTransportStats;
-		onRemoteVideoTransportStats^ onRemoteVideoTransportStats;
-		onAudioMixingBegin^ onAudioMixingBegin;
-		onAudioMixingEnd^ onAudioMixingEnd;
-		onMediaEngineLoadSuccess^ onMediaEngineLoadSuccess;
-		onMediaEngineStartCallSuccess^ onMediaEngineStartCallSuccess;
-
 		//PacketObserver Part
 		onSendAudioPacket^ onSendAudioPacket;
 		onSendVideoPacket^ onSendVideoPacket;
 		onReceiveAudioPacket^ onReceiveAudioPacket;
 		onReceiveVideoPacket^ onReceiveVideoPacket;
 
-		//Raw data Part
+		//以下是暂时没有地方认领的方法与事件
+		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
+		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
+		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
+		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
+		int setPlaybackDeviceVolume(int volume);
 
+		onAudioQuality^ onAudioQuality;
+		onFirstRemoteVideoDecoded^ onFirstRemoteVideoDecoded;
+		onUserEnableVideo^ onUserEnableVideo;
+		onCameraReady^ onCameraReady;
+		onVideoStopped^ onVideoStopped;
+		onConnectionInterrupted^ onConnectionInterrupted;
+		onConnectionBanned^ onConnectionBanned;
+		onRequestChannelKey^ onRequestChannelKey;
+		onAudioMixingFinished^ onAudioMixingFinished;
+		onStreamUnpublished^ onStreamUnpublished;
+		onStreamPublished^ onStreamPublished;
+		onUserEnableLocalVideo^ onUserEnableLocalVideo;
+		onVideoSizeChanged^ onVideoSizeChanged;
+		onRemoteAudioTransportStats^ onRemoteAudioTransportStats;
+		onRemoteVideoTransportStats^ onRemoteVideoTransportStats;
+		onAudioMixingBegin^ onAudioMixingBegin;
+		onAudioMixingEnd^ onAudioMixingEnd;
+		onMediaEngineLoadSuccess^ onMediaEngineLoadSuccess;
+		onMediaEngineStartCallSuccess^ onMediaEngineStartCallSuccess;
 
 	private:
 		agora::rtc::IRtcEngine* rtcEngine;
@@ -457,7 +415,6 @@ namespace AgoraClrLibrary
 		void NativeOnRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed);
 		void NativeOnLocalPublishFallbackToAudioOnly(bool);
 		void NativeOnRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover);
-		void NativeOnCameraFocusAreaChanged(int x, int y, int width, int height);
 		void NativeOnRemoteAudioStats(const RemoteAudioStats& stats);
 		void NativeOnRemoteAudioTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
 		void NativeOnRemoteVideoTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate);
@@ -497,7 +454,7 @@ namespace AgoraClrLibrary
 		void NativeOnChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error);
 		void NativeOnChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event);
 		void NativeOnLastmileProbeResult(const LastmileProbeResult& result);
-		
+
 		int NativeGetMaxMetadataSize();
 		bool NativeOnReadyToSendMetadata(IMetadataObserver::Metadata& metadata);
 		void NativeOnMetadataReceived(const IMetadataObserver::Metadata& metadata);
