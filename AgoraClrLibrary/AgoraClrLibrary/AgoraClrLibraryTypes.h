@@ -10,6 +10,7 @@
 
 #include <msclr/marshal_cppstd.h>
 #include <string>
+#include <iostream>
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
@@ -207,10 +208,11 @@ namespace AgoraClrLibrary {
 
 		void writePacket(IPacketObserver::Packet& packet)
 		{
-			int size = Marshal::SizeOf(buffer[0]) * buffer->Length;
-			IntPtr rawBuffer = Marshal::AllocHGlobal(size);
-			Marshal::Copy(buffer, 0, rawBuffer, buffer->Length);
-			packet.buffer = (unsigned char*)rawBuffer.ToPointer();
+			int size = sizeof(unsigned char) * buffer->Length;
+			void* tmp = malloc(size);
+			Marshal::Copy(buffer, 0, IntPtr(tmp), buffer->Length);
+			delete packet.buffer;
+			packet.buffer = reinterpret_cast<unsigned char*>(tmp);
 			packet.size = buffer->Length;
 		}
 	};
@@ -220,15 +222,15 @@ namespace AgoraClrLibrary {
 	{
 	public:
 		EnumAudioFrameType type;
-		int samples;		
-		int bytesPerSample; 
-		int channels;		
-		int samplesPerSec;  
+		int samples;
+		int bytesPerSample;
+		int channels;
+		int samplesPerSec;
 		array<Byte>^ data;
 		int64_t renderTimeMs;
 		int avsync_type;
 
-		ClrAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& raw):
+		ClrAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& raw) :
 			type(static_cast<EnumAudioFrameType>(raw.type)),
 			samples(raw.samples),
 			bytesPerSample(raw.bytesPerSample),
@@ -253,9 +255,9 @@ namespace AgoraClrLibrary {
 			raw.avsync_type = avsync_type;
 			if (sizeModified) {
 				delete raw.buffer;
-				raw.buffer = Marshal::AllocHGlobal(samples * bytesPerSample).ToPointer();
+				raw.buffer = malloc(sizeof(Byte) * data->Length);
 			}
-			Marshal::Copy(data, 0, IntPtr(raw.buffer), samples * bytesPerSample);
+			Marshal::Copy(data, 0, IntPtr(raw.buffer), data->Length);
 		}
 
 		operator IAudioFrameObserver::AudioFrame* () {
@@ -283,7 +285,7 @@ namespace AgoraClrLibrary {
 		int64_t renderTimeMs;
 		int avsync_type;
 
-		ClrVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& raw):
+		ClrVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& raw) :
 			type(static_cast<EnumVideoFrameType>(raw.type)),
 			width(raw.width),
 			height(raw.height),
@@ -320,9 +322,9 @@ namespace AgoraClrLibrary {
 
 			if (sizeModified)
 			{
-				raw.yBuffer = Marshal::AllocHGlobal(size).ToPointer();
-				raw.uBuffer = Marshal::AllocHGlobal(size / 4).ToPointer();
-				raw.vBuffer = Marshal::AllocHGlobal(size / 4).ToPointer();
+				raw.yBuffer = malloc(sizeof(Byte) * size);
+				raw.uBuffer = malloc(sizeof(Byte) * size / 4);
+				raw.vBuffer = malloc(sizeof(Byte) * size / 4);
 			}
 			Marshal::Copy(ybuffer, 0, IntPtr(raw.yBuffer), size);
 			Marshal::Copy(ubuffer, 0, IntPtr(raw.uBuffer), size / 4);
@@ -389,7 +391,7 @@ namespace AgoraClrLibrary {
 		{
 		}
 
-		operator TranscodingUser*() 
+		operator TranscodingUser* ()
 		{
 			TranscodingUser* result = new TranscodingUser();
 			result->uid = uid;
@@ -641,8 +643,8 @@ namespace AgoraClrLibrary {
 			result->cropBottom = cropBottom;
 			result->rotation = rotation;
 			result->timestamp = timestamp;
-			result->buffer = Marshal::AllocHGlobal(static_cast<int>(buffer->LongLength * sizeof(Byte))).ToPointer();
-			Marshal::Copy(buffer, 0, (IntPtr)result->buffer, static_cast<int>(buffer->LongLength));
+			result->buffer = malloc(buffer->Length * sizeof(Byte));
+			Marshal::Copy(buffer, 0, IntPtr(result->buffer), buffer->Length);
 			return result;
 		}
 	};
@@ -725,9 +727,9 @@ namespace AgoraClrLibrary {
 		ClrChannelMediaInfo^ dest;
 		int destCount;
 
-		ClrChannelMediaRelayConfiguration() : 
-			src(nullptr), 
-			dest(nullptr), 
+		ClrChannelMediaRelayConfiguration() :
+			src(nullptr),
+			dest(nullptr),
 			destCount(0) {}
 		operator ChannelMediaRelayConfiguration() {
 			ChannelMediaRelayConfiguration config;
@@ -763,12 +765,12 @@ namespace AgoraClrLibrary {
 
 		ClrLastmileProbeOneWayResult() {}
 
-		ClrLastmileProbeOneWayResult(const LastmileProbeOneWayResult& val):
+		ClrLastmileProbeOneWayResult(const LastmileProbeOneWayResult& val) :
 			packetLossRate(val.packetLossRate),
 			jitter(val.jitter),
 			availableBandwidth(val.availableBandwidth)
 		{}
-	
+
 		operator LastmileProbeOneWayResult() {
 			LastmileProbeOneWayResult result;
 			result.packetLossRate = packetLossRate;
@@ -812,7 +814,7 @@ namespace AgoraClrLibrary {
 		array<Byte>^ buffer;
 		long long timeStampMs;
 
-		ClrMetadata(const IMetadataObserver::Metadata& data):
+		ClrMetadata(const IMetadataObserver::Metadata& data) :
 			uid(data.uid),
 			timeStampMs(data.timeStampMs)
 		{
@@ -827,7 +829,7 @@ namespace AgoraClrLibrary {
 		ClrRectangle^ positionInLandscapeMode;
 		ClrRectangle^ positionInPortraitMode;
 
-		ClrWatermarkOptions():
+		ClrWatermarkOptions() :
 			visibleInPreview(false),
 			positionInLandscapeMode(gcnew ClrRectangle()),
 			positionInPortraitMode(gcnew ClrRectangle())

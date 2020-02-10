@@ -49,8 +49,7 @@ int AgoraClrLibrary::AgoraClr::initialize(String^ vendorkey)
 		return -1;
 
 	agora::rtc::RtcEngineContext context;
-	std::string middlestr = MarshalString(vendorkey);
-	context.appId = middlestr.c_str();
+	context.appId = strcopy(MarshalString(vendorkey));
 	context.eventHandler = agoraEventHandler;
 	int result = rtcEngine->initialize(context);
 	if (result == 0)
