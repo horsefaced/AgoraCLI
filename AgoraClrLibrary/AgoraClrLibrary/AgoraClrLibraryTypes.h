@@ -936,4 +936,14 @@ namespace AgoraClrLibrary {
 		}
 
 	};
+
+	public ref class ClrCameraCaptureConfiguration {
+	public:
+		EnumCapturerOutputPreference preference;
+
+		operator CameraCapturerConfiguration() {
+			CameraCapturerConfiguration config;
+			config.preference = static_cast<CAPTURER_OUTPUT_PREFERENCE>(preference);
+		}
+	};
 }

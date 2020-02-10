@@ -30,7 +30,7 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall * PFOnUserMuteAudio)(uid_t uid, bool muted);
 	typedef void(__stdcall * PFOnUserMuteVideo)(uid_t uid, bool muted);
 	typedef void(__stdcall * PFOnUserEnableVideo)(uid_t uid, bool enabled);
-	typedef void(__stdcall * PFOnApiCallExecuted)(const char* api, int error);
+	typedef void(__stdcall * PFOnApiCallExecuted)(int, const char*, const char*);
 	typedef void(__stdcall * PFOnLocalVideoStats)(const agora::rtc::LocalVideoStats& stats);
 	typedef void(__stdcall * PFOnRemoteVideoStats)(const agora::rtc::RemoteVideoStats& stats);
 	typedef void(__stdcall * PFOnCameraReady)();
@@ -107,7 +107,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnUserMuteAudioDelegate(uid_t uid, bool muted);
 	delegate void NativeOnUserMuteVideoDelegate(uid_t uid, bool muted);
 	delegate void NativeOnUserEnableVideoDelegate(uid_t uid, bool enabled);
-	delegate void NativeOnApiCallExecutedDelegate(const char* api, int error);
+	delegate void NativeOnApiCallExecutedDelegate(int, const char*, const char*);
 	delegate void NativeOnLocalVideoStatsDelegate(const agora::rtc::LocalVideoStats& stats);
 	delegate void NativeOnRemoteVideoStatsDelegate(const agora::rtc::RemoteVideoStats& stats);
 	delegate void NativeOnCameraReadyDelegate();
@@ -265,7 +265,7 @@ namespace AgoraClrLibrary {
 		virtual void onUserMuteAudio(uid_t uid, bool muted) override;
 		virtual void onUserMuteVideo(uid_t uid, bool muted) override;
 		virtual void onUserEnableVideo(uid_t uid, bool enabled) override;
-		virtual void onApiCallExecuted(const char* api, int error) override;
+		virtual void onApiCallExecuted(int err, const char* api, const char* result) override;
 		virtual void onLocalVideoStats(const agora::rtc::LocalVideoStats& stats) override;
 		virtual void onRemoteVideoStats(const agora::rtc::RemoteVideoStats& stats) override;
 		virtual void onCameraReady() override;

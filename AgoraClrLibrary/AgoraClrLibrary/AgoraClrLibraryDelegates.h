@@ -79,7 +79,7 @@ namespace AgoraClrLibrary {
 	public
 		delegate void onRefreshRecordingServiceStatus(int status);
 	public
-		delegate void onApiCallExecuted(String^ api, int error);
+		delegate void onApiCallExecuted(int err, String^ api, String^ result);
 	public
 		delegate void onStreamMessage(int uid, int streamId, String^ data);
 	public

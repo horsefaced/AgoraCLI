@@ -790,4 +790,15 @@ namespace AgoraClrLibrary {
 		  FRAME_TYPE_RGBA = 2,    // RGBA format
 	};
 
+	public enum class EnumCapturerOutputPreference {
+		/** 0: (Default) self-adapts the camera output parameters to the system performance and network conditions to balance CPU consumption and video preview quality.
+*/
+		CAPTURER_OUTPUT_PREFERENCE_AUTO = 0,
+		/** 2: Prioritizes the system performance. The SDK chooses the dimension and frame rate of the local camera capture closest to those set by \ref IRtcEngine::setVideoEncoderConfiguration "setVideoEncoderConfiguration".
+		*/
+		CAPTURER_OUTPUT_PREFERENCE_PERFORMANCE = 1,
+		/** 2: Prioritizes the local preview quality. The SDK chooses higher camera output parameters to improve the local video preview quality. This option requires extra CPU and RAM usage for video pre-processing.
+		*/
+		CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2,
+	};
 }

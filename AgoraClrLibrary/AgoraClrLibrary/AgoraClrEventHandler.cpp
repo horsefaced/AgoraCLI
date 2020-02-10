@@ -76,8 +76,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onUserMuteVideo(uid_t uid, bool mute
 void AgoraClrLibrary::AgoraClrEventHandler::onUserEnableVideo(uid_t uid, bool enabled) {
 	if (onUserEnableVideoEvent) onUserEnableVideoEvent(uid, enabled);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onApiCallExecuted(const char* api, int error) {
-	if (onApiCallExecutedEvent) onApiCallExecutedEvent(api, error);
+void AgoraClrLibrary::AgoraClrEventHandler::onApiCallExecuted(int err, const char* api, const char* result) {
+	if (onApiCallExecutedEvent) onApiCallExecutedEvent(err, api, result);
 }
 void AgoraClrLibrary::AgoraClrEventHandler::onLocalVideoStats(const LocalVideoStats& stats) {
 	if (onLocalVideoStatsEvent) onLocalVideoStatsEvent(stats);

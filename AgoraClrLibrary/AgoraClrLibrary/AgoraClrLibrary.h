@@ -294,17 +294,37 @@ namespace AgoraClrLibrary
 		//只在iOS上有
 		//int setAudioSessionOperationRestriction(EnumAudioSessionOperationRestriction restriction);
 
-		//todo: 其他视频控制
+		//其他视频控制
+		int setLocalVideoMirrorMode(VideoMirrorModeType mode);
+		int setCameraCapturerConfiguration(ClrCameraCaptureConfiguration^ config);
 
+		//其他方法
+		int getCallId(String^% callid);
+		int rate(String^ callid, int rating, String^ desc);
+		int complain(String^ callid, String^ desc);
+		String^ getVersion(int% build);
+		int setLogFile(String^ path);
+		int setLogFilter(unsigned int filter);
+		int setLogFileSize(unsigned int size);
+		String^ getErrorDescription(int code);
+
+		//其他事件
+		onWarning^ onWarning;
+		onError^ onError;
+		onApiCallExecuted^ onApiCallExecuted;
+
+		//定制方法
+		//setParameters方法不实现
+
+
+
+		//以下是暂时没有地方认领的方法与事件
 		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
 
 
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
 
 
-		int getCallId(String^% callid);
-		int rate(String^ callid, int rating, String^ desc);
-		int complain(String^ callid, String^ desc);
 
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
 
@@ -319,13 +339,9 @@ namespace AgoraClrLibrary
 
 		int setPlaybackDeviceVolume(int volume);
 
-		int setLogFile(String^ path);
-		int setLogFilter(unsigned int filter);
 
 
 
-		int setLocalVideoMirrorMode(VideoMirrorModeType mode);
-		String^ getVersion(int% build);
 
 
 		//2.3
@@ -333,12 +349,9 @@ namespace AgoraClrLibrary
 		int addVideoWatermark(ClrRtcImage^ image);
 		int clearVideoWatermark();
 
-		String^ getErrorDescription(int code);
 
 		//RtcEngineEventHandler Part
 
-		onWarning^ onWarning;
-		onError^ onError;
 		onAudioQuality^ onAudioQuality;
 
 
@@ -349,7 +362,6 @@ namespace AgoraClrLibrary
 		onConnectionInterrupted^ onConnectionInterrupted;
 		onConnectionBanned^ onConnectionBanned;
 
-		onApiCallExecuted^ onApiCallExecuted;
 		onRequestChannelKey^ onRequestChannelKey;
 
 		onAudioMixingFinished^ onAudioMixingFinished;
@@ -411,7 +423,7 @@ namespace AgoraClrLibrary
 		void NativeOnUserMuteAudio(uid_t uid, bool muted);
 		void NativeOnUserMuteVideo(uid_t uid, bool muted);
 		void NativeOnUserEnableVideo(uid_t uid, bool enabled);
-		void NativeOnApiCallExecuted(const char* api, int error);
+		void NativeOnApiCallExecuted(int err, const char* api, const char* result);
 		void NativeOnLocalVideoStats(const agora::rtc::LocalVideoStats& stats);
 		void NativeOnRemoteVideoStats(const agora::rtc::RemoteVideoStats& stats);
 		void NativeOnCameraReady();

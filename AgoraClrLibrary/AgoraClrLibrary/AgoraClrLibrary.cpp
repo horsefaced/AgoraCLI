@@ -493,14 +493,17 @@ int AgoraClr::setAudioProfile(AudioProfileType profile, AudioScenarioType scenar
 
 int AgoraClr::setLogFile(String^ path)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setLogFile(MarshalString(path).c_str());
+	return rtcEngine->setLogFile(MarshalString(path).c_str());
 }
 
 int AgoraClr::setLogFilter(unsigned int filter)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setLogFilter(filter);
+	return rtcEngine->setLogFilter(filter);
+}
+
+int AgoraClrLibrary::AgoraClr::setLogFileSize(unsigned int size)
+{
+	return rtcEngine->setLogFileSize(size);
 }
 
 int AgoraClr::adjustRecordingSignalVolume(int volume)
@@ -550,8 +553,12 @@ int AgoraClr::setLocalVoiceReverb(AudioReverbType type, int value)
 
 int AgoraClr::setLocalVideoMirrorMode(VideoMirrorModeType mode)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setLocalVideoMirrorMode((VIDEO_MIRROR_MODE_TYPE)mode);
+	return rtcEngine->setLocalVideoMirrorMode(static_cast<VIDEO_MIRROR_MODE_TYPE>(mode));
+}
+
+int AgoraClrLibrary::AgoraClr::setCameraCapturerConfiguration(ClrCameraCaptureConfiguration^ config)
+{
+	return rtcEngine->setCameraCapturerConfiguration(config);
 }
 
 String^ AgoraClr::getVersion(int% build)
@@ -1192,10 +1199,10 @@ void AgoraClr::NativeOnUserEnableVideo(uid_t uid, bool enabled)
 		onUserEnableVideo(uid, enabled);
 }
 
-void AgoraClr::NativeOnApiCallExecuted(const char* api, int error)
+void AgoraClr::NativeOnApiCallExecuted(int err, const char* api, const char* result)
 {
 	if (onApiCallExecuted)
-		onApiCallExecuted(gcnew String(api), error);
+		onApiCallExecuted(err, gcnew String(api), gcnew String(result));
 }
 
 void AgoraClr::NativeOnLocalVideoStats(const agora::rtc::LocalVideoStats& stats)
