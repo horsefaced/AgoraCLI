@@ -1,5 +1,5 @@
 # AgoraCLI项目
-
+# 2020-02-10 19:14
 #  2.9分支进行了更新, 本次更新是破坏性的,暂时留在2.9分支上,大家可以进适配测试, 一个月后.如果没有问题将合并进 master 分支中.
 
 因为要用到Visual C++，所以在安装.net运行时后，还需要安装 **Visual C++ Redistributable for Visual Studio** 才可以运行。
