@@ -160,7 +160,7 @@ int AgoraClrLibrary::AgoraClr::stopChannelMediaRelay()
 
 int AgoraClrLibrary::AgoraClr::addVideoWatermark(String^ url, ClrWatermarkOptions^ options)
 {
-	return rtcEngine->addVideoWatermark(MarshalString(url, true).c_str(), options);
+	return rtcEngine->addVideoWatermark(MarshalString(url).c_str(), options);
 }
 
 int AgoraClrLibrary::AgoraClr::clearVideoWatermarks()
@@ -248,12 +248,12 @@ int AgoraClrLibrary::AgoraClr::getCallId(String^% id)
 
 int AgoraClrLibrary::AgoraClr::rate(String^ callid, int rating, String^ desc)
 {
-	return rtcEngine->rate(MarshalString(callid).c_str(), rating, MarshalString(desc, true).c_str());
+	return rtcEngine->rate(MarshalString(callid).c_str(), rating, MarshalString(desc).c_str());
 }
 
 int AgoraClrLibrary::AgoraClr::complain(String^ callid, String^ desc)
 {
-	return rtcEngine->complain(MarshalString(callid).c_str(), MarshalString(desc, true).c_str());
+	return rtcEngine->complain(MarshalString(callid).c_str(), MarshalString(desc).c_str());
 }
 
 int AgoraClrLibrary::AgoraClr::startEchoTest(int intervalInSeconds)
@@ -337,7 +337,7 @@ int AgoraClrLibrary::AgoraClr::createDataStream(int% id, bool reliable, bool ord
 
 int AgoraClrLibrary::AgoraClr::sendStreamMessage(int id, String^ data)
 {
-	std::string dataStr = MarshalString(data, true);
+	std::string dataStr = MarshalString(data);
 	return rtcEngine->sendStreamMessage(id, dataStr.c_str(), dataStr.length());
 }
 
@@ -414,7 +414,7 @@ int AgoraClrLibrary::AgoraClr::enableAudioVolumeIndication(int interval, int smo
 
 int AgoraClrLibrary::AgoraClr::startAudioRecording(String^ path, int sampleRate, AudioRecordingQualityType quality)
 {
-	return rtcEngine->startAudioRecording(MarshalString(path, true).c_str(), sampleRate, static_cast<AUDIO_RECORDING_QUALITY_TYPE>(quality));
+	return rtcEngine->startAudioRecording(MarshalString(path).c_str(), sampleRate, static_cast<AUDIO_RECORDING_QUALITY_TYPE>(quality));
 }
 
 int AgoraClrLibrary::AgoraClr::stopAudioRecording()
@@ -454,7 +454,7 @@ int AgoraClrLibrary::AgoraClr::setAudioMixingPosition(int pos)
 
 int AgoraClrLibrary::AgoraClr::startAudioMixing(String^ path, bool loop, bool replace, int cycle)
 {
-	return rtcEngine->startAudioMixing(MarshalString(path, true).c_str(), loop, replace, cycle);
+	return rtcEngine->startAudioMixing(MarshalString(path).c_str(), loop, replace, cycle);
 }
 
 int AgoraClrLibrary::AgoraClr::stopAudioMixing()
@@ -469,7 +469,7 @@ int AgoraClrLibrary::AgoraClr::setAudioProfile(AudioProfileType profile, AudioSc
 
 int AgoraClrLibrary::AgoraClr::setLogFile(String^ path)
 {
-	return rtcEngine->setLogFile(MarshalString(path, true).c_str());
+	return rtcEngine->setLogFile(MarshalString(path).c_str());
 }
 
 int AgoraClrLibrary::AgoraClr::setLogFilter(unsigned int filter)
@@ -591,7 +591,7 @@ int AgoraClrLibrary::AgoraClr::setVolumeOfEffect(int soundId, int volume)
 int AgoraClrLibrary::AgoraClr::playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish)
 {
 	RtcEngineParameters params(*rtcEngine);
-	return params.playEffect(soundId, MarshalString(file, true).c_str(), loopCount, pitch, pan, gain, publish);
+	return params.playEffect(soundId, MarshalString(file).c_str(), loopCount, pitch, pan, gain, publish);
 }
 
 int AgoraClrLibrary::AgoraClr::stopEffect(int soundId)
@@ -608,7 +608,7 @@ int AgoraClrLibrary::AgoraClr::stopAllEffects()
 
 int AgoraClrLibrary::AgoraClr::preloadEffect(int soundId, String^ file)
 {
-	return rtcEngine->preloadEffect(soundId, MarshalString(file, true).c_str());
+	return rtcEngine->preloadEffect(soundId, MarshalString(file).c_str());
 }
 
 int AgoraClrLibrary::AgoraClr::unloadEffect(int soundId)

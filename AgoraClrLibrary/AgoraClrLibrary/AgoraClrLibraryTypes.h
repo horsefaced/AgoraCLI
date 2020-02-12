@@ -8,7 +8,7 @@
 #include "AgoraClrVideoDeviceManager.h"
 #include "AgoraClrLibraryEnum.h"
 
-#include <msclr/marshal_cppstd.h>
+#include <msclr\marshal.h>
 #include <string>
 #include <iostream>
 
@@ -29,15 +29,14 @@ namespace AgoraClrLibrary {
 		}
 	}
 
-	static std::string MarshalString(String^ s, bool isUnicode = false)
+	static std::string&& MarshalString(String^ s)
 	{
 		if (s == nullptr) return std::string();
 
-		IntPtr middleStr = isUnicode ? Runtime::InteropServices::Marshal::StringToHGlobalUni(s) :
-			Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
+		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
 		std::string result(reinterpret_cast<char*>(middleStr.ToPointer()));
 		Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
-		return result;
+		return std::move(result);
 	}
 
 	public
