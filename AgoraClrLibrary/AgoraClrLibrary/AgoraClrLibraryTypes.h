@@ -29,14 +29,14 @@ namespace AgoraClrLibrary {
 		}
 	}
 
-	static std::string&& MarshalString(String^ s)
+	static std::string MarshalString(String^ s)
 	{
 		if (s == nullptr) return std::string();
 
 		IntPtr middleStr = Runtime::InteropServices::Marshal::StringToHGlobalAnsi(s);
 		std::string result(reinterpret_cast<char*>(middleStr.ToPointer()));
 		Runtime::InteropServices::Marshal::FreeHGlobal(middleStr);
-		return std::move(result);
+		return result;
 	}
 
 	public
