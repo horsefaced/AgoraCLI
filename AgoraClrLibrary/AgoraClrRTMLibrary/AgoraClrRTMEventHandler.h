@@ -2,6 +2,8 @@
 
 #include "..\..\agorasdk\include\IAgoraRtmService.h"
 
+#include <type_traits>
+#include <utility>
 
 using namespace agora::rtm;
 
@@ -44,11 +46,11 @@ namespace AgoraClrLibrary {
 	using OnGetChannelMemberCountResultType = ET<long long, const ChannelMemberCount*, int, GET_CHANNEL_MEMBER_COUNT_ERR_CODE>;
 
 
-	public class AgoraClrRTMEventHandler : IRtmServiceEventHandler
+	public class AgoraClrRTMEventHandler : public IRtmServiceEventHandler
 	{
 	private:
-		template<typename T, typename ...Args>
-		inline void call(T* event, Args...) { if (event) event(Args...); }
+		template<typename F, typename ...Args>
+		inline void call(F&& event, Args&&... args) { if (event) event(std::forward<Args>(args)...); }
 
 	public:
 		OnLoginSuccessType::Pointer onLoginSuccessEvent = 0;
