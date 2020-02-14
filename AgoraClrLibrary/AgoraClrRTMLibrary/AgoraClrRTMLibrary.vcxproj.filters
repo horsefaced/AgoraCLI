@@ -24,7 +24,7 @@
     <ClInclude Include="AgoraClrRTM.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AgoraClrRtmServiceEventHandler.h">
+    <ClInclude Include="AgoraClrRTMEventHandler.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -36,9 +36,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AgoraClrRTM.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="AgoraClrRtmServiceEventHandler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

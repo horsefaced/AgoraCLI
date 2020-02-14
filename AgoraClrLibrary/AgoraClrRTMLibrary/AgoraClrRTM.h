@@ -14,8 +14,16 @@ namespace AgoraClrLibrary {
 	public:
 		AgoraClrRTM(String^ vendorkey);
 		~AgoraClrRTM();
+
+		int login(String^ token, String^ userId);
+		int logout();
+
+		Action^ onLoginSuccess;
 	private:
 		IRtmService* service;
+		IRtmServiceEventHandler* eventHandler;
+
+	private:
 	};
 
 }

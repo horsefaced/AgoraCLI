@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgoraClrDemo", "AgoraClrDem
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AgoraClrLibrary", "AgoraClrLibrary\AgoraClrLibrary.vcxproj", "{271543C6-D538-42CA-A307-23A7263AD3B5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AgoraClrRTMLibrary", "AgoraClrRTMLibrary\AgoraClrRTMLibrary.vcxproj", "{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,6 +42,16 @@ Global
 		{271543C6-D538-42CA-A307-23A7263AD3B5}.Release|x64.Build.0 = Release|x64
 		{271543C6-D538-42CA-A307-23A7263AD3B5}.Release|x86.ActiveCfg = Release|Win32
 		{271543C6-D538-42CA-A307-23A7263AD3B5}.Release|x86.Build.0 = Release|Win32
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Debug|x64.ActiveCfg = Debug|x64
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Debug|x64.Build.0 = Debug|x64
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Debug|x86.ActiveCfg = Debug|Win32
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Debug|x86.Build.0 = Debug|Win32
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Release|Any CPU.ActiveCfg = Release|Win32
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Release|x64.ActiveCfg = Release|x64
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Release|x64.Build.0 = Release|x64
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Release|x86.ActiveCfg = Release|Win32
+		{517CFC6A-5CB9-4F3C-9F97-1D51A2BB05CE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
