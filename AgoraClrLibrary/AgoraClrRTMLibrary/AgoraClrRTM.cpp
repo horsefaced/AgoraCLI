@@ -153,6 +153,103 @@ int AgoraClrLibrary::AgoraClrRTM::setLocalUserAttributes(List<ClrRtmAttribute^>^
 	return result;
 }
 
+AgoraClrLibrary::ClrRtmChannelAttribute^ AgoraClrLibrary::AgoraClrRTM::createChannelAttribute()
+{
+	return gcnew ClrRtmChannelAttribute();
+}
+
+int AgoraClrLibrary::AgoraClrRTM::addOrUpdateChannelAttributes(String^ channelId, List<ClrRtmChannelAttribute^>^ attributes, ClrChannelAttributeOptions^ options, long long% requestId)
+{
+	long long tmpId;
+	auto [tmpAttrs, count] = ClrRtmChannelAttribute::toArray(service, attributes);
+	ChannelAttributeOptions tmpOptions;
+	tmpOptions.enableNotificationToChannelMembers = options->enableNotificationToChannelMembers;
+	int result = service->addOrUpdateChannelAttributes(
+		marshal_as<std::string>(channelId).c_str(),
+		const_cast<const IRtmChannelAttribute**>(tmpAttrs),
+		count, tmpOptions, tmpId);
+
+	for (int i = 0; i < count; i++) tmpAttrs[i]->release();
+	delete[] tmpAttrs;
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::deleteChannelAttributesByKeys(String^ channelId, List<String^>^ keys, ClrChannelAttributeOptions^ options, long long% requestId)
+{
+	long long tmpId;
+	AutoChars context(keys);
+	ChannelAttributeOptions tmpOptons;
+	tmpOptons.enableNotificationToChannelMembers = options->enableNotificationToChannelMembers;
+	int result = service->deleteChannelAttributesByKeys(
+		context.context->marshal_as<const char*>(channelId),
+		context.chars, context.count, tmpOptons, tmpId);
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::clearChannelAttributes(String^ channelId, ClrChannelAttributeOptions^ options, long long% requestId)
+{
+	long long tmpId;
+	ChannelAttributeOptions tmpOptions;
+	tmpOptions.enableNotificationToChannelMembers = options->enableNotificationToChannelMembers;
+
+	int result = service->clearChannelAttributes(
+		marshal_as<std::string>(channelId).c_str(),
+		tmpOptions, tmpId);
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::getChannelAttributes(String^ channelId, long long% requestId)
+{
+	long long tmpId;
+	int result = service->getChannelAttributes(
+		marshal_as<std::string>(channelId).c_str(),
+		tmpId);
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::getChannelAttributesByKeys(String^ channelId, List<String^>^ keys, long long% requestId)
+{
+	AutoChars context(keys);
+	long long tmpId;
+	int result = service->getChannelAttributesByKeys(
+		context.context->marshal_as<const char*>(channelId),
+		context.chars, context.count, tmpId);
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::setChannelAttributes(String^ channelId, List<ClrRtmChannelAttribute^>^ attributes, ClrChannelAttributeOptions^ options, long long% requestId)
+{
+	long long tmpId;
+	auto [tmpAttrs, count] = ClrRtmChannelAttribute::toArray(service, attributes);
+
+	ChannelAttributeOptions tmpOptions;
+	tmpOptions.enableNotificationToChannelMembers = options->enableNotificationToChannelMembers;
+	int result = service->setChannelAttributes(
+		marshal_as<std::string>(channelId).c_str(),
+		const_cast<const IRtmChannelAttribute**>(tmpAttrs), 
+		count, tmpOptions, tmpId);
+
+	for (int i = 0; i < count; i++) tmpAttrs[i]->release();
+
+	delete[] tmpAttrs;
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::getChannelMemberCount(List<String^>^ ids, long long% requestId)
+{
+	AutoChars context(ids);
+	long long tmpId;
+	int result = service->getChannelMemberCount(context.chars, context.count, tmpId);
+	requestId = tmpId;
+	return result;
+}
+
 void AgoraClrLibrary::AgoraClrRTM::NativeOnLoginSuccess()
 {
 	if (onLoginSuccess) onLoginSuccess();
@@ -257,6 +354,51 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnGetUserAttributesResult(long long id,
 	}
 }
 
+void AgoraClrLibrary::AgoraClrRTM::NativeOnSetChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onSetChannelAttributesResult) onSetChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnAddOrUpdateChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onAddOrUpdateChannelAttributesResult)
+		onAddOrUpdateChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnDeleteChannelAttriutesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onDeleteChannelAttributesResult)
+		onDeleteChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnCleanChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onClearChannelAttributesResult)
+		onClearChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnGetChannelAttributesResult(long long id, const IRtmChannelAttribute* attributes[], int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onGetChannelAttributesResult) {
+		List<ClrRtmChannelAttribute^>^ list = gcnew List<ClrRtmChannelAttribute^>;
+		for (int i = 0; i < numberOfAttributes; i++) {
+			list->Add(gcnew ClrRtmChannelAttribute(attributes[i]));
+		}
+		onGetChannelAttributesResult(id, list, static_cast<EnumAttributeOperationErrCode>(code));
+	}
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnGetChannelMemberCountResult(long long id, const ChannelMemberCount* members, int count, GET_CHANNEL_MEMBER_COUNT_ERR_CODE code)
+{
+	if (onGetChannelMemberCountResult) {
+		List<ClrChannelMemberCount^>^ list = gcnew List<ClrChannelMemberCount^>;
+		for (int i = 0; i < count; i++)
+			list->Add(gcnew ClrChannelMemberCount(members[i]));
+		onGetChannelMemberCountResult(
+			id, list, static_cast<EnumGetChannelMemberCountErrCode>(code));
+	}
+}
+
 void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 {
 	regEvent(rtmEvents->onLoginSuccessEvent, gcnew OnLoginSuccessType::Type(this, &AgoraClrRTM::NativeOnLoginSuccess));
@@ -273,6 +415,12 @@ void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 	regEvent(rtmEvents->onDeleteLocalUserAttributesResultEvent, gcnew OnDeleteLocalUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnDeleteLocalUserAttributesResult));
 	regEvent(rtmEvents->onClearLocalUserAttributesResultEvent, gcnew OnClearLocalUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnClearLocalUserAttributesResult));
 	regEvent(rtmEvents->onGetUserAttributesResultEvent, gcnew OnGetUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnGetUserAttributesResult));
+	regEvent(rtmEvents->OnSetChannelAttributesResultEvent, gcnew OnSetChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnSetChannelAttributesResult));
+	regEvent(rtmEvents->onAddOrUpdateChannelAttributesResultEvent, gcnew OnAddOrUpdateChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnAddOrUpdateChannelAttributesResult));
+	regEvent(rtmEvents->onDeleteChannelAttributesResultEvent, gcnew OnDeleteChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnDeleteChannelAttriutesResult));
+	regEvent(rtmEvents->onClearChannelAttributesResultEvent, gcnew OnClearChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnCleanChannelAttributesResult));
+	regEvent(rtmEvents->onGetChannelAttributesResultEvent, gcnew OnGetChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnGetChannelAttributesResult));
+	regEvent(rtmEvents->onGetChannelMemberCountResultEvent, gcnew OnGetChannelMemberCountResultType::Type(this, &AgoraClrRTM::NativeOnGetChannelMemberCountResult));
 
 }
 

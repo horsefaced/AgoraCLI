@@ -386,6 +386,7 @@ namespace AgoraClrLibrary {
 
     public enum class EnumAttributeOperationErrCode {
 
+
         /**
          0: The method call succeeds, or the attribute operation succeeds.
          */
@@ -443,6 +444,49 @@ namespace AgoraClrLibrary {
                  102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before the attribute operation.
                  */
                  ATTRIBUTE_OPERATION_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
+
+    public enum class EnumGetChannelMemberCountErrCode {
+        /**
+ 0: The method call succeeds, or the operation succeeds.
+ */
+        GET_CHANNEL_MEMBER_COUNT_ERR_OK = 0,
+
+        /**
+         1: Unknown common failure.
+         */
+         GET_CHANNEL_MEMBER_COUNT_ERR_FAILURE = 1,
+
+         /**
+          2: One or several of your channel IDs is invalid, or @p channelCount < 0.
+          */
+          GET_CHANNEL_MEMBER_COUNT_ERR_INVALID_ARGUMENT = 2,
+
+          /**
+           3: The method call frequency exceeds the limit of one query per second.
+           */
+           GET_CHANNEL_MEMBER_COUNT_ERR_TOO_OFTEN = 3,
+
+           /**
+            4: A timeout occurs during this operation. The current timeout is set as five seconds.
+            */
+            GET_CHANNEL_MEMBER_COUNT_ERR_TIMEOUT = 4,
+
+            /**
+             5:@p channelCount is greater than 32.
+             */
+             GET_CHANNEL_MEMBER_COUNT_ERR_EXCEED_LIMIT = 5,
+
+             /**
+              101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+              */
+              GET_CHANNEL_MEMBER_COUNT_ERR_NOT_INITIALIZED = 101,
+
+              /**
+               102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+               */
+               GET_CHANNEL_MEMBER_COUNT_ERR_USER_NOT_LOGGED_IN = 102,
 
     };
 }

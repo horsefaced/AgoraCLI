@@ -13,26 +13,6 @@ using namespace System::Collections::Generic;
 
 namespace AgoraClrLibrary {
 
-	template<typename ...T>
-	ref struct AT {
-		delegate void Type(T...);
-	};
-
-	template<>
-	ref struct AT<> {
-		delegate void Type();
-	};
-
-	template<typename R, typename ...T>
-	ref struct FT {
-		delegate R Type(T...);
-	};
-
-	template<typename R>
-	ref struct FT<R> {
-		delegate R Type();
-	};
-	
 	public ref class AgoraClrRTM
 	{
 	public:
@@ -79,10 +59,29 @@ namespace AgoraClrLibrary {
 		AT<long long, String^, List<ClrRtmAttribute^>^, EnumAttributeOperationErrCode>::Type^ onGetUserAttributesResult;
 
 		//频道属性增删改查
+		AgoraClrLibrary::ClrRtmChannelAttribute^ createChannelAttribute();
+		int setChannelAttributes(String^ channelId, List<ClrRtmChannelAttribute^>^ attributes, ClrChannelAttributeOptions^ options, long long% requestId);
+		int addOrUpdateChannelAttributes(String^ channelId, List<ClrRtmChannelAttribute^>^ attributes, ClrChannelAttributeOptions^ options, long long% requestId);
+		int deleteChannelAttributesByKeys(String^ channelId, List<String^>^ keys, ClrChannelAttributeOptions^ options, long long% requestId);
+		int clearChannelAttributes(String^ channelId, ClrChannelAttributeOptions^ options, long long% requestId);
+		int getChannelAttributes(String^ channelId, long long% requestId);
+		int getChannelAttributesByKeys(String^ channelId, List<String^>^ keys, long long% requestId);
+		AT<long long, EnumAttributeOperationErrCode>::Type^ onSetChannelAttributesResult;
+		AT<long long, EnumAttributeOperationErrCode>::Type^ onAddOrUpdateChannelAttributesResult;
+		AT<long long, EnumAttributeOperationErrCode>::Type^ onDeleteChannelAttributesResult;
+		AT<long long, EnumAttributeOperationErrCode>::Type^ onClearChannelAttributesResult;
+		AT<long long, List<ClrRtmChannelAttribute^>^, EnumAttributeOperationErrCode>::Type^ onGetChannelAttributesResult;
+
+		//查询单个或多个频道的成员人数
+		int getChannelMemberCount(List<String^>^ ids, long long% requestId);
+		AT<long long, List<ClrChannelMemberCount^>^, EnumGetChannelMemberCountErrCode>::Type^ onGetChannelMemberCountResult;
+
+		//加入离开频道相关
 
 	private:
 		IRtmService* service;
 		AgoraClrRTMEventHandler* rtmEvents;
+
 		List<GCHandle>^ gchs;
 
 	private:
@@ -101,6 +100,12 @@ namespace AgoraClrLibrary {
 		void NativeOnDeleteLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnClearLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnGetUserAttributesResult(long long id, const char* userId, const RtmAttribute* attributes, int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnSetChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnAddOrUpdateChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnDeleteChannelAttriutesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnCleanChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnGetChannelAttributesResult(long long id, const IRtmChannelAttribute* attributes[], int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnGetChannelMemberCountResult(long long id, const ChannelMemberCount* members, int count, GET_CHANNEL_MEMBER_COUNT_ERR_CODE code);
 
 	private:
 		template<typename E, typename D>

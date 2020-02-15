@@ -13,7 +13,28 @@ using namespace System::Collections::Generic;
 using namespace msclr::interop;
 
 namespace AgoraClrLibrary {
-	ref class AutoChars {
+	template<typename ...T>
+	ref struct AT {
+		delegate void Type(T...);
+	};
+
+	template<>
+	ref struct AT<> {
+		delegate void Type();
+	};
+
+	template<typename R, typename ...T>
+	ref struct FT {
+		delegate R Type(T...);
+	};
+
+	template<typename R>
+	ref struct FT<R> {
+		delegate R Type();
+	};
+
+
+	public ref class AutoChars {
 	public:
 		marshal_context^ context;
 		const char** chars;
@@ -41,7 +62,7 @@ namespace AgoraClrLibrary {
 		property long long ServerReceivedTs { long long get() { return ts; }}
 		property bool IsOffline;
 
-		ClrMessage() : ts(0) 
+		ClrMessage() : ts(0)
 		{
 			ID = 0;
 			Type = EnumMessageType::MESSAGE_TYPE_UNDEFINED;
@@ -113,7 +134,7 @@ namespace AgoraClrLibrary {
 		String^ key;
 		String^ value;
 
-		ClrRtmAttribute(): key(nullptr), value(nullptr) {}
+		ClrRtmAttribute() : key(nullptr), value(nullptr) {}
 
 		ClrRtmAttribute(const RtmAttribute attr) {
 			key = gcnew String(attr.key);
@@ -147,5 +168,65 @@ namespace AgoraClrLibrary {
 
 			delete[] attrs;
 		}
+	};
+
+	public ref class ClrRtmChannelAttribute {
+	public:
+		property String^ key;
+		property String^ value;
+		property String^ lastUpdateUserId { String^ get() { return userId; }}
+		property long long lastUpdateTs { long long get() { return ts; }}
+
+		ClrRtmChannelAttribute() {
+			key = nullptr;
+			value = nullptr;
+			userId = nullptr;
+			ts = 0;
+		}
+		ClrRtmChannelAttribute(const IRtmChannelAttribute* attr) {
+			key = gcnew String(attr->getKey());
+			value = gcnew String(attr->getValue());
+			userId = gcnew String(attr->getLastUpdateUserId());
+			ts = attr->getLastUpdateTs();
+		}
+
+		IRtmChannelAttribute* write(IRtmChannelAttribute* attr) {
+			attr->setKey(marshal_as<std::string>(key).c_str());
+			attr->setValue(marshal_as<std::string>(value).c_str());
+			return attr;
+		}
+
+		static std::tuple<IRtmChannelAttribute**, int> toArray(IRtmService* service, List<ClrRtmChannelAttribute^>^ attrs) {
+			int count = attrs->Count;
+			IRtmChannelAttribute** tmpAttrs = new IRtmChannelAttribute * [count];
+			for (int i = 0; i < count; i++) {
+				tmpAttrs[i] = attrs[i]->write(service->createChannelAttribute());
+			}
+			return std::tuple(tmpAttrs, count);
+		}
+	private:
+		String^ userId;
+		long long ts;
+	};
+
+	public ref class ClrChannelAttributeOptions {
+	public:
+		bool enableNotificationToChannelMembers = false;
+
+		ClrChannelAttributeOptions() {}
+		ClrChannelAttributeOptions(const ChannelAttributeOptions options) {
+			enableNotificationToChannelMembers = options.enableNotificationToChannelMembers;
+		}
+	};
+
+	public ref class ClrChannelMemberCount {
+	public:
+		String^ channelId;
+		int count;
+
+		ClrChannelMemberCount(const ChannelMemberCount val):
+			channelId(gcnew String(val.channelId)),
+			count(val.count)
+		{}
 	};
 }
