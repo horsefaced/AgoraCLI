@@ -239,5 +239,148 @@ namespace AgoraClrLibrary {
                  PEER_MESSAGE_ERR_USER_NOT_LOGGED_IN = 102,
     };
 
+    public enum class EnumQueryPeersOnlineStatusErrCode {
+        /**
+ 0: The method call succeeds, or the operation succeeds.
+ */
+        QUERY_PEERS_ONLINE_STATUS_ERR_OK = 0,
 
+        /**
+         1: Common failure. The user fails to query the online status of the specified peer(s).
+         */
+         QUERY_PEERS_ONLINE_STATUS_ERR_FAILURE = 1,
+
+         /**
+          2: The method call fails. The argument is invalid.
+          */
+          QUERY_PEERS_ONLINE_STATUS_ERR_INVALID_ARGUMENT = 2,
+
+          /**
+           3: **RESERVED FOR FUTURE USE**
+           */
+           QUERY_PEERS_ONLINE_STATUS_ERR_REJECTED = 3,
+
+           /**
+            4: The SDK fails to receive a response from the server in 10 seconds. The current timeout is set as 10 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+            */
+            QUERY_PEERS_ONLINE_STATUS_ERR_TIMEOUT = 4,
+
+            /**
+             5: The method call frequency exceeds the limit of 10 queries every five seconds.
+             */
+             QUERY_PEERS_ONLINE_STATUS_ERR_TOO_OFTEN = 5,
+
+             /**
+              101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+              */
+              QUERY_PEERS_ONLINE_STATUS_ERR_NOT_INITIALIZED = 101,
+
+              /**
+               102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before querying the online status.
+               */
+               QUERY_PEERS_ONLINE_STATUS_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
+
+    public enum class EnumPeerOnlineState {
+        /**
+ 0: The peer is online (the SDK has logged in the Agora RTM system).
+ */
+        PEER_ONLINE_STATE_ONLINE = 0,
+
+        /**
+         1: The peer is temporarily unreachable (the server has not received a packet from the SDK for more than six seconds).
+         */
+         PEER_ONLINE_STATE_UNREACHABLE = 1,
+
+         /**
+          2: The peer is offline (the SDK has not logged in the Agora RTM system, or it has logged out of the system, or the server has not received a packet from the SDK for more than 30 seconds).
+          */
+          PEER_ONLINE_STATE_OFFLINE = 2,
+
+    };
+
+    public enum class EnumPeerSubscriptionOption {
+        PEER_SUBSCRIPTION_OPTION_ONLINE_STATUS = 0,
+    };
+
+    public enum class EnumPeerSubscriptionStatusErrCode {
+        /**
+ 0: The method call succeeds, or the operation succeeds.
+ */
+        PEER_SUBSCRIPTION_STATUS_ERR_OK = 0,
+
+        /**
+         1: Common failure. The user fails to subscribe to or unsubscribe from the status of the specified peer(s).
+         */
+         PEER_SUBSCRIPTION_STATUS_ERR_FAILURE = 1,
+
+         /**
+          2: The method call fails. The argument is invalid.
+          */
+          PEER_SUBSCRIPTION_STATUS_ERR_INVALID_ARGUMENT = 2,
+
+          /**
+           3: **RESERVED FOR FUTURE USE**
+           */
+           PEER_SUBSCRIPTION_STATUS_ERR_REJECTED = 3,
+
+           /**
+            4: The SDK fails to receive a response from the server within 10 seconds. The current timeout is set as 10 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+            */
+            PEER_SUBSCRIPTION_STATUS_ERR_TIMEOUT = 4,
+
+            /**
+             5: The method call frequency exceeds the limit of 10 queries every five seconds.
+             */
+             PEER_SUBSCRIPTION_STATUS_ERR_TOO_OFTEN = 5,
+
+             /**
+              6: The number of peers, to whom you subscribe, exceeds the limit of 512.
+              */
+              PEER_SUBSCRIPTION_STATUS_ERR_OVERFLOW = 6,
+
+              /**
+               101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+               */
+               PEER_SUBSCRIPTION_STATUS_ERR_NOT_INITIALIZED = 101,
+
+               /**
+                102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+                */
+                PEER_SUBSCRIPTION_STATUS_ERR_USER_NOT_LOGGED_IN = 102,
+    };
+
+    public enum class EnumQueryPeersBySubscriptionOptionErrCode {
+        /**
+ 0: The method call succeeds, or the operation succeeds.
+ */
+        QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_OK = 0,
+
+        /**
+         1: Common failure. The user fails to query peer(s) by subscription option type.
+         */
+         QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_FAILURE = 1,
+
+         /**
+          2: The SDK fails to receive a response from the server within 5 seconds. The current timeout is set as 5 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+          */
+          QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_TIMEOUT = 2,
+
+          /**
+           3: The method call frequency exceeds the limit of 10 queries every five seconds.
+           */
+           QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_TOO_OFTEN = 3,
+
+           /**
+            101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+            */
+            QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_NOT_INITIALIZED = 101,
+
+            /**
+             102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before the query.
+             */
+             QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
 }

@@ -71,4 +71,17 @@ namespace AgoraClrLibrary {
 			return options;
 		}
 	};
+
+	public ref class ClrPeerOnlineStatus {
+	public:
+		String^ peerId;
+		bool isOnline;
+		EnumPeerOnlineState onlineState;
+
+		ClrPeerOnlineStatus(const PeerOnlineStatus status) {
+			peerId = gcnew String(status.peerId);
+			isOnline = status.isOnline;
+			onlineState = static_cast<EnumPeerOnlineState>(status.onlineState);
+		}
+	};
 }
