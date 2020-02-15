@@ -2,13 +2,36 @@
 
 #include "..\..\agorasdk\include\IAgoraRtmService.h"
 
+#include <msclr/marshal_cppstd.h>
 #include <tuple>
+#include <string>
 
 using namespace agora::rtm;
 using namespace System;
 using namespace System::Runtime::InteropServices;
+using namespace System::Collections::Generic;
+using namespace msclr::interop;
 
 namespace AgoraClrLibrary {
+	ref class AutoChars {
+	public:
+		marshal_context^ context;
+		const char** chars;
+		int count;
+
+		AutoChars(List<String^>^ strings) {
+			count = strings->Count;
+			context = gcnew marshal_context;
+			chars = new const char* [count];
+			for (int i = 0; i < count; i++) chars[i] = context->marshal_as<const char*>(strings[i]);
+		}
+
+		~AutoChars() {
+			delete context;
+			delete[] chars;
+		}
+	};
+
 	public ref class ClrMessage {
 	public:
 		property long long ID;
@@ -82,6 +105,47 @@ namespace AgoraClrLibrary {
 			peerId = gcnew String(status.peerId);
 			isOnline = status.isOnline;
 			onlineState = static_cast<EnumPeerOnlineState>(status.onlineState);
+		}
+	};
+
+	public ref class ClrRtmAttribute {
+	public:
+		String^ key;
+		String^ value;
+
+		ClrRtmAttribute(): key(nullptr), value(nullptr) {}
+
+		ClrRtmAttribute(const RtmAttribute attr) {
+			key = gcnew String(attr.key);
+			value = gcnew String(attr.value);
+		}
+
+		operator RtmAttribute* () {
+			RtmAttribute* attr = new RtmAttribute;
+			String^ k = key;
+			String^ v = value;
+			attr->key = marshal_as<std::string>(k).c_str();
+			attr->value = marshal_as<std::string>(v).c_str();
+			return attr;
+		}
+
+		static void release(const RtmAttribute* attr) {
+			delete attr->key;
+			delete attr->value;
+			delete attr;
+		}
+
+		static const RtmAttribute** createAttrs(List<ClrRtmAttribute^>^ attrs) {
+			int count = attrs->Count;
+			const RtmAttribute** result = new const RtmAttribute * [count];
+			for (int i = 0; i < count; i++) result[i] = attrs[i];
+			return result;
+		}
+
+		static void releaseAttrs(const RtmAttribute** attrs, int count) {
+			for (int i = 0; i < count; i++) release(attrs[i]);
+
+			delete[] attrs;
 		}
 	};
 }

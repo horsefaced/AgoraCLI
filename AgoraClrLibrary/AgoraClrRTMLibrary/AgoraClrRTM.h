@@ -66,6 +66,19 @@ namespace AgoraClrLibrary {
 		AT<long long, List<String^>^, EnumQueryPeersBySubscriptionOptionErrCode>::Type^ onQueryPeersBySubscriptionOptionResult;
 
 		//用户属性增删改查
+		int setLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId);
+		int addOrUpdateLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId);
+		int deleteLocalUserAttributesByKeys(List<String^>^ keys, long long% requestId);
+		int clearLocalUserAttributes(long long% requestId);
+		int getUserAttributes(String^ userId, long long% requestId);
+		int getUserAttributesByKeys(String^ userId, List<String^>^ keys, long long% requestId);
+		AT<long long, EnumAttributeOperationErrCode>::Type^ onSetLocalUserAttributesResult;
+		AT<long long, EnumAttributeOperationErrCode>::Type^ onAddOrUpdateLocalUserAttributesResult;
+		AT<long long, EnumAttributeOperationErrCode>::Type^ onDeleteLocalUserAttributesResult;
+		AT<long long, EnumAttributeOperationErrCode>::Type^ onClearLocalUserAttributesResult;
+		AT<long long, String^, List<ClrRtmAttribute^>^, EnumAttributeOperationErrCode>::Type^ onGetUserAttributesResult;
+
+		//频道属性增删改查
 
 	private:
 		IRtmService* service;
@@ -83,6 +96,12 @@ namespace AgoraClrLibrary {
 		void NativeOnSubscriptionRequrestResult(long long requestId, PEER_SUBSCRIPTION_STATUS_ERR code);
 		void NativeOnPeersOnlineStatusChanged(const PeerOnlineStatus status[], int count);
 		void NativeOnQueryPeersBySubscriptionOptionResult(long long requestId, const char* peerIds[], int peerCount, QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR errorCode);
+		void NativeOnSetLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnAddOrUpdateLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnDeleteLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnClearLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnGetUserAttributesResult(long long id, const char* userId, const RtmAttribute* attributes, int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code);
+
 	private:
 		template<typename E, typename D>
 		inline void regEvent(E &e, D^ d)

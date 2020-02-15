@@ -6,8 +6,10 @@
 #include <msclr/marshal.h>
 #include <msclr/marshal_cppstd.h>
 #include <string>
+#include <tuple>
 
 using namespace msclr::interop;
+using namespace System::Collections::Generic;
 
 AgoraClrLibrary::AgoraClrRTM::AgoraClrRTM(String^ vendorkey): service(createRtmService()), rtmEvents(new AgoraClrRTMEventHandler())
 {
@@ -61,55 +63,28 @@ int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, ClrMessage^ 
 
 int AgoraClrLibrary::AgoraClrRTM::queryPeersOnlineStatus(List<String^>^ ids, long long% requestId)
 {
-	int count = ids->Count;
-	char** peerIds = new char*[count];
-	for (int i = 0; i < count; i++)
-		peerIds[i] = const_cast<char*>(marshal_as<std::string>(ids[i]).c_str());
-	
+	AutoChars context(ids);
 	long long backId;
-	int result = service->queryPeersOnlineStatus(const_cast<const char**>(peerIds), count, backId);
+	int result = service->queryPeersOnlineStatus(context.chars, context.count, backId);
 	requestId = backId;
-
-	for (int i = 0; i < count; i++) delete [] peerIds[i];
-
-	delete[] peerIds;
-
 	return result;
 }
 
 int AgoraClrLibrary::AgoraClrRTM::subscribePeersOnlineStatus(List<String^>^ ids, long long% requestId)
 {
-	int count = ids->Count;
-	const char** peerIds = new const char* [count];
-	marshal_context^ context = gcnew marshal_context();
-	for (int i = 0; i < count; i++) {
-		peerIds[i] = context->marshal_as<const char*>(ids[i]);
-	}
-
+	AutoChars context(ids);
 	long long tmpId;
-	int result = service->subscribePeersOnlineStatus(peerIds, count, tmpId);
+	int result = service->subscribePeersOnlineStatus(context.chars, context.count, tmpId);
 	requestId = tmpId;
-
-	delete context;
-	delete[] peerIds;
-
 	return result;
 }
 
 int AgoraClrLibrary::AgoraClrRTM::unsubscribePeersOnlineStatus(List<String^>^ ids, long long% requestId)
 {
-	int count = ids->Count;
-	const char** peerIds = new const char* [count];
-	marshal_context context;
-	for (int i = 0; i < count; i++) {
-		peerIds[i] = context.marshal_as<const char*>(ids[i]);
-	}
-
+	AutoChars context(ids);
 	long long tmpId;
-	int result = service->unsubscribePeersOnlineStatus(peerIds, count, tmpId);
+	int result = service->unsubscribePeersOnlineStatus(context.chars, context.count, tmpId);
 	requestId = tmpId;
-
-	delete[] peerIds;
 	return result;
 }
 
@@ -118,6 +93,63 @@ int AgoraClrLibrary::AgoraClrRTM::queryPeersBySubscriptionOption(EnumPeerSubscri
 	long long tmpId = requestId;
 	int result = service->queryPeersBySubscriptionOption(static_cast<PEER_SUBSCRIPTION_OPTION>(option), tmpId);
 	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::addOrUpdateLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
+{
+	int count = attributes->Count;
+	const RtmAttribute** attrs = ClrRtmAttribute::createAttrs(attributes);
+	long long tmpId;
+	int result = service->addOrUpdateLocalUserAttributes(attrs[0], count, tmpId);
+	requestId = tmpId;
+	ClrRtmAttribute::releaseAttrs(attrs, count);
+	return tmpId;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::deleteLocalUserAttributesByKeys(List<String^>^ keys, long long% requestId)
+{
+	AutoChars context(keys);
+	long long tmpId;
+	int result = service->deleteLocalUserAttributesByKeys(context.chars, context.count, tmpId);
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::clearLocalUserAttributes(long long% requestId)
+{
+	long long tmpId;
+	int result = service->clearLocalUserAttributes(tmpId);
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::getUserAttributes(String^ userId, long long% requestId)
+{
+	long long tmpId;
+	int result = service->getUserAttributes(marshal_as<std::string>(userId).c_str(), tmpId);
+	requestId = tmpId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::getUserAttributesByKeys(String^ userId, List<String^>^ keys, long long% requestId)
+{
+	AutoChars context(keys);
+
+	long long tmpId;
+	int result = service->getUserAttributesByKeys(context.context->marshal_as<const char*>(userId), context.chars, context.count, tmpId);
+	requestId = tmpId;
+
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::setLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
+{
+	long long tmpId;
+	const RtmAttribute** attrs = ClrRtmAttribute::createAttrs(attributes);
+	int result = service->setLocalUserAttributes(attrs[0], attributes->Count, tmpId);
+	requestId = tmpId;
+	ClrRtmAttribute::releaseAttrs(attrs, attributes->Count);
 	return result;
 }
 
@@ -191,6 +223,40 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnQueryPeersBySubscriptionOptionResult(
 	}
 }
 
+void AgoraClrLibrary::AgoraClrRTM::NativeOnSetLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onSetLocalUserAttributesResult) {
+		onSetLocalUserAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
+	}
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnAddOrUpdateLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onAddOrUpdateLocalUserAttributesResult) onAddOrUpdateLocalUserAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnDeleteLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onDeleteLocalUserAttributesResult) onDeleteLocalUserAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnClearLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onClearLocalUserAttributesResult) onClearLocalUserAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnGetUserAttributesResult(long long id, const char* userId, const RtmAttribute* attributes, int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code)
+{
+	if (onGetUserAttributesResult) {
+		List<ClrRtmAttribute^>^ list = gcnew List <ClrRtmAttribute^>;
+		for (int i = 0; i < numberOfAttributes; i++) {
+			list->Add(gcnew ClrRtmAttribute(attributes[i]));
+		}
+
+		onGetUserAttributesResult(id, gcnew String(userId), list, static_cast<EnumAttributeOperationErrCode>(code));
+	}
+}
+
 void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 {
 	regEvent(rtmEvents->onLoginSuccessEvent, gcnew OnLoginSuccessType::Type(this, &AgoraClrRTM::NativeOnLoginSuccess));
@@ -202,6 +268,11 @@ void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 	regEvent(rtmEvents->onSubscriptionRequestResultEvent, gcnew OnSubscriptionRequestResultType::Type(this, &AgoraClrRTM::NativeOnSubscriptionRequrestResult));
 	regEvent(rtmEvents->onPeersOnlineStatusChangedEvent, gcnew OnPeersOnlineStatusChangedType::Type(this, &AgoraClrRTM::NativeOnPeersOnlineStatusChanged));
 	regEvent(rtmEvents->onQueryPeersBySubscriptionOptionResultEvent, gcnew OnQueryPeersBySubscriptionOptionResultType::Type(this, &AgoraClrRTM::NativeOnQueryPeersBySubscriptionOptionResult));
+	regEvent(rtmEvents->onSetLocalUserAttributesResultEvent, gcnew OnSetLocalUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnSetLocalUserAttributesResult));
+	regEvent(rtmEvents->onAddOrUpdateLocalUserAttributesResultEvent, gcnew OnAddOrUpdateLocalUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnAddOrUpdateLocalUserAttributesResult));
+	regEvent(rtmEvents->onDeleteLocalUserAttributesResultEvent, gcnew OnDeleteLocalUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnDeleteLocalUserAttributesResult));
+	regEvent(rtmEvents->onClearLocalUserAttributesResultEvent, gcnew OnClearLocalUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnClearLocalUserAttributesResult));
+	regEvent(rtmEvents->onGetUserAttributesResultEvent, gcnew OnGetUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnGetUserAttributesResult));
 
 }
 

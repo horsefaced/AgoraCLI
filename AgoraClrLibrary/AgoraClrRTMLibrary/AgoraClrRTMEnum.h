@@ -383,4 +383,66 @@ namespace AgoraClrLibrary {
              QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR_USER_NOT_LOGGED_IN = 102,
 
     };
+
+    public enum class EnumAttributeOperationErrCode {
+
+        /**
+         0: The method call succeeds, or the attribute operation succeeds.
+         */
+        ATTRIBUTE_OPERATION_ERR_OK = 0,
+
+        /**
+         1: @deprecated
+         */
+         ATTRIBUTE_OPERATION_ERR_NOT_READY = 1,
+
+         /**
+          2: Common failure. The attribute operation fails.
+          */
+          ATTRIBUTE_OPERATION_ERR_FAILURE = 2,
+
+          /**
+           3: The argument you put for this attribute operation is invalid. For example, you cannot set a user or channel attribute as "".
+           */
+           ATTRIBUTE_OPERATION_ERR_INVALID_ARGUMENT = 3,
+
+           /**
+            4: The attribute size exceeds the limit.
+
+            - For user attribute operations: The user's overall attribute size would exceed the limit of 16 KB, one of the user's attributes would exceeds 8 KB in size, or the number of this user's attributes would exceed 32 after this attribute operation.
+            - For channel attribute operations: The channel's overall attribute size would exceed the limit of 32 KB, one of the channel attributes would exceed 8 KB in size, or the number of this channel's attributes would exceed 32 after this attribute operation.
+            */
+            ATTRIBUTE_OPERATION_ERR_SIZE_OVERFLOW = 4,
+
+            /**
+             5: The method call frequency exceeds the limit.
+
+             - For \ref agora::rtm::IRtmService::setLocalUserAttributes "setLocalUserAttributes", \ref agora::rtm::IRtmService::addOrUpdateLocalUserAttributes "addOrUpdateLocalUserAttributes", \ref agora::rtm::IRtmService::deleteLocalUserAttributesByKeys "deleteLocalUserAttributesByKeys" and \ref agora::rtm::IRtmService::clearLocalUserAttributes "clearLocalUserAttributes" taken together: the call frequency limit is 10 queries every five seconds.
+             - For \ref agora::rtm::IRtmService::getUserAttributes "getUserAttributes" and \ref agora::rtm::IRtmService::getUserAttributesByKeys "getUserAttributesByKeys" taken together, the call frequency limit is 40 queries every five seconds.
+             - For \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes", \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes", \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" and \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" taken together: the call frequency limit is 10 queries every five seconds.
+             - For \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" and \ref agora::rtm::IRtmService::getChannelAttributesByKeys "getChannelAttributesByKeys" taken together, the call frequency limit is 10 queries every five seconds.
+             */
+             ATTRIBUTE_OPERATION_ERR_TOO_OFTEN = 5,
+
+             /**
+              6: The specified user is not found, either because the user is offline or because the user does not exist.
+              */
+              ATTRIBUTE_OPERATION_ERR_USER_NOT_FOUND = 6,
+
+              /**
+               7: A timeout occurs during the attribute operation. The current timeout is set as five seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+               */
+               ATTRIBUTE_OPERATION_ERR_TIMEOUT = 7,
+
+               /**
+                101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+                */
+                ATTRIBUTE_OPERATION_ERR_NOT_INITIALIZED = 101,
+
+                /**
+                 102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before the attribute operation.
+                 */
+                 ATTRIBUTE_OPERATION_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
 }
