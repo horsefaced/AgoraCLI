@@ -489,4 +489,389 @@ namespace AgoraClrLibrary {
                GET_CHANNEL_MEMBER_COUNT_ERR_USER_NOT_LOGGED_IN = 102,
 
     };
+
+    public enum class EnumJoinChannelErrCode {
+        /**
+ 0: The method call succeeds, or the user joins the channel successfully.
+ */
+        JOIN_CHANNEL_ERR_OK = 0,
+
+        /**
+         1: Common failure. The user fails to join the channel.
+         */
+         JOIN_CHANNEL_ERR_FAILURE = 1,
+
+         /**
+          2: **RESERVED FOR FUTURE USE**
+          */
+          JOIN_CHANNEL_ERR_REJECTED = 2, // Usually occurs when the user is already in the channel
+
+          /**
+           3: The user fails to join the channel because the argument is invalid.
+           */
+           JOIN_CHANNEL_ERR_INVALID_ARGUMENT = 3,
+
+           /**
+            4: A timeout occurs when joining the channel. The current timeout is set as five seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+            */
+            JOIN_CHANNEL_TIMEOUT = 4,
+
+            /**
+             5: The number of the RTM channels you are in exceeds the limit of 20.
+             */
+             JOIN_CHANNEL_ERR_EXCEED_LIMIT = 5,
+
+             /**
+              6: The user is joining or has joined the channel.
+              */
+              JOIN_CHANNEL_ERR_ALREADY_JOINED = 6,
+
+              /**
+              7: The method call frequency exceeds 50 queries every three seconds.
+              */
+              JOIN_CHANNEL_ERR_TOO_OFTEN = 7,
+
+              /**
+               8: The frequency of joining the same channel exceeds two times every five seconds.
+               */
+               JOIN_CHANNEL_ERR_JOIN_SAME_CHANNEL_TOO_OFTEN = 8,
+
+               /**
+                101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+                */
+                JOIN_CHANNEL_ERR_NOT_INITIALIZED = 101,
+
+                /**
+                 102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before joining the channel.
+                 */
+                 JOIN_CHANNEL_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
+
+    public enum class EnumLeaveChannelErrCode {
+        /**
+ 0: The method call succeeds, or the user leaves the channel successfully.
+ */
+        LEAVE_CHANNEL_ERR_OK = 0,
+
+        /**
+         1: Common failure. The user fails to leave the channel.
+         */
+         LEAVE_CHANNEL_ERR_FAILURE = 1,
+
+         /**
+          2: The user cannot leave the channel, possibly because the user is not in the channel.
+          */
+          LEAVE_CHANNEL_ERR_REJECTED = 2,
+
+          /**
+           3: The user is not in the channel.
+           */
+           LEAVE_CHANNEL_ERR_NOT_IN_CHANNEL = 3,
+
+           /**
+            101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+            */
+            LEAVE_CHANNEL_ERR_NOT_INITIALIZED = 101,
+
+            /**
+             102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before calling the \ref agora::rtm::IChannel::leave "leave" method.
+             */
+             LEAVE_CHANNEL_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
+
+    public enum class EnumChannelMessageErrCode {
+        /**
+ 0: The method call succeeds, or the server receives the channel message.
+ */
+        CHANNEL_MESSAGE_ERR_OK = 0,
+
+        /**
+         1: Common failure. The user fails to send the channel message.
+         */
+         CHANNEL_MESSAGE_ERR_FAILURE = 1,
+
+         /**
+          2: The SDK does not receive a response from the server in five seconds. The current timeout is set as five seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+          */
+          CHANNEL_MESSAGE_ERR_SENT_TIMEOUT = 2,
+
+          /**
+           3: The method call frequency exceeds the limit of 60 queries per second (channel and peer messages taken together).
+           */
+           CHANNEL_MESSAGE_ERR_TOO_OFTEN = 3,
+
+           /**
+            4: The message is null or exceeds 32 KB in length.
+            */
+            CHANNEL_MESSAGE_ERR_INVALID_MESSAGE = 4,
+
+            /**
+             101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+             */
+             CHANNEL_MESSAGE_ERR_NOT_INITIALIZED = 101,
+
+             /**
+              102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before sending out a channel message.
+              */
+              CHANNEL_MESSAGE_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
+
+    public enum class EnumGetMembersErrCode {
+        /**
+ 0: The method call succeeds, or the operation succeeds.
+ */
+        GET_MEMBERS_ERR_OK = 0,
+
+        /**
+         1: Common failure. The user fails to retrieve a member list of the channel.
+         */
+         GET_MEMBERS_ERR_FAILURE = 1,
+
+         /**
+          2: Cannot retrieve a member list of the channel.
+          */
+          GET_MEMBERS_ERR_REJECTED = 2,
+
+          /**
+           3: A timeout occurs when retrieving a member list of the channel. The current timeout is set as five seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+           */
+           GET_MEMBERS_ERR_TIMEOUT = 3,
+
+           /**
+            4: The method call frequency exceeds the limit of five queries every two seconds.
+            */
+            GET_MEMBERS_ERR_TOO_OFTEN = 4,
+
+            /**
+             5: The user is not in channel.
+             */
+             GET_MEMBERS_ERR_NOT_IN_CHANNEL = 5,
+
+             /**
+              101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+              */
+              GET_MEMBERS_ERR_NOT_INITIALIZED = 101,
+
+              /**
+               102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before retrieving a member list.
+               */
+               GET_MEMBERS_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
+
+    public enum class EnumLocalInvitationState {
+        /**
+ 0: <b>RETURNED TO THE CALLER.</b> The initial state of a call invitation (idle).
+ */
+        LOCAL_INVITATION_STATE_IDLE = 0,
+
+        /**
+         1: <b>RETURNED TO THE CALLER.</b> The call invitation is sent to the callee.
+         */
+         LOCAL_INVITATION_STATE_SENT_TO_REMOTE = 1,
+
+         /**
+          2: <b>RETURNED TO THE CALLER.</b> The call invitation is received by the callee.
+          */
+          LOCAL_INVITATION_STATE_RECEIVED_BY_REMOTE = 2,
+
+          /**
+           3: <b>RETURNED TO THE CALLER.</b> The call invitation is accepted by the callee.
+           */
+           LOCAL_INVITATION_STATE_ACCEPTED_BY_REMOTE = 3,
+
+           /**
+            4: <b>RETURNED TO THE CALLER.</b> The call invitation is declined by the callee.
+            */
+            LOCAL_INVITATION_STATE_REFUSED_BY_REMOTE = 4,
+
+            /**
+             5: <b>RETURNED TO THE CALLER.</b> You have canceled the call invitation.
+             */
+             LOCAL_INVITATION_STATE_CANCELED = 5,
+
+             /**
+              6: <b>RETURNED TO THE CALLER.</b> The call invitation fails.
+              */
+              LOCAL_INVITATION_STATE_FAILURE = 6,
+
+    };
+
+    public enum class EnumRemoteInvitationState {
+        /**
+ 0: <b>RETURNED TO THE CALLEE.</b> The initial state of a call invitation (idle).
+ */
+        REMOTE_INVITATION_STATE_IDLE = 0,
+
+        /**
+         1: <b>RETURNED TO THE CALLEE.</b> A call invitation from a remote caller is received.
+         */
+         REMOTE_INVITATION_STATE_INVITATION_RECEIVED = 1,
+
+         /**
+          2: <b>RETURNED TO THE CALLEE.</b> The message is sent to the caller that the call invitation is accepted.
+          */
+          REMOTE_INVITATION_STATE_ACCEPT_SENT_TO_LOCAL = 2,
+
+          /**
+           3: <b>RETURNED TO THE CALLEE.</b> You have declined the call invitation.
+           */
+           REMOTE_INVITATION_STATE_REFUSED = 3,
+
+           /**
+            4: <b>RETURNED TO THE CALLEE.</b> You have accepted the call invitation.
+            */
+            REMOTE_INVITATION_STATE_ACCEPTED = 4,
+
+            /**
+             5: <b>RETURNED TO THE CALLEE.</b> The call invitation is canceled by the remote caller.
+             */
+             REMOTE_INVITATION_STATE_CANCELED = 5,
+
+             /**
+              6: <b>RETURNED TO THE CALLEE.</b> The call invitation fails.
+              */
+              REMOTE_INVITATION_STATE_FAILURE = 6,
+
+    };
+
+    public enum class EnumLocalInvitationErrCode {
+        /**
+         0: <b>RETURNED TO THE CALLER.</b> The outgoing invitation succeeds.
+         */
+        LOCAL_INVITATION_ERR_OK = 0,
+
+        /**
+         1: <b>RETURNED TO THE CALLER.</b> The callee is offline.
+
+         The SDK performs the following:
+         - Keeps resending the call invitation to the callee, if the callee is offline.
+         - Returns this error code, if the callee is still offline 30 seconds since the call invitation is sent.
+         */
+         LOCAL_INVITATION_ERR_PEER_OFFLINE = 1,
+
+         /**
+          2: <b>RETURNED TO THE CALLER.</b> The callee is online but has not ACKed to the call invitation 30 seconds since it is sent.
+          */
+          LOCAL_INVITATION_ERR_PEER_NO_RESPONSE = 2,
+
+          /**
+           3: <b>RETURNED TO THE CALLER. SAVED FOR FUTURE USE.</b> The call invitation expires 60 seconds since it is sent, if the callee ACKs to the call invitation but neither the caller or callee takes any further action (cancel, accpet, or decline it).
+           */
+           LOCAL_INVITATION_ERR_INVITATION_EXPIRE = 3,
+
+           /**
+            4: <b>RETURNED TO THE CALLER.</b> The caller is not logged in.
+            */
+            LOCAL_INVITATION_ERR_NOT_LOGGEDIN = 4,
+
+    };
+
+    public enum class EnumRemoteInvitationErrCode {
+
+        /**
+         0: <b>RETURNED TO THE CALLEE.</b> The incoming calll invitation succeeds.
+         */
+        REMOTE_INVITATION_ERR_OK = 0,
+
+        /**
+         1: <b>RETURNED TO THE CALLEE.</b> The call invitation received by the callee fails: the callee is not online.
+         */
+         REMOTE_INVITATION_ERR_PEER_OFFLINE = 1,
+
+         /**
+          2: <b>RETURNED TO THE CALLEE.</b> The call invitation received by callee fails: the acceptance of the call invitation fails.
+          */
+          REMOTE_INVITATION_ERR_ACCEPT_FAILURE = 2,
+
+          /**
+           3: <b>RETURNED TO THE CALLEE.</b> The call invitation expires 60 seconds since it is sent, if the callee ACKs to the call invitation but neither the caller or callee takes any further action (cancel, accpet, or decline it).
+           */
+           REMOTE_INVITATION_ERR_INVITATION_EXPIRE = 3,
+
+    };
+
+    public enum class EnumRenewTokenErrCode {
+        /**
+         0: The method call succeeds, or the renewing operation succeeds.
+         */
+        RENEW_TOKEN_ERR_OK = 0,
+
+        /**
+         1: Common failure. The user fails to renew the token.
+         */
+         RENEW_TOKEN_ERR_FAILURE = 1,
+
+         /**
+          2: The method call fails. The argument is invalid.
+          */
+          RENEW_TOKEN_ERR_INVALID_ARGUMENT = 2,
+
+          /**
+           3: The Agora RTM service is not initialized.
+           */
+           RENEW_TOKEN_ERR_REJECTED = 3,
+
+           /**
+            4: The method call frequency exceeds the limit of two queries per second.
+            */
+            RENEW_TOKEN_ERR_TOO_OFTEN = 4,
+
+            /**
+             5: The token has expired.
+             */
+             RENEW_TOKEN_ERR_TOKEN_EXPIRED = 5,
+
+             /**
+              6: The token is invalid.
+              */
+              RENEW_TOKEN_ERR_INVALID_TOKEN = 6,
+
+              /**
+               101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+               */
+               RENEW_TOKEN_ERR_NOT_INITIALIZED = 101,
+
+               /**
+                102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before renewing the token.
+                */
+                RENEW_TOKEN_ERR_USER_NOT_LOGGED_IN = 102,
+
+    };
+
+    public enum class EnumLogFilterType {
+
+        /**
+         0: Do not output any log information.
+           */
+        LOG_FILTER_OFF = 0,
+
+        /**
+         0x000f: Output CRITICAL, ERROR, WARNING, and INFO level log information.
+           */
+           LOG_FILTER_INFO = 0x000f,
+
+           /**
+            0x000e: Output CRITICAL, ERROR, and WARNING level log information.
+              */
+              LOG_FILTER_WARN = 0x000e,
+
+              /**
+               0x000c: Output CRITICAL and ERROR level log information.
+                 */
+                 LOG_FILTER_ERROR = 0x000c,
+
+                 /**
+                  0x0008: Output CRITICAL level log information.
+                    */
+                    LOG_FILTER_CRITICAL = 0x0008,
+                    /**
+                     Reserved for future use.
+                       */
+                       LOG_FILTER_MASK = 0x80f,
+
+    };
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\..\agorasdk\include\IAgoraRtmService.h"
+#include "AgoraClrRTMTypes.h"
 
 #include <type_traits>
 #include <utility>
@@ -8,43 +9,33 @@
 using namespace agora::rtm;
 
 namespace AgoraClrLibrary {
+	namespace RTMEventType {
+		using OnLoginSuccessType = ET<void>;
+		using OnLoginFailureType = ET<LOGIN_ERR_CODE>;
+		using OnRenewTokenResultType = ET<const char*, RENEW_TOKEN_ERR_CODE>;
+		using OnTokenExpiredType = ET<void>;
+		using OnLogoutType = ET<LOGOUT_ERR_CODE>;
+		using OnConnectionStateChangedType = ET<CONNECTION_STATE, CONNECTION_CHANGE_REASON>;
+		using OnSendMessageResultType = ET<long long, PEER_MESSAGE_ERR_CODE>;
+		using OnMessageReceivedFromPeerType = ET<const char*, const IMessage*>;
+		using OnQueryPeersOnlineStatusResultType = ET<long long, const PeerOnlineStatus*, int, QUERY_PEERS_ONLINE_STATUS_ERR>;
+		using OnSubscriptionRequestResultType = ET<long long, PEER_SUBSCRIPTION_STATUS_ERR>;
+		using OnQueryPeersBySubscriptionOptionResultType = ET<long long, const char* [], int, QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR>;
+		using OnPeersOnlineStatusChangedType = ET<const PeerOnlineStatus[], int>;
+		using OnSetLocalUserAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
+		using OnAddOrUpdateLocalUserAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
+		using OnDeleteLocalUserAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
+		using OnClearLocalUserAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
+		using OnGetUserAttributesResultType = ET<long long, const char*, const RtmAttribute*, int, ATTRIBUTE_OPERATION_ERR>;
+		using OnSetChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
+		using OnAddOrUpdateChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
+		using OnDeleteChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
+		using OnClearChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
+		using OnGetChannelAttributesResultType = ET<long long, const IRtmChannelAttribute * [], int, ATTRIBUTE_OPERATION_ERR>;
+		using OnGetChannelMemberCountResultType = ET<long long, const ChannelMemberCount*, int, GET_CHANNEL_MEMBER_COUNT_ERR_CODE>;
+	}
 
-	template<typename ...T>
-	ref struct ET {
-		using Pointer = void(__stdcall*)(T...);
-		delegate void Type(T...);
-	};
-
-	template<>
-	ref struct ET<void> {
-		using Pointer = void(__stdcall*)();
-		delegate void Type();
-	};
-
-	using OnLoginSuccessType = ET<void>;
-	using OnLoginFailureType = ET<LOGIN_ERR_CODE>;
-	using OnRenewTokenResultType = ET<const char*, RENEW_TOKEN_ERR_CODE>;
-	using OnTokenExpiredType = ET<void>;
-	using OnLogoutType = ET<LOGOUT_ERR_CODE>;
-	using OnConnectionStateChangedType = ET<CONNECTION_STATE, CONNECTION_CHANGE_REASON>;
-	using OnSendMessageResultType = ET<long long, PEER_MESSAGE_ERR_CODE>;
-	using OnMessageReceivedFromPeerType = ET<const char*, const IMessage*>;
-	using OnQueryPeersOnlineStatusResultType = ET<long long, const PeerOnlineStatus*, int, QUERY_PEERS_ONLINE_STATUS_ERR>;
-	using OnSubscriptionRequestResultType = ET<long long, PEER_SUBSCRIPTION_STATUS_ERR>;
-	using OnQueryPeersBySubscriptionOptionResultType = ET<long long, const char*[] , int, QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR>;
-	using OnPeersOnlineStatusChangedType = ET<const PeerOnlineStatus[], int>;
-	using OnSetLocalUserAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
-	using OnAddOrUpdateLocalUserAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
-	using OnDeleteLocalUserAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
-	using OnClearLocalUserAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
-	using OnGetUserAttributesResultType = ET<long long, const char*, const RtmAttribute*, int, ATTRIBUTE_OPERATION_ERR>;
-	using OnSetChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
-	using OnAddOrUpdateChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
-	using OnDeleteChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
-	using OnClearChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
-	using OnGetChannelAttributesResultType = ET<long long, const IRtmChannelAttribute * [], int, ATTRIBUTE_OPERATION_ERR>;
-	using OnGetChannelMemberCountResultType = ET<long long, const ChannelMemberCount*, int, GET_CHANNEL_MEMBER_COUNT_ERR_CODE>;
-
+	using namespace RTMEventType;
 
 	public class AgoraClrRTMEventHandler : public IRtmServiceEventHandler
 	{
@@ -59,7 +50,7 @@ namespace AgoraClrLibrary {
 		OnTokenExpiredType::Pointer onTokenExpiredEvent = 0;
 		OnLogoutType::Pointer onLogoutEvent = 0;
 		OnConnectionStateChangedType::Pointer onConnectionStateChangedEvent = 0;
-		OnSendMessageResultType::Pointer onSendMessageResultEvent = 0;
+		RTMEventType::OnSendMessageResultType::Pointer onSendMessageResultEvent = 0;
 		OnMessageReceivedFromPeerType::Pointer onMessageReceivedFromPeerEvent = 0;
 		OnQueryPeersOnlineStatusResultType::Pointer onQueryPeersOnlineStatusResultEvent = 0;
 		OnSubscriptionRequestResultType::Pointer onSubscriptionRequestResultEvent = 0;

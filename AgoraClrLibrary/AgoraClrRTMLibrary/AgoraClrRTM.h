@@ -4,6 +4,9 @@
 #include "AgoraClrRTMEnum.h"
 #include "AgoraClrRTMTypes.h"
 #include "AgoraClrRTMEventHandler.h"
+#include "AgoraClrRTMChannel.h"
+#include "AgoraClrRTMCallManager.h"
+
 #include <memory>
 
 using namespace agora::rtm;
@@ -77,10 +80,25 @@ namespace AgoraClrLibrary {
 		AT<long long, List<ClrChannelMemberCount^>^, EnumGetChannelMemberCountErrCode>::Type^ onGetChannelMemberCountResult;
 
 		//加入离开频道相关
+		AgoraClrRTMChannel^ createChannel(String^ id);
 
+		//呼叫邀请管理
+		AgoraClrRTMCallManager^ getRtmCallManager();
+
+		//更新token
+		int renewToken(String^ token);
+		AT<>::Type^ onTokenExpired;
+		AT<String^, EnumRenewTokenErrCode>::Type^ onRenewTokenResult;
+
+		//日志设置与版本查询
+		int setLogFile(String^ file);
+		int setLogFilter(EnumLogFilterType filter);
+		int setLogFileSize(int size);
+		String^ getRTMSdkVersion();
 	private:
 		IRtmService* service;
 		AgoraClrRTMEventHandler* rtmEvents;
+		AgoraClrRTMCallManager^ manager;
 
 		List<GCHandle>^ gchs;
 
@@ -106,7 +124,8 @@ namespace AgoraClrLibrary {
 		void NativeOnCleanChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnGetChannelAttributesResult(long long id, const IRtmChannelAttribute* attributes[], int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnGetChannelMemberCountResult(long long id, const ChannelMemberCount* members, int count, GET_CHANNEL_MEMBER_COUNT_ERR_CODE code);
-
+		void NativeOnTokenExpired();
+		void NativeOnRenewTokenResult(const char* token, RENEW_TOKEN_ERR_CODE code);
 	private:
 		template<typename E, typename D>
 		inline void regEvent(E &e, D^ d)

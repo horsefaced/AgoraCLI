@@ -11,7 +11,10 @@
 using namespace msclr::interop;
 using namespace System::Collections::Generic;
 
-AgoraClrLibrary::AgoraClrRTM::AgoraClrRTM(String^ vendorkey): service(createRtmService()), rtmEvents(new AgoraClrRTMEventHandler())
+AgoraClrLibrary::AgoraClrRTM::AgoraClrRTM(String^ vendorkey) :
+	service(createRtmService()),
+	rtmEvents(new AgoraClrRTMEventHandler()),
+	manager(nullptr)
 {
 	bindEventHandler();
 	int result = service->initialize(marshal_as<std::string>(vendorkey).c_str(), rtmEvents);
@@ -22,8 +25,13 @@ AgoraClrLibrary::AgoraClrRTM::AgoraClrRTM(String^ vendorkey): service(createRtmS
 
 AgoraClrLibrary::AgoraClrRTM::~AgoraClrRTM()
 {
+	delete manager;
 	service->removeEventHandler(rtmEvents);
 	delete rtmEvents;
+	for each (GCHandle handler in this->gchs)
+	{
+		handler.Free();
+	}
 	service->release();
 }
 
@@ -44,19 +52,8 @@ AgoraClrLibrary::ClrMessage^ AgoraClrLibrary::AgoraClrRTM::createMessage()
 
 int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, ClrMessage^ msg, ClrSendMessageOptions^ options)
 {
-	IMessage* raw;
-	if (msg->Data == nullptr || msg->Data->Length == 0) 
-		raw = service->createMessage();
-	else {
-		auto [rawData, length] = msg->rawData();
-		raw = service->createMessage(static_cast<const uint8_t*>(rawData), length);
-	}
-
-	if (msg->Text != nullptr)
-		raw->setText(marshal_as<std::string>(msg->Text).c_str());
-	
+	IMessage* raw = msg->toMessage(service);
 	int result = service->sendMessageToPeer(marshal_as<std::string>(peerId).c_str(), raw, options);
-	msg->ID = raw->getMessageId();
 	raw->release();
 	return result;
 }
@@ -250,6 +247,43 @@ int AgoraClrLibrary::AgoraClrRTM::getChannelMemberCount(List<String^>^ ids, long
 	return result;
 }
 
+AgoraClrLibrary::AgoraClrRTMChannel^ AgoraClrLibrary::AgoraClrRTM::createChannel(String^ id)
+{
+	return gcnew AgoraClrRTMChannel(service, id);
+}
+
+AgoraClrLibrary::AgoraClrRTMCallManager^ AgoraClrLibrary::AgoraClrRTM::getRtmCallManager()
+{
+	if (manager == nullptr) manager = gcnew AgoraClrRTMCallManager(service);
+	return manager;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::renewToken(String^ token)
+{
+	marshal_context context;
+	return service->renewToken(context.marshal_as<const char*>(token));
+}
+
+int AgoraClrLibrary::AgoraClrRTM::setLogFile(String^ file)
+{
+	return service->setLogFile(marshal_as<std::string>(file).c_str());
+}
+
+int AgoraClrLibrary::AgoraClrRTM::setLogFilter(EnumLogFilterType filter)
+{
+	return service->setLogFilter(static_cast<LOG_FILTER_TYPE>(filter));
+}
+
+int AgoraClrLibrary::AgoraClrRTM::setLogFileSize(int size)
+{
+	return service->setLogFileSize(size);
+}
+
+String^ AgoraClrLibrary::AgoraClrRTM::getRTMSdkVersion()
+{
+	return gcnew String(getRtmSdkVersion());
+}
+
 void AgoraClrLibrary::AgoraClrRTM::NativeOnLoginSuccess()
 {
 	if (onLoginSuccess) onLoginSuccess();
@@ -399,12 +433,23 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnGetChannelMemberCountResult(long long
 	}
 }
 
+void AgoraClrLibrary::AgoraClrRTM::NativeOnTokenExpired()
+{
+	if (onTokenExpired) onTokenExpired();
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnRenewTokenResult(const char* token, RENEW_TOKEN_ERR_CODE code)
+{
+	if (onRenewTokenResult)
+		onRenewTokenResult(gcnew String(token), static_cast<EnumRenewTokenErrCode>(code));
+}
+
 void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 {
 	regEvent(rtmEvents->onLoginSuccessEvent, gcnew OnLoginSuccessType::Type(this, &AgoraClrRTM::NativeOnLoginSuccess));
 	regEvent(rtmEvents->onLoginFailureEvent, gcnew OnLoginFailureType::Type(this, &AgoraClrRTM::NativeOnLoginFailure));
 	regEvent(rtmEvents->onLogoutEvent, gcnew OnLogoutType::Type(this, &AgoraClrRTM::NativeOnLogout));
-	regEvent(rtmEvents->onSendMessageResultEvent, gcnew OnSendMessageResultType::Type(this, &AgoraClrRTM::NativeOnSendMessageResult));
+	regEvent(rtmEvents->onSendMessageResultEvent, gcnew AgoraClrLibrary::RTMEventType::OnSendMessageResultType::Type(this, &AgoraClrRTM::NativeOnSendMessageResult));
 	regEvent(rtmEvents->onMessageReceivedFromPeerEvent, gcnew OnMessageReceivedFromPeerType::Type(this, &AgoraClrRTM::NativeOnMessageReceivedFromPeer));
 	regEvent(rtmEvents->onQueryPeersOnlineStatusResultEvent, gcnew OnQueryPeersOnlineStatusResultType::Type(this, &AgoraClrRTM::NativeOnQueryPeersOnlineStatusResult));
 	regEvent(rtmEvents->onSubscriptionRequestResultEvent, gcnew OnSubscriptionRequestResultType::Type(this, &AgoraClrRTM::NativeOnSubscriptionRequrestResult));
@@ -421,6 +466,8 @@ void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 	regEvent(rtmEvents->onClearChannelAttributesResultEvent, gcnew OnClearChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnCleanChannelAttributesResult));
 	regEvent(rtmEvents->onGetChannelAttributesResultEvent, gcnew OnGetChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnGetChannelAttributesResult));
 	regEvent(rtmEvents->onGetChannelMemberCountResultEvent, gcnew OnGetChannelMemberCountResultType::Type(this, &AgoraClrRTM::NativeOnGetChannelMemberCountResult));
+	regEvent(rtmEvents->onTokenExpiredEvent, gcnew OnTokenExpiredType::Type(this, &AgoraClrRTM::NativeOnTokenExpired));
+	regEvent(rtmEvents->onRenewTokenResultEvent, gcnew OnRenewTokenResultType::Type(this, &AgoraClrRTM::NativeOnRenewTokenResult));
 
 }
 

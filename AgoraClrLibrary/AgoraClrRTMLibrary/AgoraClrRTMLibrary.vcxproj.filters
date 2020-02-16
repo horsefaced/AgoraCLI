@@ -33,6 +33,18 @@
     <ClInclude Include="AgoraClrRTMTypes.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AgoraClrRTMChannel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraClrRTMChannelEventHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraClrRTMCallManager.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraClrRTMCallEventHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -42,6 +54,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AgoraClrRTM.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraClrRTMChannel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraClrRTMCallManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

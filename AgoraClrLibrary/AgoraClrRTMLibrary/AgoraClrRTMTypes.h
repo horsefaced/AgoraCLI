@@ -1,6 +1,7 @@
 #pragma once
 
 #include "..\..\agorasdk\include\IAgoraRtmService.h"
+#include "AgoraClrRTMEnum.h"
 
 #include <msclr/marshal_cppstd.h>
 #include <tuple>
@@ -14,25 +15,36 @@ using namespace msclr::interop;
 
 namespace AgoraClrLibrary {
 	template<typename ...T>
-	ref struct AT {
+	public ref struct AT {
 		delegate void Type(T...);
 	};
 
 	template<>
-	ref struct AT<> {
+	public ref struct AT<> {
 		delegate void Type();
 	};
 
 	template<typename R, typename ...T>
-	ref struct FT {
+	public ref struct FT {
 		delegate R Type(T...);
 	};
 
 	template<typename R>
-	ref struct FT<R> {
+	public ref struct FT<R> {
 		delegate R Type();
 	};
 
+	template<typename ...T>
+	public ref struct ET {
+		using Pointer = void(__stdcall*)(T...);
+		delegate void Type(T...);
+	};
+
+	template<>
+	public ref struct ET<void> {
+		using Pointer = void(__stdcall*)();
+		delegate void Type();
+	};
 
 	public ref class AutoChars {
 	public:
@@ -81,13 +93,22 @@ namespace AgoraClrLibrary {
 			IsOffline = raw->isOfflineMessage();
 		}
 
-		std::tuple<const void*, int> rawData() {
-			if (Data == nullptr || Data->Length == 0) return std::make_tuple<const void*, int>(nullptr, 0);
-			int size = Data->Length;
-			void* raw = malloc(sizeof(char) * size);
-			Marshal::Copy(Data, 0, IntPtr(raw), size);
-			return std::tuple<const void*, int>(raw, size);
+		IMessage* toMessage(IRtmService* service) {
+			IMessage* raw;
+			if (Data == nullptr || Data->Length == 0)
+				raw = service->createMessage();
+			else {
+				auto [rawData, length] = this->rawData();
+				raw = service->createMessage(static_cast<const uint8_t*>(rawData), length);
+			}
+
+			if (Text != nullptr)
+				raw->setText(marshal_as<std::string>(Text).c_str());
+
+			ID = raw->getMessageId();
+			return raw;
 		}
+
 	private:
 		long long id;
 		long long ts;
@@ -97,6 +118,14 @@ namespace AgoraClrLibrary {
 			auto result = gcnew array<Byte>(size);
 			if (size > 0) Marshal::Copy(IntPtr(reinterpret_cast<void*>(const_cast<char*>(raw->getRawMessageData()))), result, 0, size);
 			return result;
+		}
+
+		std::tuple<const void*, int> rawData() {
+			if (Data == nullptr || Data->Length == 0) return std::make_tuple<const void*, int>(nullptr, 0);
+			int size = Data->Length;
+			void* raw = malloc(sizeof(char) * size);
+			Marshal::Copy(Data, 0, IntPtr(raw), size);
+			return std::tuple<const void*, int>(raw, size);
 		}
 
 	};
@@ -224,9 +253,86 @@ namespace AgoraClrLibrary {
 		String^ channelId;
 		int count;
 
-		ClrChannelMemberCount(const ChannelMemberCount val):
+		ClrChannelMemberCount(const ChannelMemberCount val) :
 			channelId(gcnew String(val.channelId)),
 			count(val.count)
 		{}
+	};
+
+	public ref class ClrChannelMember {
+	public:
+		property String^ UserId { String^ get() { return userId; }}
+		property String^ ChannelId { String^ get() { return channelId; } }
+
+		ClrChannelMember(IChannelMember* member) :
+			userId(gcnew String(member->getChannelId())),
+			channelId(gcnew String(member->getChannelId()))
+		{
+		}
+	private:
+		String^ userId;
+		String^ channelId;
+	};
+
+	public ref class ClrLocalCallInvation {
+	public:
+		property String^ CalleeId { String^ get() { return calleeId; } }
+		property String^ Content;
+		property String^ ChannelId;
+		property String^ Response { String^ get() { return response; }}
+		property EnumLocalInvitationState State { EnumLocalInvitationState get() { return state; }}
+
+		ClrLocalCallInvation(ILocalCallInvitation* lci) :
+			calleeId(gcnew String(lci->getCalleeId())),
+			response(gcnew String(lci->getResponse())),
+			state(static_cast<EnumLocalInvitationState>(lci->getState()))
+		{
+			Content = gcnew String(lci->getContent());
+			ChannelId = gcnew String(lci->getChannelId());
+		}
+
+		ILocalCallInvitation* toILCI(IRtmCallManager* manager) {
+			ILocalCallInvitation* lci = manager->createLocalCallInvitation(marshal_as<std::string>(CalleeId).c_str());
+			lci->setChannelId(marshal_as<std::string>(ChannelId).c_str());
+			lci->setContent(marshal_as<std::string>(Content).c_str());
+			return lci;
+		}
+
+	private:
+		String^ calleeId;
+		String^ response;
+		EnumLocalInvitationState state;
+
+	};
+
+	public ref class ClrRemoteCallInvitation {
+	public:
+		property String^ CallerId {
+			String^ get() { return gcnew String(raw->getCallerId()); }
+		}
+		property String^ Content {
+			String^ get() { return gcnew String(raw->getContent()); }
+		}
+		property String^ Response {
+			String^ get() { return gcnew String(raw->getResponse()); }
+			void set(String^ value) { raw->setResponse(marshal_as<std::string>(value).c_str()); }
+		}
+		property String^ ChannelId {
+			String^ get() { return gcnew String(raw->getChannelId()); }
+		}
+		property EnumRemoteInvitationState State {
+			EnumRemoteInvitationState get() { return static_cast<EnumRemoteInvitationState>(raw->getState()); }
+		}
+
+		ClrRemoteCallInvitation(IRemoteCallInvitation* rci) : raw(rci)
+		{
+		}
+		~ClrRemoteCallInvitation() { raw->release(); }
+
+		operator IRemoteCallInvitation* () {
+			return raw;
+		}
+	private:
+		IRemoteCallInvitation* raw;
 	};
 }

@@ -153,7 +153,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AgoraClrRTMCallEventHandler.h" />
+    <ClInclude Include="AgoraClrRTMCallManager.h" />
     <ClInclude Include="AgoraClrRTM.h" />
+    <ClInclude Include="AgoraClrRTMChannel.h" />
+    <ClInclude Include="AgoraClrRTMChannelEventHandler.h" />
     <ClInclude Include="AgoraClrRTMEnum.h" />
     <ClInclude Include="AgoraClrRTMEventHandler.h" />
     <ClInclude Include="AgoraClrRTMTypes.h" />
@@ -161,7 +165,9 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AgoraClrRTMCallManager.cpp" />
     <ClCompile Include="AgoraClrRTM.cpp" />
+    <ClCompile Include="AgoraClrRTMChannel.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
