@@ -15,12 +15,14 @@ namespace AgoraClrDemo
     public partial class Form1 : Form
     {
         private AgoraClr agora = new AgoraClr();
+        private AgoraClrRTM agoraRTM = new AgoraClrRTM();
         private AgoraClrLibrary.onCameraReady cameraReadyEvent;
 
         public Form1()
         {
             InitializeComponent();
             log("initialize", agora.initialize(txtVendorkey.Text));
+            log("initialize rtm", agoraRTM.initialize(txtVendorkey.Text));
             agora.onCameraReady += new AgoraClrLibrary.onCameraReady(onCameraReady);
             agora.onJoinChannelSuccess += new AgoraClrLibrary.onJoinChannelSuccess(onJoinChannelSuccess);
             agora.onFirstRemoteVideoDecoded += new AgoraClrLibrary.onFirstRemoteVideoDecoded(onFirstRemoteVideoDecoded);
@@ -71,7 +73,8 @@ namespace AgoraClrDemo
                 this.Invoke(d, new object[] { operation, result });
             } else
             {
-                txtResult.AppendText(String.Format("agora {0} result is {1}\n", operation, result));
+                txtResult.AppendText(String.Format("agora {0} result is {1}", operation, result));
+                txtResult.AppendText(Environment.NewLine);
             }
 
         }

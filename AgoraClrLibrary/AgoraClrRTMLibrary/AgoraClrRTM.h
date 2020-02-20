@@ -19,8 +19,10 @@ namespace AgoraClrLibrary {
 	public ref class AgoraClrRTM
 	{
 	public:
-		AgoraClrRTM(String^ vendorkey);
+		AgoraClrRTM();
 		~AgoraClrRTM();
+
+		int initialize(String^ vendorkey);
 
 		//登入登出相关
 		int login(String^ token, String^ userId);

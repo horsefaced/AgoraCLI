@@ -107,6 +107,10 @@
       <Project>{271543c6-d538-42ca-a307-23a7263ad3b5}</Project>
       <Name>AgoraClrLibrary</Name>
     </ProjectReference>
+    <ProjectReference Include="..\AgoraClrRTMLibrary\AgoraClrRTMLibrary.vcxproj">
+      <Project>{517cfc6a-5cb9-4f3c-9f97-1d51a2bb05ce}</Project>
+      <Name>AgoraClrRTMLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">

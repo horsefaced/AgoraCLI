@@ -11,16 +11,13 @@
 using namespace msclr::interop;
 using namespace System::Collections::Generic;
 
-AgoraClrLibrary::AgoraClrRTM::AgoraClrRTM(String^ vendorkey) :
+AgoraClrLibrary::AgoraClrRTM::AgoraClrRTM() :
 	service(createRtmService()),
 	rtmEvents(new AgoraClrRTMEventHandler()),
-	manager(nullptr)
+	manager(nullptr),
+	gchs(gcnew List<GCHandle>)
 {
 	bindEventHandler();
-	int result = service->initialize(marshal_as<std::string>(vendorkey).c_str(), rtmEvents);
-	if (result < 0) throw gcnew System::ArgumentException(result.ToString(), "vendorkey");
-
-	
 }
 
 AgoraClrLibrary::AgoraClrRTM::~AgoraClrRTM()
@@ -33,6 +30,11 @@ AgoraClrLibrary::AgoraClrRTM::~AgoraClrRTM()
 		handler.Free();
 	}
 	service->release();
+}
+
+int AgoraClrLibrary::AgoraClrRTM::initialize(String^ vendorkey)
+{
+	return service->initialize(marshal_as<std::string>(vendorkey).c_str(), rtmEvents);
 }
 
 int AgoraClrLibrary::AgoraClrRTM::login(String^ token, String^ userId)
