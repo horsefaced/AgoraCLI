@@ -18,9 +18,6 @@
     <ClInclude Include="AgoraClrLibrary.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -39,10 +36,19 @@
     <ClInclude Include="AgoraClrAudioDeviceManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AgoraClrSignalCallback.h">
+    <ClInclude Include="AgoraClrLibraryEnum.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AgoraClrSignal.h">
+    <ClInclude Include="AgoraClrLibraryTypes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraClrLibraryDelegates.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraClrMetadataObserver.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -51,9 +57,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AssemblyInfo.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AgoraClrEventHandler.cpp">
@@ -71,10 +74,10 @@
     <ClCompile Include="AgoraClrAudioDeviceManager.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AgoraClrSignalCallback.cpp">
+    <ClCompile Include="AgoraClrMetadataObserver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AgoraClrSignal.cpp">
+    <ClCompile Include="Stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -76,8 +76,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onUserMuteVideo(uid_t uid, bool mute
 void AgoraClrLibrary::AgoraClrEventHandler::onUserEnableVideo(uid_t uid, bool enabled) {
 	if (onUserEnableVideoEvent) onUserEnableVideoEvent(uid, enabled);
 }
-void AgoraClrLibrary::AgoraClrEventHandler::onApiCallExecuted(const char* api, int error) {
-	if (onApiCallExecutedEvent) onApiCallExecutedEvent(api, error);
+void AgoraClrLibrary::AgoraClrEventHandler::onApiCallExecuted(int err, const char* api, const char* result) {
+	if (onApiCallExecutedEvent) onApiCallExecutedEvent(err, api, result);
 }
 void AgoraClrLibrary::AgoraClrEventHandler::onLocalVideoStats(const LocalVideoStats& stats) {
 	if (onLocalVideoStatsEvent) onLocalVideoStatsEvent(stats);
@@ -106,11 +106,6 @@ void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessage(uid_t uid, int strea
 }
 void AgoraClrLibrary::AgoraClrEventHandler::onStreamMessageError(uid_t uid, int streamId, int code, int missed, int cached) {
 	if (onStreamMessageErrorEvent) onStreamMessageErrorEvent(uid, streamId, code, missed, cached);
-}
-
-void AgoraClrLibrary::AgoraClrEventHandler::onRequestChannelKey()
-{
-	if (onRequestChannelKeyEvent) onRequestChannelKeyEvent();
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onRequestToken()
@@ -183,9 +178,9 @@ void AgoraClrLibrary::AgoraClrEventHandler::onVideoSizeChanged(uid_t uid, int wi
 	if (onVideoSizeChangedEvent) onVideoSizeChangedEvent(uid, width, height, rotation);
 }
 
-void AgoraClrLibrary::AgoraClrEventHandler::onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state)
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
 {
-	if (onRemoteVideoStateChangedEvent) onRemoteVideoStateChangedEvent(uid, state);
+	if (onRemoteVideoStateChangedEvent) onRemoteVideoStateChangedEvent(uid, state, reason, elapsed);
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onLocalPublishFallbackToAudioOnly(bool fallbackOrRecover)
@@ -196,11 +191,6 @@ void AgoraClrLibrary::AgoraClrEventHandler::onLocalPublishFallbackToAudioOnly(bo
 void AgoraClrLibrary::AgoraClrEventHandler::onRemoteSubscribeFallbackToAudioOnly(uid_t uid, bool isFallbackOrRecover)
 {
 	if (onRemoteSubscribeFallbackToAudioOnlyEvent) onRemoteSubscribeFallbackToAudioOnlyEvent(uid, isFallbackOrRecover);
-}
-
-void AgoraClrLibrary::AgoraClrEventHandler::onCameraFocusAreaChanged(int x, int y, int width, int height)
-{
-	if (onCameraFocusAreaChangedEvent) onCameraFocusAreaChangedEvent(x, y, width, height);
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioStats(const RemoteAudioStats & stats)
@@ -216,16 +206,6 @@ void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioTransportStats(uid_t ui
 void AgoraClrLibrary::AgoraClrEventHandler::onRemoteVideoTransportStats(uid_t uid, unsigned short delay, unsigned short lost, unsigned short rxKBitRate)
 {
 	if (onRemoteVideoTransportStatsEvent) onRemoteVideoTransportStatsEvent(uid, delay, lost, rxKBitRate);
-}
-
-void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingBegin()
-{
-	if (onAudioMixingBeginEvent) onAudioMixingBeginEvent();
-}
-
-void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingEnd()
-{
-	if (onAudioMixingEndEvent) onAudioMixingEndEvent();
 }
 
 void AgoraClrLibrary::AgoraClrEventHandler::onAudioEffectFinished(int soundId)
@@ -246,4 +226,69 @@ void AgoraClrLibrary::AgoraClrEventHandler::onMediaEngineLoadSuccess()
 void AgoraClrLibrary::AgoraClrEventHandler::onMediaEngineStartCallSuccess()
 {
 	if (onMediaEngineStartCallSuccessEvent) onMediaEngineStartCallSuccessEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onNetworkTypeChanged(NETWORK_TYPE type)
+{
+	if (onNetworkTypeChangedEvent) onNetworkTypeChangedEvent(type);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLocalAudioStateChanged(LOCAL_AUDIO_STREAM_STATE state, LOCAL_AUDIO_STREAM_ERROR error)
+{
+	if (onLocalAudioStateChangedEvent) onLocalAudioStateChangedEvent(state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLocalVideoStateChanged(LOCAL_VIDEO_STREAM_STATE state, LOCAL_VIDEO_STREAM_ERROR error)
+{
+	if (onLocalVideoStateChangedEvent) onLocalVideoStateChangedEvent(state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed)
+{
+	if (onRemoteAudioStateChangedEvent) onRemoteAudioStateChangedEvent(uid, state, reason, elapsed);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onFirstRemoteAudioDecoded(uid_t uid, int elapsed)
+{
+	if (onFirstRemoteAudioDecodedEvent) onFirstRemoteAudioDecodedEvent(uid, elapsed);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLocalAudioStats(const LocalAudioStats& stats)
+{
+	if (onLocalAudioStatsEvent) onLocalAudioStatsEvent(stats);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error)
+{
+	if (onAudioMixingStateChangedEvent) onAudioMixingStateChangedEvent(state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioMixingBegin()
+{
+	if (onRemoteAudioMixingBeginEvent) onRemoteAudioMixingBeginEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRemoteAudioMixingEnd()
+{
+	if (onRemoteAudioMixingEndEvent) onRemoteAudioMixingEndEvent();
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error)
+{
+	if (onRtmpStreamingStateChangedEvent) onRtmpStreamingStateChangedEvent(url, state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error)
+{
+	if (onChannelMediaRelayStateChangedEvent) onChannelMediaRelayStateChangedEvent(state, error);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event)
+{
+	if (onChannelMediaRelayEventEvnet) onChannelMediaRelayEventEvnet(event);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onLastmileProbeResult(const LastmileProbeResult& result)
+{
+	if (onLastmileProbeResultEvent) onLastmileProbeResultEvent(result);
 }

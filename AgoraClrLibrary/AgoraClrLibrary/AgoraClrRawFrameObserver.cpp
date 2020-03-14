@@ -43,3 +43,21 @@ bool AgoraClrRawFrameObserver::onRenderVideoFrame(unsigned int uid, VideoFrame &
 	if (onRenderVideoFrameEvent) return onRenderVideoFrameEvent(uid, videoFrame);
 	else return true;
 }
+
+agora::media::IVideoFrameObserver::VIDEO_FRAME_TYPE AgoraClrLibrary::AgoraClrRawFrameObserver::getVideoFormatPreference()
+{
+	if (onGetVideoFormatePreferenceEvent) return onGetVideoFormatePreferenceEvent();
+	else return FRAME_TYPE_YUV420;
+}
+
+bool AgoraClrLibrary::AgoraClrRawFrameObserver::getRotationApplied()
+{
+	if (onGetRotationAppliedEvent) return onGetRotationAppliedEvent();
+	else return false;
+}
+
+bool AgoraClrLibrary::AgoraClrRawFrameObserver::getMirrorApplied()
+{
+	if (onGetMirrorAppliedEvent) return onGetMirrorAppliedEvent();
+	else return false;
+}

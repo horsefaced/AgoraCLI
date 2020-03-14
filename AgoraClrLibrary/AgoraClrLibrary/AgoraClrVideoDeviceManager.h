@@ -18,15 +18,17 @@ namespace AgoraClrLibrary {
 		int getCount();
 		int getDevice(int index, String^% deviceName, String^% deviceId);
 		int setDevice(String^ deviceId);
-		void release();
 	private:
 		IVideoDeviceCollection* raw;
+
+		void release();
 	};
 
 	public ref class AgoraClrVideoDeviceManager
 	{
 	public:
-		AgoraClrVideoDeviceManager(AgoraClr^ engine);
+		AgoraClrVideoDeviceManager(IRtcEngine* engine);
+
 		ClrVideoDeviceCollection^ enumerateVideoDevices();
 		int setDevice(String^ deviceId);
 		int getDevice(String^ deviceId);
@@ -34,7 +36,7 @@ namespace AgoraClrLibrary {
 		int stopDeviceTest();
 
 	private:
-		AgoraClr^ engine;
+		IRtcEngine* engine;
 	};
 
 }
