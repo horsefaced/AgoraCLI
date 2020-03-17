@@ -54,7 +54,8 @@ int AgoraClrLibrary::AgoraClr::initialize(String^ vendorkey)
 	int result = rtcEngine->initialize(context);
 	if (result == 0)
 	{
-		rtcEngine->registerPacketObserver(agoraPacketObserver);
+		//需要打开加密的话，请在封装层打开该接口。
+// 		rtcEngine->registerPacketObserver(agoraPacketObserver);
 		IMediaEngine* temp = nullptr;
 		if (!rtcEngine->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, reinterpret_cast<void**>(&temp)))
 		{
