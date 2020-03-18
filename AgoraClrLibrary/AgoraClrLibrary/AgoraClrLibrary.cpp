@@ -54,7 +54,9 @@ int AgoraClrLibrary::AgoraClr::initialize(String^ vendorkey)
 	int result = rtcEngine->initialize(context);
 	if (result == 0)
 	{
-		rtcEngine->registerPacketObserver(agoraPacketObserver);
+		// agora设计中一旦注册了packetObserver就会开启加密,
+		// 所以此接口注册移入开启加密的方法中进行
+		//rtcEngine->registerPacketObserver(agoraPacketObserver);
 		IMediaEngine* temp = nullptr;
 		if (!rtcEngine->queryInterface(agora::AGORA_IID_MEDIA_ENGINE, reinterpret_cast<void**>(&temp)))
 		{
@@ -226,6 +228,9 @@ int AgoraClrLibrary::AgoraClr::renewToken(String^ token)
 
 int AgoraClrLibrary::AgoraClr::setEncryptionSecret(String^ key)
 {
+	// 设置加密密码时, agora就开启了加密模式, 同时注册数据包观察器
+	rtcEngine->registerPacketObserver(agoraPacketObserver);
+
 	return rtcEngine->setEncryptionSecret(MarshalString(key).c_str());
 }
 
