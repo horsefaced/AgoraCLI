@@ -203,6 +203,9 @@ int AgoraClrLibrary::AgoraClr::switchChannel(String^ token, String^ channelId)
 
 int AgoraClrLibrary::AgoraClr::leaveChannel()
 {
+	// 如果该频道是加密频道, 用户退出时回知道解除加密, 
+	// 所以设置为离开频道时, 自动退出数据包观察器, 不管原来频道是否加密
+	rtcEngine->registerPacketObserver(nullptr);
 	return rtcEngine->leaveChannel();
 }
 
