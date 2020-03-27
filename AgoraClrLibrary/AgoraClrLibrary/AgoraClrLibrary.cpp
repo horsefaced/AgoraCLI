@@ -178,8 +178,7 @@ int AgoraClrLibrary::AgoraClr::clearVideoWatermarks()
 
 int AgoraClrLibrary::AgoraClr::setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setHighQualityAudioParameters(fullband, stereo, fullBitrate);
+	return rtcEngine->setHighQualityAudioParameters(fullband, stereo, fullBitrate);
 }
 
 int AgoraClrLibrary::AgoraClr::startPreview()
@@ -310,9 +309,19 @@ int AgoraClrLibrary::AgoraClr::setupLocalVideo(IntPtr view, int renderMode, int 
 	return rtcEngine->setupLocalVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid));
 }
 
+int AgoraClrLibrary::AgoraClr::setupLocalVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt)
+{
+	return rtcEngine->setupLocalVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid, static_cast<VIDEO_MIRROR_MODE_TYPE>(mt)));
+}
+
 int AgoraClrLibrary::AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, int uid)
 {
 	return rtcEngine->setupRemoteVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid));
+}
+
+int AgoraClrLibrary::AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt)
+{
+	return rtcEngine->setupRemoteVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid, static_cast<VIDEO_MIRROR_MODE_TYPE>(mt)));
 }
 
 int AgoraClrLibrary::AgoraClr::enableDualStreamMode(bool enabled)
@@ -327,8 +336,7 @@ int AgoraClrLibrary::AgoraClr::setRemoteVideoStreamType(int uid, RemoteVideoStre
 
 int AgoraClrLibrary::AgoraClr::setVideoQualityParameters(bool preferFrameRateOverImageQuality)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setVideoQualityParameters(preferFrameRateOverImageQuality);
+	return rtcEngine->setVideoQualityParameters(preferFrameRateOverImageQuality);
 }
 
 int AgoraClrLibrary::AgoraClr::setChannelProfile(ChannelProfile profile)
@@ -405,20 +413,28 @@ int AgoraClrLibrary::AgoraClr::muteRemoteVideoStream(int uid, bool mute)
 	return rtcEngine->muteRemoteVideoStream(uid, mute);
 }
 
-int AgoraClrLibrary::AgoraClr::setPlaybackDeviceVolume(int volume)
-{
-	RtcEngineParameters params(*rtcEngine);
-	return params.setPlaybackDeviceVolume(volume);
-}
-
 int AgoraClrLibrary::AgoraClr::setLocalRenderMode(RenderMode mode)
 {
 	return rtcEngine->setLocalRenderMode((agora::rtc::RENDER_MODE_TYPE)mode);
 }
 
+int AgoraClrLibrary::AgoraClr::setLocalRenderMode(RenderMode mode, EnumVideoMirrorModeType mt)
+{
+	return rtcEngine->setLocalRenderMode(static_cast<agora::rtc::RENDER_MODE_TYPE>(mode),
+		static_cast<VIDEO_MIRROR_MODE_TYPE>(mt));
+}
+
 int AgoraClrLibrary::AgoraClr::setRemoteRenderMode(int uid, RenderMode mode)
 {
 	return rtcEngine->setRemoteRenderMode(uid, (agora::rtc::RENDER_MODE_TYPE)mode);
+}
+
+int AgoraClrLibrary::AgoraClr::setRemoteRenderMode(int uid, RenderMode mode, EnumVideoMirrorModeType mt)
+{
+	return rtcEngine->setRemoteRenderMode(
+		uid, static_cast<agora::rtc::RENDER_MODE_TYPE>(mode),
+		static_cast<VIDEO_MIRROR_MODE_TYPE>(mt)
+		);
 }
 
 int AgoraClrLibrary::AgoraClr::enableAudioVolumeIndication(int interval, int smooth, bool report_vad)
@@ -591,38 +607,32 @@ int AgoraClrLibrary::AgoraClr::removeInjectStreamUrl(String^ url)
 
 int AgoraClrLibrary::AgoraClr::getEffectsVolume()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.getEffectsVolume();
+	return rtcEngine->getEffectsVolume();
 }
 
 int AgoraClrLibrary::AgoraClr::setEffectsVolume(int volume)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setEffectsVolume(volume);
+	return rtcEngine->setEffectsVolume(volume);
 }
 
 int AgoraClrLibrary::AgoraClr::setVolumeOfEffect(int soundId, int volume)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.setVolumeOfEffect(soundId, volume);
+	return rtcEngine->setVolumeOfEffect(soundId, volume);
 }
 
 int AgoraClrLibrary::AgoraClr::playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.playEffect(soundId, MarshalString(file).c_str(), loopCount, pitch, pan, gain, publish);
+	return rtcEngine->playEffect(soundId, MarshalString(file).c_str(), loopCount, pitch, pan, gain, publish);
 }
 
 int AgoraClrLibrary::AgoraClr::stopEffect(int soundId)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.stopEffect(soundId);
+	return rtcEngine->stopEffect(soundId);
 }
 
 int AgoraClrLibrary::AgoraClr::stopAllEffects()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.stopAllEffects();
+	return rtcEngine->stopAllEffects();
 }
 
 int AgoraClrLibrary::AgoraClr::preloadEffect(int soundId, String^ file)
@@ -632,32 +642,27 @@ int AgoraClrLibrary::AgoraClr::preloadEffect(int soundId, String^ file)
 
 int AgoraClrLibrary::AgoraClr::unloadEffect(int soundId)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.unloadEffect(soundId);
+	return rtcEngine->unloadEffect(soundId);
 }
 
 int AgoraClrLibrary::AgoraClr::pauseEffect(int soundId)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.pauseEffect(soundId);
+	return rtcEngine->pauseEffect(soundId);
 }
 
 int AgoraClrLibrary::AgoraClr::pauseAllEffects()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.pauseAllEffects();
+	return rtcEngine->pauseAllEffects();
 }
 
 int AgoraClrLibrary::AgoraClr::resumeEffect(int soundId)
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.resumeEffect(soundId);
+	return rtcEngine->resumeEffect(soundId);
 }
 
 int AgoraClrLibrary::AgoraClr::resumeAllEffects()
 {
-	RtcEngineParameters params(*rtcEngine);
-	return params.resumeAllEffects();
+	return rtcEngine->resumeAllEffects();
 }
 
 AgoraClrLibrary::ConnectionStateType AgoraClrLibrary::AgoraClr::getConnectionState()

@@ -73,9 +73,13 @@ namespace AgoraClrLibrary
 		int disableVideo();
 		int setVideoEncoderConfiguration(ClrVideoEncoderConfiguration^ config);
 		int setupLocalVideo(IntPtr view, int renderMode, int uid);
+		int setupLocalVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt);
 		int setupRemoteVideo(IntPtr view, int renderMode, int uid);
+		int setupRemoteVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt);
 		int setLocalRenderMode(RenderMode mode);
+		int setLocalRenderMode(RenderMode mode, EnumVideoMirrorModeType mt);
 		int setRemoteRenderMode(int uid, RenderMode mode);
+		int setRemoteRenderMode(int uid, RenderMode mode, EnumVideoMirrorModeType mt);
 		int startPreview();
 		int stopPreview();
 		int enableLocalVideo(bool enabled);
@@ -333,7 +337,7 @@ namespace AgoraClrLibrary
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
 		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
-		int setPlaybackDeviceVolume(int volume);
+		//int setPlaybackDeviceVolume(int volume);
 
 		onAudioQuality^ onAudioQuality;
 		onFirstRemoteVideoDecoded^ onFirstRemoteVideoDecoded;

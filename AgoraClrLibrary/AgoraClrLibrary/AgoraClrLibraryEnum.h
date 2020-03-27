@@ -810,4 +810,14 @@ namespace AgoraClrLibrary {
 		/** High contrast level. */
 		LIGHTENING_CONTRAST_HIGH
 	};
+
+	public enum class EnumVideoMirrorModeType {
+		/** 0: (Default) The SDK enables the mirror mode.
+ */
+		VIDEO_MIRROR_MODE_AUTO = 0,//determined by SDK
+			/** 1: Enable mirror mode. */
+			VIDEO_MIRROR_MODE_ENABLED = 1,//enabled mirror
+				/** 2: Disable mirror mode. */
+				VIDEO_MIRROR_MODE_DISABLED = 2,//disable mirror
+	};
 }

@@ -46,13 +46,15 @@ namespace AgoraClrLibrary {
 		int uid;
 		unsigned int volume; // [0,255]
 		unsigned int vad;
+		String^ channelId;
 
 		ClrAudioVolumeInfo() {}
 
 		ClrAudioVolumeInfo(const AudioVolumeInfo& info) :
 			uid(info.uid),
 			volume(info.volume),
-			vad(info.vad)
+			vad(info.vad),
+			channelId(gcnew String(info.channelId))
 		{
 
 		}
@@ -90,6 +92,11 @@ namespace AgoraClrLibrary {
 		double cpuAppUsage;
 		double cpuTotalUsage;
 
+		int gatewayRtt;
+		double memoryAppUsageRatio;
+		double memoryTotalUsageRatio;
+		int memoryAppUsageInKbytes;
+
 		RtcStats(agora::rtc::RtcStats raw)
 		{
 			duration = raw.duration;
@@ -119,6 +126,11 @@ namespace AgoraClrLibrary {
 			cpuAppUsage = raw.cpuAppUsage;
 			cpuTotalUsage = raw.cpuTotalUsage;
 			userCount = raw.userCount;
+
+			gatewayRtt = raw.gatewayRtt;
+			memoryAppUsageRatio = raw.memoryAppUsageRatio;
+			memoryTotalUsageRatio = raw.memoryTotalUsageRatio;
+			memoryAppUsageInKbytes = raw.memoryAppUsageInKbytes;
 		}
 	};
 
@@ -569,6 +581,7 @@ namespace AgoraClrLibrary {
 		int minBitrate;
 		OrientationMode orientationMode;
 		DegradationPreference degradationPreference;
+		EnumVideoMirrorModeType mirrorMode;
 
 		ClrVideoEncoderConfiguration(
 			const ClrVideoDimensions^ d, FrameRate f,
@@ -587,6 +600,23 @@ namespace AgoraClrLibrary {
 			orientationMode = m;
 		}
 
+		ClrVideoEncoderConfiguration(
+			const ClrVideoDimensions^ d, FrameRate f,
+			int b, OrientationMode m, EnumVideoMirrorModeType mt)
+			: ClrVideoEncoderConfiguration(d->width, d->height, f, b, m, mt)
+		{
+		}
+
+		ClrVideoEncoderConfiguration(
+			int width, int height, FrameRate f,
+			int b, OrientationMode m, EnumVideoMirrorModeType mt) : ClrVideoEncoderConfiguration()
+		{
+			dimensions = gcnew ClrVideoDimensions(width, height);
+			frameRate = f;
+			bitrate = b;
+			orientationMode = m;
+		}
+
 		ClrVideoEncoderConfiguration()
 			: dimensions(),
 			frameRate(FrameRate::FRAME_RATE_FPS_15),
@@ -594,7 +624,8 @@ namespace AgoraClrLibrary {
 			bitrate(STANDARD_BITRATE),
 			minBitrate(DEFAULT_MIN_BITRATE),
 			orientationMode(OrientationMode::ORIENTATION_MODE_ADAPTIVE),
-			degradationPreference(DegradationPreference::MAINTAIN_QUALITY)
+			degradationPreference(DegradationPreference::MAINTAIN_QUALITY),
+			mirrorMode(EnumVideoMirrorModeType::VIDEO_MIRROR_MODE_AUTO)
 
 		{
 		}
@@ -608,6 +639,7 @@ namespace AgoraClrLibrary {
 			raw.minBitrate = minBitrate;
 			raw.orientationMode = (ORIENTATION_MODE)orientationMode;
 			raw.degradationPreference = (DEGRADATION_PREFERENCE)degradationPreference;
+			raw.mirrorMode = static_cast<VIDEO_MIRROR_MODE_TYPE>(mirrorMode);
 			return raw;
 		}
 
