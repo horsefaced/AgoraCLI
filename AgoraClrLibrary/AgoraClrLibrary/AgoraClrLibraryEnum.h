@@ -801,4 +801,13 @@ namespace AgoraClrLibrary {
 		*/
 		CAPTURER_OUTPUT_PREFERENCE_PREVIEW = 2,
 	};
+
+	public enum class EnumLighteningContrastLevel {
+		/** Low contrast level. */
+		LIGHTENING_CONTRAST_LOW = 0,
+		/** (Default) Normal contrast level. */
+		LIGHTENING_CONTRAST_NORMAL,
+		/** High contrast level. */
+		LIGHTENING_CONTRAST_HIGH
+	};
 }

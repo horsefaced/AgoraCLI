@@ -227,7 +227,7 @@ public:
 
 @param token The Token.
 - If you initialized the engine with an available App ID, set token as null.
-- If you enabled the Token in Dashboard, set it here.
+- If you enabled the Token in Console, set it here.
 @param channelId Channel ID
 @param config Channel configuration: LiveChannelConfig
 @param uid User ID. If uid is set to 0, the system will assign a uid.

@@ -18,6 +18,7 @@ AgoraClrLibrary::AgoraClr::AgoraClr()
 	agoraMetadataObserver = new AgoraClrMetadataObserver;
 
 	VideoFormatPreference = VideoFrameType::FRAME_TYPE_YUV420;
+	IsSmoothRenderingEnabled = false;
 	IsVideoRotationApplied = false;
 	IsVideoMirrorApplied = false;
 
@@ -103,6 +104,11 @@ int AgoraClrLibrary::AgoraClr::enableAudio()
 int AgoraClrLibrary::AgoraClr::disableAudio()
 {
 	return rtcEngine->disableAudio();
+}
+
+int AgoraClrLibrary::AgoraClr::setBeautyEffectOptions(bool enabled, ClrBeautyOptions options)
+{
+	return rtcEngine->setBeautyEffectOptions(enabled, options);
 }
 
 int AgoraClrLibrary::AgoraClr::startScreenCaptureByScreenRect(ClrRectangle^ screenRect, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params)
@@ -495,6 +501,11 @@ int AgoraClrLibrary::AgoraClr::adjustRecordingSignalVolume(int volume)
 	return rtcEngine->adjustRecordingSignalVolume(volume);
 }
 
+int AgoraClrLibrary::AgoraClr::adjustUserPlaybackSignalVolume(int uid, int volume)
+{
+	return rtcEngine->adjustUserPlaybackSignalVolume(uid, volume);
+}
+
 int AgoraClrLibrary::AgoraClr::adjustPlaybackSignalVolume(int volume)
 {
 	return rtcEngine->adjustPlaybackSignalVolume(volume);
@@ -835,6 +846,8 @@ void AgoraClrLibrary::AgoraClr::initializeRawFrameObserver()
 	agoraRawObserver->onMixedAudioFrameEvent = PFOnMixedAudioFrame(regEvent(gcnew NativeOnMixedAudioFrameDelegate(this, &AgoraClr::NativeOnMixedAudioFrame)));
 
 	agoraRawObserver->onCaptureVideoFrameEvent = PFOnCaptureVideoFrame(regEvent(gcnew NativeOnCaptureVideoFrameDelegate(this, &AgoraClr::NativeOnCaptureVideoFrame)));
+	agoraRawObserver->onPreEncodeVideoFrameEvent = PFOnPreEncodeVideoFrame(regEvent(gcnew NativeOnPreEncodeVideoFrameDelegate(this, &AgoraClr::NativeOnPreEncodeVideoFrame)));
+	agoraRawObserver->getSmoothRenderingEnabledEvent = PFGetSmoothRenderingEnabled(regEvent(gcnew NativeGetSmoothRenderingEnabledDelegate(this, &AgoraClr::NativeOnGetSmoothRenderingEnabled)));
 	agoraRawObserver->onRenderVideoFrameEvent = PFOnRenderVideoFrame(regEvent(gcnew NativeOnRenderVideoFrameDelegate(this, &AgoraClr::NativeOnRenderVideoFrame)));
 	agoraRawObserver->onGetVideoFormatePreferenceEvent = reinterpret_cast<PFOnGetVideoFormatePreference>(regEvent(gcnew NativeOnGetVideoFormatePreferenceDelegate(this, &AgoraClr::NativeOnGetVideoFormatPreference)));
 	agoraRawObserver->onGetRotationAppliedEvent = reinterpret_cast<PFOnGetRotationApplied>(regEvent(gcnew NativeOnGetRotationAppliedDelegate(this, &AgoraClr::NativeOnGetRotationApplied)));
@@ -1428,6 +1441,24 @@ bool AgoraClrLibrary::AgoraClr::NativeOnCaptureVideoFrame(agora::media::IVideoFr
 			clrFrame->writeRaw(frame);
 	}
 	return result;
+}
+
+bool AgoraClrLibrary::AgoraClr::NativeOnPreEncodeVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame)
+{
+	bool result = true;
+	if (onPreEncodeVideoFrame)
+	{
+		ClrVideoFrame^ clrFrame = gcnew ClrVideoFrame(frame);
+		result = onPreEncodeVideoFrame(clrFrame);
+		if (result)
+			clrFrame->writeRaw(frame);
+	}
+	return result;
+}
+
+bool AgoraClrLibrary::AgoraClr::NativeOnGetSmoothRenderingEnabled()
+{
+	return IsSmoothRenderingEnabled;
 }
 
 bool AgoraClrLibrary::AgoraClr::NativeOnRenderVideoFrame(uid_t uid, agora::media::IVideoFrameObserver::VideoFrame& frame)

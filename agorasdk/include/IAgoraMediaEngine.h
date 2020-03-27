@@ -32,30 +32,34 @@ class IAudioFrameObserver {
   };
   /** Definition of AudioFrame */
   struct AudioFrame {
-    AUDIO_FRAME_TYPE type;
-    /** Number of samples in the audio frame: samples = (int)samplesPerCall = (int)(sampleRate &times; sampleInterval)
+    /** The type of the audio frame. See #AUDIO_FRAME_TYPE
      */
-    int samples;  //number of samples in this frame
-    /** Number of bytes per audio sample. For example, each PCM audio sample usually takes up 16 bits (2 bytes).
+    AUDIO_FRAME_TYPE type;
+    /** The number of samples per channel in the audio frame.
+    */
+    int samples;  //number of samples for each channel in this frame
+    /**The number of bytes per audio sample, which is usually 16-bit (2-byte).
      */
     int bytesPerSample;  //number of bytes per sample: 2 for PCM16
-    /** Number of audio channels.
+    /** The number of audio channels.
      - 1: Mono
      - 2: Stereo (the data is interleaved)
      */
     int channels;  //number of channels (data are interleaved if stereo)
-    /** Audio frame sample rate: 8000, 16000, 32000, 44100, or 48000 Hz.
-     * samplesPerCall = (int)(samplesPerSec &times; sampleInterval &times; numChannels), where sampleInterval &ge; 0.01 in seconds.
+    /** The sample rate.
      */
     int samplesPerSec;  //sampling rate
-    /** Audio frame data buffer. The valid data length is: samples &times; channels &times; bytesPerSample
+    /** The data buffer of the audio frame. When the audio frame uses a stereo channel, the data buffer is interleaved. 
+     The size of the data buffer is as follows: `buffer` = `samples` × `channels` × `bytesPerSample`.
      */
     void* buffer;  //data buffer
-      /** The timestamp of the external audio frame. It is mandatory. You can use this parameter for the following purposes:
+      /** The timestamp of the external audio frame. You can use this parameter for the following purposes:
        - Restore the order of the captured audio frame.
-       - Synchronize audio and video frames in video-related scenarios, including scenarios where external video sources are used.
+       - Synchronize audio and video frames in video-related scenarios, including where external video sources are used.
        */
     int64_t renderTimeMs;
+    /** Reserved parameter.
+    */
     int avsync_type;
   };
 
@@ -178,9 +182,25 @@ class IVideoFrameObserver {
    * @param videoFrame Pointer to VideoFrame.
    * @return Whether or not to ignore the current video frame if the pre-processing fails:
    * - true: Do not ignore.
-   * - false: Ignore.
+   * - false: Ignore the current video frame, and do not send it back to the SDK.
    */
   virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) = 0;
+  /** Occurs each time the SDK receives a video frame before encoding.
+   *
+   * After you successfully register the video frame observer, the SDK triggers this callback each time when it receives a video frame. In this callback, you can get the video data before encoding. You can then process the data according to your particular scenarios.
+   *
+   * After processing, you can send the processed video data back to the SDK by setting the `VideoFrame` parameter in this callback.
+   *
+   * @note
+   * - The video data that this callback gets has been pre-processed, with its content cropped, rotated, and the image enhanced.
+   * - This callback does not support sending processed RGBA video data back to the SDK.
+   *
+   * @param videoFrame A pointer to VideoFrame
+   * @return Whether to ignore the current video frame if the processing fails:
+   * - true: Do not ignore the current video frame.
+   * - false: Ignore the current video frame, and do not send it back to the SDK.
+   */
+  virtual bool onPreEncodeVideoFrame(VideoFrame& videoFrame) { return true; }
   /** Occurs each time the SDK receives a video frame sent by the remote user.
    * 
    * After you successfully register the video frame observer, the SDK triggers this callback each time a video frame is received. In this callback, 
@@ -195,7 +215,7 @@ class IVideoFrameObserver {
    * @param videoFrame Pointer to VideoFrame.
    * @return Whether or not to ignore the current video frame if the post-processing fails:
    * - true: Do not ignore.
-   * - false: Ignore.
+   * - false: Ignore the current video frame, and do not send it back to the SDK.
    */
   virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame) = 0;
   /** Occurs each time the SDK receives a video frame and prompts you to set the video format. 
@@ -239,6 +259,19 @@ class IVideoFrameObserver {
    * - false: (Default) Do not mirror.
    */
   virtual bool getMirrorApplied() { return false; }
+  /** Sets whether to output the acquired video frame smoothly.
+
+   If you want the video frames acquired from \ref IVideoFrameObserver::onRenderVideoFrame "onRenderVideoFrame" to be more evenly spaced, you can register the `getSmoothRenderingEnabled` callback in the `IVideoFrameObserver` class and set its return value as `true`.
+
+   @note
+   - Register this callback before joining a channel.
+   - This callback applies to scenarios where the acquired video frame is self-rendered after being processed, not to scenarios where the video frame is sent back to the SDK after being processed.
+
+   @return Set whether or not to smooth the video frames:
+   - true: Smooth the video frame.
+   - false: (Default) Do not smooth.
+   */
+  virtual bool getSmoothRenderingEnabled(){ return false; }
 };
 
 class IVideoFrame {

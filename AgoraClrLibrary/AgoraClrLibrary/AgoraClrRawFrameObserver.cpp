@@ -38,6 +38,18 @@ bool AgoraClrRawFrameObserver::onCaptureVideoFrame(VideoFrame & videoFrame)
 	else return true;
 }
 
+bool AgoraClrLibrary::AgoraClrRawFrameObserver::onPreEncodeVideoFrame(VideoFrame& videoFrame)
+{
+	if (onPreEncodeVideoFrameEvent) return onPreEncodeVideoFrameEvent(videoFrame);
+	else return true;
+}
+
+bool AgoraClrLibrary::AgoraClrRawFrameObserver::getSmoothRenderingEnabled()
+{
+	if (getSmoothRenderingEnabledEvent) return getSmoothRenderingEnabledEvent();
+	else return false;
+}
+
 bool AgoraClrRawFrameObserver::onRenderVideoFrame(unsigned int uid, VideoFrame & videoFrame)
 {
 	if (onRenderVideoFrameEvent) return onRenderVideoFrameEvent(uid, videoFrame);

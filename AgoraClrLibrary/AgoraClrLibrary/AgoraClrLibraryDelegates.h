@@ -168,6 +168,10 @@ namespace AgoraClrLibrary {
 	public
 		delegate bool onCaptureVideoFrame(ClrVideoFrame^ frame);
 	public
+		delegate bool onPreEncodeVideoFrame(ClrVideoFrame^ frame);
+	public
+		delegate bool onGetSmoothRenderingEnabled();
+	public
 		delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^ frame);
 
 	public

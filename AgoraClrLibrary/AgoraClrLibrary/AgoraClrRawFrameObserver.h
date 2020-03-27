@@ -10,6 +10,8 @@ namespace AgoraClrLibrary {
 	typedef bool(__stdcall * PFOnPlaybackAudioFrameBeforeMixing)(unsigned int uid, IAudioFrameObserver::AudioFrame & audioFrame);
 
 	typedef bool(__stdcall * PFOnCaptureVideoFrame)(IVideoFrameObserver::VideoFrame & videoFrame);
+	typedef bool(__stdcall* PFOnPreEncodeVideoFrame)(IVideoFrameObserver::VideoFrame&);
+	typedef bool(__stdcall* PFGetSmoothRenderingEnabled)();
 	typedef bool(__stdcall * PFOnRenderVideoFrame)(unsigned int uid, IVideoFrameObserver::VideoFrame & videoFrame);
 	typedef IVideoFrameObserver::VIDEO_FRAME_TYPE(__stdcall * PFOnGetVideoFormatePreference)();
 	typedef bool(__stdcall* PFOnGetRotationApplied)();
@@ -19,7 +21,10 @@ namespace AgoraClrLibrary {
 	delegate bool NativeOnMixedAudioFrameDelegate(IAudioFrameObserver::AudioFrame & audioFrame);
 	delegate bool NativeOnPlaybackAudioFrameDelegate(IAudioFrameObserver::AudioFrame & audioFrame);
 	delegate bool NativeOnPlaybackAudioFrameBeforeMixingDelegate(unsigned int uid, IAudioFrameObserver::AudioFrame & audioFrame);
+
 	delegate bool NativeOnCaptureVideoFrameDelegate(IVideoFrameObserver::VideoFrame & videoFrame);
+	delegate bool NativeOnPreEncodeVideoFrameDelegate(IVideoFrameObserver::VideoFrame&);
+	delegate bool NativeGetSmoothRenderingEnabledDelegate();
 	delegate bool NativeOnRenderVideoFrameDelegate(unsigned int uid, IVideoFrameObserver::VideoFrame & videoFrame);
 	delegate IVideoFrameObserver::VIDEO_FRAME_TYPE NativeOnGetVideoFormatePreferenceDelegate();
 	delegate bool NativeOnGetRotationAppliedDelegate();
@@ -37,6 +42,8 @@ namespace AgoraClrLibrary {
 		PFOnPlaybackAudioFrameBeforeMixing onPlaybackAudioFrameBeforeMixingEvent = 0;
 
 		PFOnCaptureVideoFrame onCaptureVideoFrameEvent = 0;
+		PFOnPreEncodeVideoFrame onPreEncodeVideoFrameEvent = 0;
+		PFGetSmoothRenderingEnabled getSmoothRenderingEnabledEvent = 0;
 		PFOnRenderVideoFrame onRenderVideoFrameEvent = 0;
 		PFOnGetVideoFormatePreference onGetVideoFormatePreferenceEvent = 0;
 		PFOnGetRotationApplied onGetRotationAppliedEvent = 0;
@@ -50,6 +57,8 @@ namespace AgoraClrLibrary {
 
 		// Inherited via IVideoFrameObserver
 		virtual bool onCaptureVideoFrame(VideoFrame & videoFrame) override;
+		virtual bool onPreEncodeVideoFrame(VideoFrame& videoFrame) override;
+		virtual bool getSmoothRenderingEnabled() override;
 		virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame & videoFrame) override;
 		virtual VIDEO_FRAME_TYPE getVideoFormatPreference() override;
 		virtual bool getRotationApplied() override;

@@ -9,6 +9,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
+#include <stdlib.h>
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
@@ -173,6 +175,9 @@ enum WARN_CODE_TYPE
     /** 1021: Audio Device Module: the recording device fails.
     */
     WARN_ADM_RECORD_MALFUNCTION = 1021,
+    /** 1025: The audio playback or recording is interrupted by system events (such as a phone call).
+    */
+    WARN_ADM_CALL_INTERRUPTION = 1025,
     /** 1029: During a call, the audio session category should be set to 
      * AVAudioSessionCategoryPlayAndRecord, and RtcEngine monitors this value. 
      * If the audio session category is set to other values, this warning code 
@@ -257,7 +262,7 @@ enum ERROR_CODE_TYPE
     /** 4: The SDK does not support this function.
      */
     ERR_NOT_SUPPORTED = 4,
-    /** 5: The request is rejected. This is for internal SDK use only, and it does not return to the application through any method or callback.
+    /** 5: The request is rejected.
      */
     ERR_REFUSED = 5,
     /** 6: The buffer size is not big enough to store the returned data.
@@ -266,7 +271,7 @@ enum ERROR_CODE_TYPE
     /** 7: The SDK is not initialized before calling this method.
      */
     ERR_NOT_INITIALIZED = 7,
-    /** 9: No permission exists. This is for internal SDK use only, and it does not return to the application through any method or callback.
+    /** 9: No permission exists. Check if the user has granted access to the audio or video device.
      */
     ERR_NO_PERMISSION = 9,
     /** 10: An API method timeout occurs. Some API methods require the SDK to return the execution result, and this error occurs if the request takes too long (more than 10 seconds) for the SDK to process.
@@ -328,7 +333,7 @@ enum ERROR_CODE_TYPE
      
      The token is invalid due to one of the following reasons:
      
-     - The App Certificate for the project is enabled in Dashboard, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.
+     - The App Certificate for the project is enabled in Console, but the user is still using the App ID. Once the App Certificate is enabled, the user must use a token.
      - The uid is mandatory, and users must set the same uid as the one set in the \ref agora::rtc::IRtcEngine::joinChannel "joinChannel" method.
      */
     ERR_INVALID_TOKEN = 110,

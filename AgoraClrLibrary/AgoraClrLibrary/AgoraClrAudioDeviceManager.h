@@ -41,6 +41,12 @@ namespace AgoraClrLibrary {
 		int startPlaybackDeviceTest(String^ path);
 		int stopPlaybackDeviceTest();
 
+		int startRecordingDeviceTest(int indicationInterval);
+		int stopRecordingDeviceTest();
+
+		int startAudioDeviceLoopbackTest(int interval);
+		int stopAudioDeviceLoopbackTest();
+
 		int setPlaybackDeviceVolume(int volume);
 		int getPlaybackDeviceVolume(int %volume);
 
@@ -53,17 +59,13 @@ namespace AgoraClrLibrary {
 		int setRecordingDeviceMute(bool mute);
 		int getRecordingDeviceMute(bool& mute);
 
-		int startRecordingDeviceTest(int indicationInterval);
-		int stopRecordingDeviceTest();
-
 		int getPlaybackDevice(String^% deviceId);
 		int getPlaybackDeviceInfo(String^% deviceId, String^% deviceName);
 
 		int getRecordingDevice(String^% deviceId);
 		int getRecordingDeviceInfo(String^% deviceId, String^% deviceName);
 
-		int startAudioDeviceLoopbackTest(int interval);
-		int stopAudioDeviceLoopbackTest();
+
 	private:
 		IRtcEngine* engine;
 

@@ -60,6 +60,7 @@ namespace AgoraClrLibrary
 		int disableAudio();
 		int setAudioProfile(AudioProfileType profile, AudioScenarioType scenario);
 		int adjustRecordingSignalVolume(int volume);
+		int adjustUserPlaybackSignalVolume(int uid, int volume);
 		int adjustPlaybackSignalVolume(int volume);
 		int enableLocalAudio(bool enabled);
 		int muteLocalAudioStream(bool mute);
@@ -92,6 +93,8 @@ namespace AgoraClrLibrary
 		//远端媒体事件
 		onRemoteAudioStateChanged^ onRemoteAudioStateChanged;
 		onRemoteVideoStateChanged^ onRemoteVideoStateChanged;
+
+		//好像3.0上没有了
 		onUserMuteAudio^ onUserMuteAudio;
 		onUserMuteVideo^ onUserMuteVideo;
 		onFirstRemoteAudioFrame^ onFirstRemoteAudioFrame;
@@ -107,7 +110,9 @@ namespace AgoraClrLibrary
 		onRemoteVideoStats^ onRemoteVideoStats;
 
 		//视频前处理及后处理
-		//setBeautyEffectOptions 在2.9.1上只适配iOS与Android,所以不添加
+		int setBeautyEffectOptions(bool enabled, ClrBeautyOptions options); //在3.0上不适配macos, 在2.9.1上只适配iOS与Android,所以不添加
+
+		//todo: 多频道管理
 
 		//屏幕共享
 		//startScreenCaptureByDisplayId 只在macos上有效,所以不添加
@@ -245,7 +250,9 @@ namespace AgoraClrLibrary
 
 		//原始视频数据
 		onCaptureVideoFrame^ onCaptureVideoFrame;
+		onPreEncodeVideoFrame^ onPreEncodeVideoFrame;
 		onRenderVideoFrame^ onRenderVideoFrame;
+		property bool IsSmoothRenderingEnabled;
 		property VideoFrameType VideoFormatPreference;
 		property bool IsVideoRotationApplied;
 		property bool IsVideoMirrorApplied;
@@ -294,7 +301,7 @@ namespace AgoraClrLibrary
 		//int setAudioSessionOperationRestriction(EnumAudioSessionOperationRestriction restriction);
 
 		//其他视频控制
-		int setLocalVideoMirrorMode(VideoMirrorModeType mode);
+		int setLocalVideoMirrorMode(VideoMirrorModeType mode); //这个在3.0上好像没有
 		int setCameraCapturerConfiguration(ClrCameraCaptureConfiguration^ config);
 
 		//其他方法
@@ -321,7 +328,7 @@ namespace AgoraClrLibrary
 		onReceiveAudioPacket^ onReceiveAudioPacket;
 		onReceiveVideoPacket^ onReceiveVideoPacket;
 
-		//以下是暂时没有地方认领的方法与事件
+		//以下是暂时没有地方认领的方法与事件, 可能以后就不存在了, 谨慎调用
 		int setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
@@ -436,6 +443,8 @@ namespace AgoraClrLibrary
 		bool NativeOnMixedAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& frame);
 
 		bool NativeOnCaptureVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame);
+		bool NativeOnPreEncodeVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame);
+		bool NativeOnGetSmoothRenderingEnabled();
 		bool NativeOnRenderVideoFrame(uid_t uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
 		IVideoFrameObserver::VIDEO_FRAME_TYPE NativeOnGetVideoFormatPreference();
 		bool NativeOnGetRotationApplied();

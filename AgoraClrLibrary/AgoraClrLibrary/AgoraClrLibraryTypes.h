@@ -854,4 +854,28 @@ namespace AgoraClrLibrary {
 			return config;
 		}
 	};
+	
+	public ref class ClrBeautyOptions {
+	public:
+		EnumLighteningContrastLevel lighteningContrastLevel;
+		float lighteningLevel;
+		float smoothnessLevel;
+		float rednessLevel;
+
+		ClrBeautyOptions() :
+			lighteningLevel(0),
+			smoothnessLevel(0),
+			rednessLevel(0),
+			lighteningContrastLevel(EnumLighteningContrastLevel::LIGHTENING_CONTRAST_NORMAL) {}
+
+		operator BeautyOptions () {
+			return BeautyOptions(
+				static_cast<BeautyOptions::LIGHTENING_CONTRAST_LEVEL>(lighteningContrastLevel),
+				lighteningLevel,
+				smoothnessLevel,
+				rednessLevel
+				);
+		}
+
+	};
 }
