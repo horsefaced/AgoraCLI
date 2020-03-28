@@ -10,6 +10,9 @@
 #include "../../agorasdk/include/IAgoraLiveEngine.h"
 #include "../../agorasdk/include/IAgoraLivePublisher.h"
 #include "../../agorasdk/include/IAgoraLiveSubscriber.h"
+#include "../../agorasdk/include/IAgoraRtcChannel.h"
+#include "../include/common.h"
+
 #pragma comment(lib, "../../agorasdk/lib/agora_rtc_sdk.lib")
 
 

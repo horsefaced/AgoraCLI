@@ -31,17 +31,17 @@ namespace AgoraClrLibrary {
 	public
 		delegate void onAudioVolumeIndication(List<ClrAudioVolumeInfo^>^ speakers, int totalVolume);
 	public
-		delegate void onLeaveChannel(RtcStats^ stat);
+		delegate void onLeaveChannel(ClrRtcStats^ stat);
 	public
 		delegate void onUserJoined(int uid, int elapsed);
 	public
 		delegate void onUserOffline(int uid, UserOfflineType reason);
 	public
-		delegate void onRtcStats(RtcStats^ stat);
+		delegate void onRtcStats(ClrRtcStats^ stat);
 	public
 		delegate void onLocalVideoStats(ClrLocalVideoStats^ stats);
 	public
-		delegate void onRemoteVideoStats(RemoteVideoStats^ stats);
+		delegate void onRemoteVideoStats(ClrRemoteVideoStats^ stats);
 	public
 		delegate void onFirstLocalVideoFrame(int width, int height, int elapsed);
 	public
@@ -107,7 +107,7 @@ namespace AgoraClrLibrary {
 		delegate void onTranscodingUpdated();
 
 	public
-		delegate void onConnectionStateChanged(ConnectionStateType state, ConnectionChangedReasonType reason);
+		delegate void onConnectionStateChanged(EnumConnectionStateType state, EnumConnectionChangedReasonType reason);
 	public
 		delegate void onTokenPrivilegeWillExpire(String^ token);
 	public
@@ -119,7 +119,7 @@ namespace AgoraClrLibrary {
 	public
 		delegate void onVideoSizeChanged(int uid, int width, int height, int rotation);
 	public
-		delegate void onRemoteVideoStateChanged(int uid, RemoteVideoState state, RemoteVideoStateReason reason, int elapsed);
+		delegate void onRemoteVideoStateChanged(int uid, EnumRemoteVideoState state, EnumRemoteVideoStateReason reason, int elapsed);
 	public
 		delegate void onLocalPublishFallbackToAudioOnly(bool);
 	public
@@ -183,7 +183,7 @@ namespace AgoraClrLibrary {
 	public
 		delegate void onLocalVideoStateChanged(LocalVideoStreamState state, LocalVideoStreamError error);
 
-	public delegate void onRemoteAudioStateChanged(uid_t, RemoteAudioState, RemoteAudioStateReason, int);
+	public delegate void onRemoteAudioStateChanged(uid_t, EnumRemoteAudioState, EnumRemoteAudioStateReason, int);
 
 	public delegate void onFirstRemoteAudioDecoded(uid_t, int);
 
@@ -191,8 +191,8 @@ namespace AgoraClrLibrary {
 
 	public delegate void onAudioMixingStateChanged(AudioMixingStateType state, AudioMixingErrorType error);
 
-	public delegate void onRtmpStreamingStateChanged(String^, RtmpStreamPublishState, RtmpStreamPublishError);
+	public delegate void onRtmpStreamingStateChanged(String^, EnumRtmpStreamPublishState, EnumRtmpStreamPublishError);
 
-	public delegate void onChannelMediaRelayStateChanged(ChannelMediaRelayState, ChannelMediaRelayError);
+	public delegate void onChannelMediaRelayStateChanged(EnumChannelMediaRelayState, EnumChannelMediaRelayError);
 
 }

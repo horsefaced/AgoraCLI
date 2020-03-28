@@ -49,7 +49,7 @@ namespace AgoraClrDemo
                 this.Invoke(d, uid);
             } else
             {
-                agora.setupRemoteVideo(remoteVideo.Handle, (int)RenderMode.RENDER_MODE_ADAPTIVE, uid);
+                agora.setupRemoteVideo(remoteVideo.Handle, (int)EnumRenderModeType.RENDER_MODE_ADAPTIVE, uid);
             }
         }
 
@@ -101,7 +101,7 @@ namespace AgoraClrDemo
 
         private void btnStartPreview_Click(object sender, EventArgs e)
         {
-            log("setuplocalVideo", agora.setupLocalVideo(localVideo.Handle, (int)RenderMode.RENDER_MODE_ADAPTIVE, 0));
+            log("setuplocalVideo", agora.setupLocalVideo(localVideo.Handle, (int)EnumRenderModeType.RENDER_MODE_ADAPTIVE, 0));
             log("enableVideo", agora.enableVideo());
             log("startPreview", agora.startPreview());
         }

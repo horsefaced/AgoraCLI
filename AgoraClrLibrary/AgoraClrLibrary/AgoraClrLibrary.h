@@ -11,6 +11,7 @@
 #include "AgoraClrPacketObserver.h"
 #include "AgoraClrRawFrameObserver.h"
 #include "AgoraClrVideoDeviceManager.h"
+#include "AgoraClrChannel.h"
 
 #include <string>
 
@@ -40,7 +41,7 @@ namespace AgoraClrLibrary
 		int leaveChannel();
 		int renewToken(String^ token);
 		int enableWebSdkInteroperability(bool enabled);
-		ConnectionStateType getConnectionState();
+		EnumConnectionStateType getConnectionState();
 
 		//频道事件
 		onConnectionStateChanged^ onConnectionStateChanged;
@@ -76,10 +77,10 @@ namespace AgoraClrLibrary
 		int setupLocalVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt);
 		int setupRemoteVideo(IntPtr view, int renderMode, int uid);
 		int setupRemoteVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt);
-		int setLocalRenderMode(RenderMode mode);
-		int setLocalRenderMode(RenderMode mode, EnumVideoMirrorModeType mt);
-		int setRemoteRenderMode(int uid, RenderMode mode);
-		int setRemoteRenderMode(int uid, RenderMode mode, EnumVideoMirrorModeType mt);
+		int setLocalRenderMode(EnumRenderModeType mode);
+		int setLocalRenderMode(EnumRenderModeType mode, EnumVideoMirrorModeType mt);
+		int setRemoteRenderMode(int uid, EnumRenderModeType mode);
+		int setRemoteRenderMode(int uid, EnumRenderModeType mode, EnumVideoMirrorModeType mt);
 		int startPreview();
 		int stopPreview();
 		int enableLocalVideo(bool enabled);
@@ -117,6 +118,7 @@ namespace AgoraClrLibrary
 		int setBeautyEffectOptions(bool enabled, ClrBeautyOptions options); //在3.0上不适配macos, 在2.9.1上只适配iOS与Android,所以不添加
 
 		//todo: 多频道管理
+		AgoraClrChannel^ createChannel(String^ channelId);
 
 		//屏幕共享
 		//startScreenCaptureByDisplayId 只在macos上有效,所以不添加
@@ -190,7 +192,7 @@ namespace AgoraClrLibrary
 
 		//跨频道媒体流转发事件
 		onChannelMediaRelayStateChanged^ onChannelMediaRelayStateChanged;
-		Action<ChannelMediaRelayEvent>^ onChannelMediaRelayEvent;
+		Action<EnumChannelMediaRelayEvent>^ onChannelMediaRelayEvent;
 
 		//音量提示
 		int enableAudioVolumeIndication(int interval, int smooth, bool report_vad);
@@ -207,8 +209,8 @@ namespace AgoraClrLibrary
 
 		//视频双流模式
 		int enableDualStreamMode(bool enabled);
-		int setRemoteVideoStreamType(int uid, RemoteVideoStreamType type);
-		int setRemoteDefaultVideoStreamType(RemoteVideoStreamType type);
+		int setRemoteVideoStreamType(int uid, EnumRemoteVideoStreamType type);
+		int setRemoteDefaultVideoStreamType(EnumRemoteVideoStreamType type);
 
 		//直播音视频回退
 		int setLocalPublishFallbackOption(StreamFallbackOptions option);
@@ -305,7 +307,7 @@ namespace AgoraClrLibrary
 		//int setAudioSessionOperationRestriction(EnumAudioSessionOperationRestriction restriction);
 
 		//其他视频控制
-		int setLocalVideoMirrorMode(VideoMirrorModeType mode); //这个在3.0上好像没有
+		int setLocalVideoMirrorMode(EnumVideoMirrorModeType mode); //这个在3.0上好像没有
 		int setCameraCapturerConfiguration(ClrCameraCaptureConfiguration^ config);
 
 		//其他方法

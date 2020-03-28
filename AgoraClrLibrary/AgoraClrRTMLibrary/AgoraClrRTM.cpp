@@ -103,7 +103,7 @@ int AgoraClrLibrary::AgoraClrRTM::addOrUpdateLocalUserAttributes(List<ClrRtmAttr
 	int result = service->addOrUpdateLocalUserAttributes(attrs[0], count, tmpId);
 	requestId = tmpId;
 	ClrRtmAttribute::releaseAttrs(attrs, count);
-	return tmpId;
+	return result;
 }
 
 int AgoraClrLibrary::AgoraClrRTM::deleteLocalUserAttributesByKeys(List<String^>^ keys, long long% requestId)
@@ -136,7 +136,7 @@ int AgoraClrLibrary::AgoraClrRTM::getUserAttributesByKeys(String^ userId, List<S
 	AutoChars context(keys);
 
 	long long tmpId;
-	int result = service->getUserAttributesByKeys(context.context->marshal_as<const char*>(userId), context.chars, context.count, tmpId);
+	int result = service->getUserAttributesByKeys(context.marshal_as(userId), context.chars, context.count, tmpId);
 	requestId = tmpId;
 
 	return result;
@@ -181,7 +181,7 @@ int AgoraClrLibrary::AgoraClrRTM::deleteChannelAttributesByKeys(String^ channelI
 	ChannelAttributeOptions tmpOptons;
 	tmpOptons.enableNotificationToChannelMembers = options->enableNotificationToChannelMembers;
 	int result = service->deleteChannelAttributesByKeys(
-		context.context->marshal_as<const char*>(channelId),
+		context.marshal_as(channelId),
 		context.chars, context.count, tmpOptons, tmpId);
 	requestId = tmpId;
 	return result;
@@ -215,7 +215,7 @@ int AgoraClrLibrary::AgoraClrRTM::getChannelAttributesByKeys(String^ channelId, 
 	AutoChars context(keys);
 	long long tmpId;
 	int result = service->getChannelAttributesByKeys(
-		context.context->marshal_as<const char*>(channelId),
+		context.marshal_as(channelId),
 		context.chars, context.count, tmpId);
 	requestId = tmpId;
 	return result;

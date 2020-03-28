@@ -24,7 +24,7 @@ namespace AgoraClrLibrary {
 		char* dest = reinterpret_cast<char*>(malloc(sizeof(char) * source.length() + 1));
 		if (dest == 0) return nullptr;
 		else {
-			strcpy(dest, source.c_str());
+			strcpy_s(dest, source.length() + 1, source.c_str());
 			return dest;
 		}
 	}
@@ -61,7 +61,7 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-	ref class RtcStats
+	ref class ClrRtcStats
 	{
 	public:
 		unsigned int duration;
@@ -97,7 +97,7 @@ namespace AgoraClrLibrary {
 		double memoryTotalUsageRatio;
 		int memoryAppUsageInKbytes;
 
-		RtcStats(agora::rtc::RtcStats raw)
+		ClrRtcStats(agora::rtc::RtcStats raw)
 		{
 			duration = raw.duration;
 			rxBytes = raw.rxBytes;
@@ -169,7 +169,7 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-	ref class RemoteVideoStats
+	ref class ClrRemoteVideoStats
 	{
 	public:
 		int uid;
@@ -181,12 +181,12 @@ namespace AgoraClrLibrary {
 		int rendererOutputFrameRate;
 		int packedLossRate;
 
-		RemoteVideoStreamType rxStreamType;
+		EnumRemoteVideoStreamType rxStreamType;
 
 		int totalFrozenTime;
 		int frozenRate;
 
-		RemoteVideoStats(agora::rtc::RemoteVideoStats stats)
+		ClrRemoteVideoStats(agora::rtc::RemoteVideoStats stats)
 		{
 			uid = stats.uid;
 			delay = stats.delay;
@@ -197,7 +197,7 @@ namespace AgoraClrLibrary {
 			rendererOutputFrameRate = stats.rendererOutputFrameRate;
 			packedLossRate = stats.packetLossRate;
 
-			rxStreamType = (RemoteVideoStreamType)stats.rxStreamType;
+			rxStreamType = (EnumRemoteVideoStreamType)stats.rxStreamType;
 
 			totalFrozenTime = stats.totalFrozenTime;
 			frozenRate = stats.frozenRate;
@@ -752,6 +752,24 @@ namespace AgoraClrLibrary {
 		}
 	};
 
+	public ref class ClrChannelMediaOptions {
+	public:
+		bool autoSubscribeAudio;
+		bool autoSubscribeVideo;
+
+		ClrChannelMediaOptions() :
+			autoSubscribeAudio(true),
+			autoSubscribeVideo(true)
+		{}
+
+		operator ChannelMediaOptions () {
+			ChannelMediaOptions result;
+			result.autoSubscribeAudio = autoSubscribeAudio;
+			result.autoSubscribeVideo = autoSubscribeVideo;
+			return result;
+		}
+	};
+
 	public ref class ClrChannelMediaRelayConfiguration {
 	public:
 		ClrChannelMediaInfo^ src;
@@ -886,7 +904,7 @@ namespace AgoraClrLibrary {
 			return config;
 		}
 	};
-	
+
 	public ref class ClrBeautyOptions {
 	public:
 		EnumLighteningContrastLevel lighteningContrastLevel;

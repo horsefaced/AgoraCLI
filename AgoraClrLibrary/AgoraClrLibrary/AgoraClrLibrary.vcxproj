@@ -137,6 +137,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AgoraClrAudioDeviceManager.h" />
+    <ClInclude Include="AgoraClrChannel.h" />
+    <ClInclude Include="AgoraClrChannelEventHandler.h" />
     <ClInclude Include="AgoraClrEventHandler.h" />
     <ClInclude Include="AgoraClrLibrary.h" />
     <ClInclude Include="AgoraClrLibraryDelegates.h" />
@@ -153,6 +155,8 @@
     <ClCompile Include="AgoraClrAudioDeviceManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="AgoraClrChannel.cpp" />
+    <ClCompile Include="AgoraClrChannelEventHandler.cpp" />
     <ClCompile Include="AgoraClrEventHandler.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>

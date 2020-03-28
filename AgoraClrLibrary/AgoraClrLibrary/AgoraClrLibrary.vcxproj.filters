@@ -51,6 +51,12 @@
     <ClInclude Include="Stdafx.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AgoraClrChannel.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AgoraClrChannelEventHandler.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AgoraClrLibrary.cpp">
@@ -78,6 +84,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Stdafx.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraClrChannel.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraClrChannelEventHandler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

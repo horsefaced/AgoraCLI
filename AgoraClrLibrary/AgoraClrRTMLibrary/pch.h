@@ -11,6 +11,7 @@
 #include "framework.h"
 #include "..\..\agorasdk\include\IAgoraRtmCallManager.h"
 #include "..\..\agorasdk\include\IAgoraRtmService.h"
+#include "..\include\common.h"
 #pragma comment(lib, "../../agorasdk/lib/agora_rtm_sdk.lib")
 
 #endif //PCH_H

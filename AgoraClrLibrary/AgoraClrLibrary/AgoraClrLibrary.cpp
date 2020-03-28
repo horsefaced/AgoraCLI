@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "AgoraClrLibrary.h"
+#include "../../agorasdk/include/IAgoraRtcChannel.h"
 #include <iostream>
 
 using namespace AgoraClrLibrary;
@@ -109,6 +110,12 @@ int AgoraClrLibrary::AgoraClr::disableAudio()
 int AgoraClrLibrary::AgoraClr::setBeautyEffectOptions(bool enabled, ClrBeautyOptions options)
 {
 	return rtcEngine->setBeautyEffectOptions(enabled, options);
+}
+
+AgoraClrChannel^ AgoraClrLibrary::AgoraClr::createChannel(String^ channelId)
+{
+	IRtcEngine2* engine2 = dynamic_cast<IRtcEngine2*>(rtcEngine);
+	return gcnew AgoraClrChannel(engine2->createChannel(MarshalString(channelId).c_str()));
 }
 
 int AgoraClrLibrary::AgoraClr::startScreenCaptureByScreenRect(ClrRectangle^ screenRect, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params)
@@ -329,7 +336,7 @@ int AgoraClrLibrary::AgoraClr::enableDualStreamMode(bool enabled)
 	return rtcEngine->enableDualStreamMode(enabled);
 }
 
-int AgoraClrLibrary::AgoraClr::setRemoteVideoStreamType(int uid, RemoteVideoStreamType type)
+int AgoraClrLibrary::AgoraClr::setRemoteVideoStreamType(int uid, EnumRemoteVideoStreamType type)
 {
 	return rtcEngine->setRemoteVideoStreamType(uid, static_cast<REMOTE_VIDEO_STREAM_TYPE>(type));
 }
@@ -413,23 +420,23 @@ int AgoraClrLibrary::AgoraClr::muteRemoteVideoStream(int uid, bool mute)
 	return rtcEngine->muteRemoteVideoStream(uid, mute);
 }
 
-int AgoraClrLibrary::AgoraClr::setLocalRenderMode(RenderMode mode)
+int AgoraClrLibrary::AgoraClr::setLocalRenderMode(EnumRenderModeType mode)
 {
 	return rtcEngine->setLocalRenderMode((agora::rtc::RENDER_MODE_TYPE)mode);
 }
 
-int AgoraClrLibrary::AgoraClr::setLocalRenderMode(RenderMode mode, EnumVideoMirrorModeType mt)
+int AgoraClrLibrary::AgoraClr::setLocalRenderMode(EnumRenderModeType mode, EnumVideoMirrorModeType mt)
 {
 	return rtcEngine->setLocalRenderMode(static_cast<agora::rtc::RENDER_MODE_TYPE>(mode),
 		static_cast<VIDEO_MIRROR_MODE_TYPE>(mt));
 }
 
-int AgoraClrLibrary::AgoraClr::setRemoteRenderMode(int uid, RenderMode mode)
+int AgoraClrLibrary::AgoraClr::setRemoteRenderMode(int uid, EnumRenderModeType mode)
 {
 	return rtcEngine->setRemoteRenderMode(uid, (agora::rtc::RENDER_MODE_TYPE)mode);
 }
 
-int AgoraClrLibrary::AgoraClr::setRemoteRenderMode(int uid, RenderMode mode, EnumVideoMirrorModeType mt)
+int AgoraClrLibrary::AgoraClr::setRemoteRenderMode(int uid, EnumRenderModeType mode, EnumVideoMirrorModeType mt)
 {
 	return rtcEngine->setRemoteRenderMode(
 		uid, static_cast<agora::rtc::RENDER_MODE_TYPE>(mode),
@@ -557,7 +564,7 @@ int AgoraClrLibrary::AgoraClr::setLocalVoiceReverb(AudioReverbType type, int val
 	return rtcEngine->setLocalVoiceReverb(static_cast<AUDIO_REVERB_TYPE>(type), value);
 }
 
-int AgoraClrLibrary::AgoraClr::setLocalVideoMirrorMode(VideoMirrorModeType mode)
+int AgoraClrLibrary::AgoraClr::setLocalVideoMirrorMode(EnumVideoMirrorModeType mode)
 {
 	return rtcEngine->setLocalVideoMirrorMode(static_cast<VIDEO_MIRROR_MODE_TYPE>(mode));
 }
@@ -665,9 +672,9 @@ int AgoraClrLibrary::AgoraClr::resumeAllEffects()
 	return rtcEngine->resumeAllEffects();
 }
 
-AgoraClrLibrary::ConnectionStateType AgoraClrLibrary::AgoraClr::getConnectionState()
+AgoraClrLibrary::EnumConnectionStateType AgoraClrLibrary::AgoraClr::getConnectionState()
 {
-	return (ConnectionStateType)rtcEngine->getConnectionState();
+	return (EnumConnectionStateType)rtcEngine->getConnectionState();
 }
 
 int AgoraClrLibrary::AgoraClr::setDefaultMuteAllRemoteAudioStreams(bool mute)
@@ -740,7 +747,7 @@ int AgoraClrLibrary::AgoraClr::setRemoteUserPriority(uid_t uid, PriorityType pri
 	return rtcEngine->setRemoteUserPriority(uid, static_cast<PRIORITY_TYPE>(priority));
 }
 
-int AgoraClrLibrary::AgoraClr::setRemoteDefaultVideoStreamType(RemoteVideoStreamType type)
+int AgoraClrLibrary::AgoraClr::setRemoteDefaultVideoStreamType(EnumRemoteVideoStreamType type)
 {
 	return rtcEngine->setRemoteDefaultVideoStreamType(static_cast<REMOTE_VIDEO_STREAM_TYPE>(type));
 }
@@ -927,14 +934,14 @@ void AgoraClrLibrary::AgoraClr::NativeOnAudioVolumeIndication(const agora::rtc::
 void AgoraClrLibrary::AgoraClr::NativeOnLeaveChannel(const agora::rtc::RtcStats& stats)
 {
 	if (onLeaveChannel)
-		onLeaveChannel(gcnew RtcStats(stats));
+		onLeaveChannel(gcnew ClrRtcStats(stats));
 }
 
 void AgoraClrLibrary::AgoraClr::NativeOnRtcStats(const agora::rtc::RtcStats& stats)
 {
 	if (onRtcStats)
 	{
-		RtcStats^ rtc = gcnew RtcStats(stats);
+		ClrRtcStats^ rtc = gcnew ClrRtcStats(stats);
 		onRtcStats(rtc);
 	}
 }
@@ -996,7 +1003,7 @@ void AgoraClrLibrary::AgoraClr::NativeOnTranscodingUpdated()
 void AgoraClrLibrary::AgoraClr::NativeOnConnectionStateChanged(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason)
 {
 	if (onConnectionStateChanged)
-		onConnectionStateChanged((ConnectionStateType)state, (ConnectionChangedReasonType)reason);
+		onConnectionStateChanged((EnumConnectionStateType)state, (EnumConnectionChangedReasonType)reason);
 }
 
 void AgoraClrLibrary::AgoraClr::NativeOnTokenPrivilegeWillExpire(const char* token)
@@ -1032,7 +1039,7 @@ void AgoraClrLibrary::AgoraClr::NativeOnVideoSizeChanged(uid_t uid, int width, i
 void AgoraClrLibrary::AgoraClr::NativeOnRemoteVideoStateChanged(uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
 {
 	if (onRemoteVideoStateChanged)
-		onRemoteVideoStateChanged(uid, (RemoteVideoState)state, (RemoteVideoStateReason)reason, elapsed);
+		onRemoteVideoStateChanged(uid, (EnumRemoteVideoState)state, (EnumRemoteVideoStateReason)reason, elapsed);
 }
 
 void AgoraClrLibrary::AgoraClr::NativeOnLastmileQuality(int quality)
@@ -1098,7 +1105,7 @@ void AgoraClrLibrary::AgoraClr::NativeOnLocalVideoStateChanged(LOCAL_VIDEO_STREA
 void AgoraClrLibrary::AgoraClr::NativeOnRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed)
 {
 	if (onRemoteAudioStateChanged)
-		onRemoteAudioStateChanged(uid, (RemoteAudioState)state, (RemoteAudioStateReason)reason, elapsed);
+		onRemoteAudioStateChanged(uid, (EnumRemoteAudioState)state, (EnumRemoteAudioStateReason)reason, elapsed);
 }
 
 void AgoraClrLibrary::AgoraClr::NativeOnFirstRemoteAudioDecoded(uid_t uid, int elapsed)
@@ -1134,19 +1141,19 @@ void AgoraClrLibrary::AgoraClr::NativeOnRemoteAudioMixingEnd()
 void AgoraClrLibrary::AgoraClr::NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error)
 {
 	if (onRtmpStreamingStateChanged)
-		onRtmpStreamingStateChanged(gcnew String(url), static_cast<RtmpStreamPublishState>(state), static_cast<RtmpStreamPublishError>(error));
+		onRtmpStreamingStateChanged(gcnew String(url), static_cast<EnumRtmpStreamPublishState>(state), static_cast<EnumRtmpStreamPublishError>(error));
 }
 
 void AgoraClrLibrary::AgoraClr::NativeOnChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error)
 {
 	if (onChannelMediaRelayStateChanged)
-		onChannelMediaRelayStateChanged(static_cast<ChannelMediaRelayState>(state), static_cast<ChannelMediaRelayError>(error));
+		onChannelMediaRelayStateChanged(static_cast<EnumChannelMediaRelayState>(state), static_cast<EnumChannelMediaRelayError>(error));
 }
 
 void AgoraClrLibrary::AgoraClr::NativeOnChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event)
 {
 	if (onChannelMediaRelayEvent)
-		onChannelMediaRelayEvent(static_cast<ChannelMediaRelayEvent>(event));
+		onChannelMediaRelayEvent(static_cast<EnumChannelMediaRelayEvent>(event));
 }
 
 void AgoraClrLibrary::AgoraClr::NativeOnLastmileProbeResult(const LastmileProbeResult& result)
@@ -1205,7 +1212,7 @@ void AgoraClrLibrary::AgoraClr::NativeOnRemoteVideoStats(const agora::rtc::Remot
 {
 	if (onRemoteVideoStats)
 	{
-		RemoteVideoStats^ s = gcnew RemoteVideoStats(stats);
+		ClrRemoteVideoStats^ s = gcnew ClrRemoteVideoStats(stats);
 
 		onRemoteVideoStats(s);
 	}

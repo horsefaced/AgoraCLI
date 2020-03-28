@@ -95,7 +95,7 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-		enum class RenderMode
+		enum class EnumRenderModeType
 	{
 		RENDER_MODE_HIDDEN = 1,
 		RENDER_MODE_FIT = 2,
@@ -148,7 +148,7 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-		enum class RemoteVideoStreamType
+		enum class EnumRemoteVideoStreamType
 	{
 		REMOTE_VIDEO_STREAM_HIGH = 0,
 		REMOTE_VIDEO_STREAM_LOW = 1,
@@ -264,15 +264,7 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-		enum class VideoMirrorModeType
-	{
-		VIDEO_MIRROR_MODE_AUTO = 0,		//determined by SDK
-		VIDEO_MIRROR_MODE_ENABLED = 1,  //enabled mirror
-		VIDEO_MIRROR_MODE_DISABLED = 2, //disable mirror
-	};
-
-	public
-		enum class ConnectionStateType
+		enum class EnumConnectionStateType 
 	{
 		CONNECTION_STATE_DISCONNECTED = 1,
 		CONNECTION_STATE_CONNECTING = 2,
@@ -282,7 +274,7 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-		enum class ConnectionChangedReasonType
+		enum class EnumConnectionChangedReasonType
 	{
 		/** 0: The SDK is connecting to Agora's edge server. */
 		CONNECTION_CHANGED_CONNECTING = 0,
@@ -387,7 +379,7 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-		enum class RemoteVideoState
+		enum class EnumRemoteVideoState
 	{
 		REMOTE_VIDEO_STATE_STOPPED = 0,
 		REMOTE_VIDEO_STATE_STARTING = 1,
@@ -396,7 +388,7 @@ namespace AgoraClrLibrary {
 		REMOTE_VIDEO_STATE_FAILED = 4
 	};
 
-	public enum class RemoteVideoStateReason
+	public enum class EnumRemoteVideoStateReason
 	{
 		REMOTE_VIDEO_STATE_REASON_INTERNAL = 0,
 		REMOTE_VIDEO_STATE_REASON_NETWORK_CONGESTION = 1,
@@ -480,7 +472,7 @@ namespace AgoraClrLibrary {
 		LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5
 	};
 
-	public enum class RemoteAudioState
+	public enum class EnumRemoteAudioState
 	{
 		/** 0: The remote audio is in the default state, probably due to
 	 * #REMOTE_AUDIO_REASON_LOCAL_MUTED (3),
@@ -507,7 +499,7 @@ namespace AgoraClrLibrary {
 			REMOTE_AUDIO_STATE_FAILED = 4,    // Remote audio play failed
 	};
 
-	public enum class RemoteAudioStateReason
+	public enum class EnumRemoteAudioStateReason
 	{
 		/** 0: Internal reasons.
 	 */
@@ -621,7 +613,7 @@ namespace AgoraClrLibrary {
 
 	};
 
-	public enum class RtmpStreamPublishState {
+	public enum class EnumRtmpStreamPublishState {
 		RTMP_STREAM_PUBLISH_STATE_IDLE = 0,
 		RTMP_STREAM_PUBLISH_STATE_CONNECTING = 1,
 		RTMP_STREAM_PUBLISH_STATE_RUNNING = 2,
@@ -629,7 +621,7 @@ namespace AgoraClrLibrary {
 		RTMP_STREAM_PUBLISH_STATE_FAILURE = 4,
 	};
 
-	public enum class RtmpStreamPublishError {
+	public enum class EnumRtmpStreamPublishError {
 		/** The RTMP streaming publishes successfully. */
 		RTMP_STREAM_PUBLISH_ERROR_OK = 0,
 		/** Invalid argument used. If, for example, you do not call the \ref IRtcEngine::setLiveTranscoding "setLiveTranscoding" method to configure the LiveTranscoding parameters before calling the addPublishStreamUrl method, the SDK returns this error. Check whether you set the parameters in the *setLiveTranscoding* method properly. */
@@ -654,7 +646,7 @@ namespace AgoraClrLibrary {
 		RTMP_STREAM_PUBLISH_ERROR_FORMAT_NOT_SUPPORTED = 10,
 	};
 
-	public enum class ChannelMediaRelayState {
+	public enum class EnumChannelMediaRelayState {
 		/** 0: The SDK is initializing.
  */
 		RELAY_STATE_IDLE = 0,
@@ -671,7 +663,7 @@ namespace AgoraClrLibrary {
 
 	};
 
-	public enum class ChannelMediaRelayError {
+	public enum class EnumChannelMediaRelayError {
 		/** 0: The state is normal.
  */
 		RELAY_OK = 0,
@@ -716,7 +708,7 @@ namespace AgoraClrLibrary {
 
 	};
 
-	public enum class ChannelMediaRelayEvent {
+	public enum class EnumChannelMediaRelayEvent {
 		/** 0: The user disconnects from the server due to poor network
 	 * connections.
 	 */
@@ -819,5 +811,23 @@ namespace AgoraClrLibrary {
 			VIDEO_MIRROR_MODE_ENABLED = 1,//enabled mirror
 				/** 2: Disable mirror mode. */
 				VIDEO_MIRROR_MODE_DISABLED = 2,//disable mirror
+	};
+
+	public enum class EnumClientRoleType 
+	{
+		/** 1: Host */
+		CLIENT_ROLE_BROADCASTER = 1,
+		/** 2: Audience */
+		CLIENT_ROLE_AUDIENCE = 2,
+	};
+
+	public enum class EnumUserOfflineReasonType
+	{
+		/** 0: The user quits the call. */
+		USER_OFFLINE_QUIT = 0,
+		/** 1: The SDK times out and the user drops offline because no data packet is received within a certain period of time. If the user quits the call and the message is not passed to the SDK (due to an unreliable channel), the SDK assumes the user dropped offline. */
+		USER_OFFLINE_DROPPED = 1,
+		/** 2: (Live broadcast only.) The client role switched from the host to the audience. */
+		USER_OFFLINE_BECOME_AUDIENCE = 2,
 	};
 }
