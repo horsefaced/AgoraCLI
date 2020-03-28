@@ -103,7 +103,7 @@ int AgoraClrLibrary::AgoraClrRTM::addOrUpdateLocalUserAttributes(List<ClrRtmAttr
 	int result = service->addOrUpdateLocalUserAttributes(attrs[0], count, tmpId);
 	requestId = tmpId;
 	ClrRtmAttribute::releaseAttrs(attrs, count);
-	return tmpId;
+	return result;
 }
 
 int AgoraClrLibrary::AgoraClrRTM::deleteLocalUserAttributesByKeys(List<String^>^ keys, long long% requestId)
