@@ -265,7 +265,7 @@ namespace AgoraClrLibrary {
 		property String^ ChannelId { String^ get() { return channelId; } }
 
 		ClrChannelMember(IChannelMember* member) :
-			userId(gcnew String(member->getChannelId())),
+			userId(gcnew String(member->getUserId())),
 			channelId(gcnew String(member->getChannelId()))
 		{
 		}
