@@ -52,6 +52,27 @@ AgoraClrLibrary::ClrMessage^ AgoraClrLibrary::AgoraClrRTM::createMessage()
 	return gcnew ClrMessage();
 }
 
+int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, String^ msg)
+{
+	try
+	{
+		if (peerId == nullptr || peerId == "" ) {
+			return 1;
+		}
+		const auto clrMsg = gcnew ClrMessage();
+		clrMsg->Type = EnumMessageType::MESSAGE_TYPE_TEXT;
+		clrMsg->Text = msg;
+		const auto msgOption = gcnew ClrSendMessageOptions();
+		msgOption->enableHistoricalMessaging = false;
+		msgOption->enableOfflineMessaging = false;
+
+		return this->sendMessageToPeer(peerId,clrMsg,msgOption);
+	}
+	catch (Exception^)
+	{
+		return FALSE;
+	}
+}
 int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, ClrMessage^ msg, ClrSendMessageOptions^ options)
 {
 	IMessage* raw = msg->toMessage(service);
