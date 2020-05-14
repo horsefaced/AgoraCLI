@@ -97,10 +97,11 @@ int AgoraClrLibrary::AgoraClrRTM::queryPeersBySubscriptionOption(EnumPeerSubscri
 
 int AgoraClrLibrary::AgoraClrRTM::addOrUpdateLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
 {
-	int count = attributes->Count;
-	const RtmAttribute** attrs = ClrRtmAttribute::createAttrs(attributes);
+
+	const int count = attributes->Count;
+	const RtmAttribute* attrs = ClrRtmAttribute::createAttrs(attributes);
 	long long tmpId;
-	int result = service->addOrUpdateLocalUserAttributes(attrs[0], count, tmpId);
+	const int result = service->addOrUpdateLocalUserAttributes(attrs, count, tmpId);
 	requestId = tmpId;
 	ClrRtmAttribute::releaseAttrs(attrs, count);
 	return result;
@@ -145,8 +146,8 @@ int AgoraClrLibrary::AgoraClrRTM::getUserAttributesByKeys(String^ userId, List<S
 int AgoraClrLibrary::AgoraClrRTM::setLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
 {
 	long long tmpId;
-	const RtmAttribute** attrs = ClrRtmAttribute::createAttrs(attributes);
-	int result = service->setLocalUserAttributes(attrs[0], attributes->Count, tmpId);
+	const RtmAttribute* attrs = ClrRtmAttribute::createAttrs(attributes);
+	int result = service->setLocalUserAttributes(attrs, attributes->Count, tmpId);
 	requestId = tmpId;
 	ClrRtmAttribute::releaseAttrs(attrs, attributes->Count);
 	return result;
