@@ -170,29 +170,29 @@ namespace AgoraClrLibrary {
 			value = gcnew String(attr.value);
 		}
 
-		operator RtmAttribute* () {
-			RtmAttribute* attr = new RtmAttribute;
+		operator RtmAttribute () {
+			RtmAttribute attr;
 			String^ k = key;
 			String^ v = value;
-			attr->key = marshal_as<std::string>(k).c_str();
-			attr->value = marshal_as<std::string>(v).c_str();
+			attr.key = _strdup(marshal_as<std::string>(k).data());
+			attr.value =  _strdup(marshal_as<std::string>(v).data());
 			return attr;
 		}
 
-		static void release(const RtmAttribute* attr) {
-			delete attr->key;
-			delete attr->value;
-			delete attr;
+		static void release(const RtmAttribute attr) {
+			delete attr.key;
+			delete attr.value;
+			//delete attr;
 		}
 
-		static const RtmAttribute** createAttrs(List<ClrRtmAttribute^>^ attrs) {
-			int count = attrs->Count;
-			const RtmAttribute** result = new const RtmAttribute * [count];
+		static const RtmAttribute* createAttrs(List<ClrRtmAttribute^>^ attrs) {
+			const int count = attrs->Count;
+			RtmAttribute* result = new  RtmAttribute  [count];
 			for (int i = 0; i < count; i++) result[i] = attrs[i];
 			return result;
 		}
 
-		static void releaseAttrs(const RtmAttribute** attrs, int count) {
+		static void releaseAttrs(const RtmAttribute* attrs, int count) {
 			for (int i = 0; i < count; i++) release(attrs[i]);
 
 			delete[] attrs;
@@ -265,7 +265,7 @@ namespace AgoraClrLibrary {
 		property String^ ChannelId { String^ get() { return channelId; } }
 
 		ClrChannelMember(IChannelMember* member) :
-			userId(gcnew String(member->getChannelId())),
+			userId(gcnew String(member->getUserId())),
 			channelId(gcnew String(member->getChannelId()))
 		{
 		}
