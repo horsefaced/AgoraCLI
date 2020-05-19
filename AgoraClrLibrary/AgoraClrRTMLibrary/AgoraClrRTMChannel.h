@@ -18,6 +18,7 @@ namespace AgoraClrLibrary {
 		int Join();
 		int Leave();
 		int SendMessage(ClrMessage^ msg);
+		void Release();
 		property String^ Id { String^ get() { return id; }}
 		int getMembers();
 

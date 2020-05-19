@@ -19,19 +19,20 @@ AgoraClrLibrary::AgoraClrRTMChannel::AgoraClrRTMChannel(IRtmService* service, St
 	this->channel = channel;
 	this->id = gcnew String(id);
 	this->gchs = gcnew List<GCHandle>;
-
+	this->service = service;
+	
 	bindEvents();
 }
 
 AgoraClrLibrary::AgoraClrRTMChannel::~AgoraClrRTMChannel()
 {
-	this->channel->release();
+	this->service = nullptr;
 	for each (GCHandle handler in this->gchs)
 	{
 		handler.Free();
 	}
 	delete events;
-
+	this->channel->release();
 }
 
 int AgoraClrLibrary::AgoraClrRTMChannel::Join()
@@ -42,6 +43,11 @@ int AgoraClrLibrary::AgoraClrRTMChannel::Join()
 int AgoraClrLibrary::AgoraClrRTMChannel::Leave()
 {
 	return channel->leave();
+}
+
+void AgoraClrLibrary::AgoraClrRTMChannel::Release()
+{
+	channel ->release();
 }
 
 int AgoraClrLibrary::AgoraClrRTMChannel::SendMessage(ClrMessage^ msg)

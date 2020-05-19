@@ -52,6 +52,27 @@ AgoraClrLibrary::ClrMessage^ AgoraClrLibrary::AgoraClrRTM::createMessage()
 	return gcnew ClrMessage();
 }
 
+int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, String^ msg)
+{
+	try
+	{
+		if (peerId == nullptr || peerId == "" ) {
+			return 1;
+		}
+		const auto clrMsg = gcnew ClrMessage();
+		clrMsg->Type = EnumMessageType::MESSAGE_TYPE_TEXT;
+		clrMsg->Text = msg;
+		const auto msgOption = gcnew ClrSendMessageOptions();
+		msgOption->enableHistoricalMessaging = false;
+		msgOption->enableOfflineMessaging = false;
+
+		return this->sendMessageToPeer(peerId,clrMsg,msgOption);
+	}
+	catch (Exception^)
+	{
+		return FALSE;
+	}
+}
 int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, ClrMessage^ msg, ClrSendMessageOptions^ options)
 {
 	IMessage* raw = msg->toMessage(service);
@@ -97,10 +118,11 @@ int AgoraClrLibrary::AgoraClrRTM::queryPeersBySubscriptionOption(EnumPeerSubscri
 
 int AgoraClrLibrary::AgoraClrRTM::addOrUpdateLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
 {
-	int count = attributes->Count;
-	const RtmAttribute** attrs = ClrRtmAttribute::createAttrs(attributes);
+
+	const int count = attributes->Count;
+	const RtmAttribute* attrs = ClrRtmAttribute::createAttrs(attributes);
 	long long tmpId;
-	int result = service->addOrUpdateLocalUserAttributes(attrs[0], count, tmpId);
+	const int result = service->addOrUpdateLocalUserAttributes(attrs, count, tmpId);
 	requestId = tmpId;
 	ClrRtmAttribute::releaseAttrs(attrs, count);
 	return result;
@@ -145,8 +167,8 @@ int AgoraClrLibrary::AgoraClrRTM::getUserAttributesByKeys(String^ userId, List<S
 int AgoraClrLibrary::AgoraClrRTM::setLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
 {
 	long long tmpId;
-	const RtmAttribute** attrs = ClrRtmAttribute::createAttrs(attributes);
-	int result = service->setLocalUserAttributes(attrs[0], attributes->Count, tmpId);
+	const RtmAttribute* attrs = ClrRtmAttribute::createAttrs(attributes);
+	int result = service->setLocalUserAttributes(attrs, attributes->Count, tmpId);
 	requestId = tmpId;
 	ClrRtmAttribute::releaseAttrs(attrs, attributes->Count);
 	return result;
@@ -451,6 +473,7 @@ void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 	regEvent(rtmEvents->onLoginSuccessEvent, gcnew OnLoginSuccessType::Type(this, &AgoraClrRTM::NativeOnLoginSuccess));
 	regEvent(rtmEvents->onLoginFailureEvent, gcnew OnLoginFailureType::Type(this, &AgoraClrRTM::NativeOnLoginFailure));
 	regEvent(rtmEvents->onLogoutEvent, gcnew OnLogoutType::Type(this, &AgoraClrRTM::NativeOnLogout));
+	regEvent(rtmEvents->onConnectionStateChangedEvent,gcnew OnConnectionStateChangedType::Type(this,&AgoraClrRTM::NativeOnConnectionStateChanged));
 	regEvent(rtmEvents->onSendMessageResultEvent, gcnew AgoraClrLibrary::RTMEventType::OnSendMessageResultType::Type(this, &AgoraClrRTM::NativeOnSendMessageResult));
 	regEvent(rtmEvents->onMessageReceivedFromPeerEvent, gcnew OnMessageReceivedFromPeerType::Type(this, &AgoraClrRTM::NativeOnMessageReceivedFromPeer));
 	regEvent(rtmEvents->onQueryPeersOnlineStatusResultEvent, gcnew OnQueryPeersOnlineStatusResultType::Type(this, &AgoraClrRTM::NativeOnQueryPeersOnlineStatusResult));
