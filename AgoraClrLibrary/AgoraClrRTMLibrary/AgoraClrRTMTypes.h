@@ -49,7 +49,7 @@ namespace AgoraClrLibrary {
 		property long long ServerReceivedTs { long long get() { return ts; }}
 		property bool IsOffline;
 
-		ClrMessage() : ts(0)
+		ClrMessage() : id(0), ts(0)
 		{
 			ID = 0;
 			Type = EnumMessageType::MESSAGE_TYPE_UNDEFINED;
@@ -103,6 +103,87 @@ namespace AgoraClrLibrary {
 			return std::tuple<const void*, int>(raw, size);
 		}
 
+	};
+
+	public ref class ClrFileMessage : public ClrMessage
+	{
+	public:
+		property long long Size;
+		property String^ MediaId;
+		property array<Byte>^ Thumbnail;
+		property String^ FileName;
+
+		ClrFileMessage() :ClrMessage()
+		{
+			Size =0;
+			MediaId = nullptr;
+			Thumbnail = nullptr;
+			FileName = nullptr;
+		}
+		ClrFileMessage(IFileMessage* raw) :ClrMessage(raw)
+		{
+			Size = raw->getSize();
+			MediaId = gcnew String( raw->getMediaId());
+			Thumbnail = getFileRawMessageData(raw);
+			FileName = gcnew String(raw->getFileName());
+		}
+
+		//	if (Text != nullptr)
+		//		raw->setText(marshal_as<std::string>(Text).c_str());
+
+		//	ID = raw->getMessageId();*/
+		//	return raw;
+		//}
+	private:
+		array<Byte>^ getFileRawMessageData(IFileMessage* raw) {
+			const auto size = raw->getThumbnailLength();
+			const auto result = gcnew array<Byte>(size);
+			if (size > 0) Marshal::Copy(IntPtr(reinterpret_cast<void*>(const_cast<char*>(raw->getThumbnailData()))), result, 0, size);
+			return result;
+		}
+	};
+
+	public ref class ClrImageMessage : public ClrMessage
+	{
+	public:
+		property long long Size;
+		property String^ MediaId;
+		property array<Byte>^ Thumbnail;
+		property String^ FileName;
+		property int Width;
+		property int Height;
+		property int ThumbnailWidth;
+		property int ThumbnailHeight;
+		ClrImageMessage() :ClrMessage()
+		{
+			Size =0;
+			MediaId = nullptr;
+			Thumbnail = nullptr;
+			FileName = nullptr;
+			Width = 0;
+			Height=0;
+			ThumbnailWidth=0;
+			ThumbnailHeight=0;
+		}
+		ClrImageMessage(IImageMessage* raw) :ClrMessage(raw)
+		{
+			Size = raw->getSize();
+			MediaId = gcnew String( raw->getMediaId());
+			Thumbnail = getImageRawMessageData(raw);
+			FileName = gcnew String(raw->getFileName());
+
+			Width = raw->getWidth();
+			Height=raw->getHeight();
+			ThumbnailWidth=raw->getThumbnailWidth();
+			ThumbnailHeight=raw->getThumbnailHeight();
+		}
+		private:
+		array<Byte>^ getImageRawMessageData(IImageMessage* raw) {
+			const auto size = raw->getThumbnailLength();
+			const auto result = gcnew array<Byte>(size);
+			if (size > 0) Marshal::Copy(IntPtr(reinterpret_cast<void*>(const_cast<char*>(raw->getThumbnailData()))), result, 0, size);
+			return result;
+		}
 	};
 
 	public ref class ClrSendMessageOptions {
@@ -311,5 +392,24 @@ namespace AgoraClrLibrary {
 		IRemoteCallInvitation* raw;
 	};
 
+	public ref class ClrMediaOperationProgress {
+	public:
+		long long totalSize;
+		long long currentSize;
+
+		ClrMediaOperationProgress() : totalSize(0), currentSize(0) {}
+		ClrMediaOperationProgress(const MediaOperationProgress& progress)
+		{
+			totalSize = progress.totalSize;
+			currentSize=progress.currentSize;
+		}
+
+		operator MediaOperationProgress() {
+			MediaOperationProgress progress;
+			progress.totalSize = totalSize;
+			progress.currentSize = currentSize;
+			return progress;
+		}
+	};
 
 }

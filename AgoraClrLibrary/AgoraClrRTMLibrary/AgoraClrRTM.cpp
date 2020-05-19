@@ -308,6 +308,64 @@ String^ AgoraClrLibrary::AgoraClrRTM::getRTMSdkVersion()
 	return gcnew String(getRtmSdkVersion());
 }
 
+int AgoraClrLibrary::AgoraClrRTM::createFileMessageByUploading(String^ filePath, long long% requestId)
+{
+	long long backId;
+	const int result =  service->createFileMessageByUploading(marshal_as<std::string>(filePath).data(),backId);
+	requestId = backId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::createImageMessageByUploading(String^ filePath, long long% requestId)
+{
+	long long backId;
+	const int result =  service->createImageMessageByUploading(marshal_as<std::string>(filePath).data(),backId);
+	requestId = backId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::cancelMediaUpload(long requestId)
+{
+	return service->cancelMediaDownload(requestId);
+}
+
+int AgoraClrLibrary::AgoraClrRTM::cancelMediaDownload(long requestId)
+{
+	return service->cancelMediaDownload(requestId);
+}
+
+AgoraClrLibrary::ClrFileMessage^ AgoraClrLibrary::AgoraClrRTM::createFileMessageByMediaId(String^ mediaId)
+{
+	const auto raw = service->createFileMessageByMediaId(marshal_as<std::string>(mediaId).data());
+	if(nullptr == raw)
+		return nullptr;
+	return gcnew ClrFileMessage(raw );
+}
+
+AgoraClrLibrary::ClrImageMessage^ AgoraClrLibrary::AgoraClrRTM::createImageMessageByMediaId(String^ mediaId)
+{
+	const auto raw = service->createImageMessageByMediaId(marshal_as<std::string>(mediaId).data());
+	if(nullptr == raw)
+		return nullptr;
+	return gcnew ClrImageMessage(raw );
+}
+
+int AgoraClrLibrary::AgoraClrRTM::downloadMediaToMemory(String^ mediaId, long long% requestId)
+{
+	long long backId;
+	const int result =  service->downloadMediaToMemory(marshal_as<std::string>(mediaId).data(),backId);
+	requestId = backId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTM::downloadMediaToFile(String^ mediaId, String^ filePath, long long% requestId)
+{
+	long long backId;
+	const int result =  service->downloadMediaToFile(marshal_as<std::string>(mediaId).data(),
+		marshal_as<std::string>(filePath).data(),backId);
+	requestId = backId;
+	return result;
+}
 void AgoraClrLibrary::AgoraClrRTM::NativeOnLoginSuccess()
 {
 	if (onLoginSuccess) onLoginSuccess();
@@ -349,7 +407,7 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnQueryPeersOnlineStatusResult(long lon
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnSubscriptionRequrestResult(long long requestId, PEER_SUBSCRIPTION_STATUS_ERR code)
+void AgoraClrLibrary::AgoraClrRTM::NativeOnSubscriptionRequestResult(long long requestId, PEER_SUBSCRIPTION_STATUS_ERR code)
 {
 	if (onSubscriptionRequestResult) onSubscriptionRequestResult(requestId, static_cast<EnumPeerSubscriptionStatusErrCode>(code));
 }
@@ -423,7 +481,7 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnAddOrUpdateChannelAttributesResult(lo
 		onAddOrUpdateChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnDeleteChannelAttriutesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrLibrary::AgoraClrRTM::NativeOnDeleteChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onDeleteChannelAttributesResult)
 		onDeleteChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
@@ -468,6 +526,70 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnRenewTokenResult(const char* token, R
 		onRenewTokenResult(gcnew String(token), static_cast<EnumRenewTokenErrCode>(code));
 }
 
+void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaUploadingProgress(long long requestId,
+	const MediaOperationProgress& progress)
+{
+	if (onMediaUploadingProgress)
+		onMediaUploadingProgress(requestId, gcnew ClrMediaOperationProgress(progress));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaDownloadingProgress(long long requestId,
+	const MediaOperationProgress& progress)
+{
+	if (onMediaDownloadingProgress)
+		onMediaDownloadingProgress(requestId, gcnew ClrMediaOperationProgress(progress));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaCancelResult(long long requestId, CANCEL_MEDIA_ERR_CODE code)
+{
+	if (onMediaCancelResult)
+		onMediaCancelResult(requestId, static_cast<EnumCancelMediaErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnFileMediaUploadResult(long long requestId,  IFileMessage* fileMessage,
+	UPLOAD_MEDIA_ERR_CODE code)
+{
+	if (onFileMediaUploadResult)
+		onFileMediaUploadResult(requestId, gcnew ClrFileMessage(fileMessage), static_cast<EnumUploadMediaErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnImageMediaUploadResult(long long requestId,  IImageMessage* fileMessage,
+	UPLOAD_MEDIA_ERR_CODE code)
+{
+	if (onImageMediaUploadResult)
+		onImageMediaUploadResult(requestId, gcnew ClrImageMessage(fileMessage), static_cast<EnumUploadMediaErrCode>(code));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnFileMessageReceivedFromPeer(const char* peerId, const IFileMessage* message)
+{
+	if (onFileMessageReceivedFromPeer)
+		onFileMessageReceivedFromPeer(gcnew String(peerId), gcnew ClrFileMessage(const_cast<IFileMessage*>(message)));
+}
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnImageMessageReceivedFromPeer(const char* peerId, const IImageMessage* message)
+{
+	if (onImageMessageReceivedFromPeer)
+		onImageMessageReceivedFromPeer(gcnew String(peerId), gcnew ClrImageMessage(const_cast<IImageMessage*>(message)));
+}
+
+
+void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaDownloadToMemoryResult(long long requestId, const char* memory,
+		long long length, DOWNLOAD_MEDIA_ERR_CODE code)
+{
+	if (onMediaDownloadToMemoryResult)
+	{
+		const auto result = gcnew array<Byte>(length);
+		if (length > 0) 
+			Marshal::Copy(IntPtr(reinterpret_cast<void*>(const_cast<char*>(memory))), result, 0, length);
+		onMediaDownloadToMemoryResult(requestId, result,static_cast<EnumDownloadMediaErrCode>(code));
+	}
+}
+void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaDownloadToFileResult(long long requestId,
+	DOWNLOAD_MEDIA_ERR_CODE code)
+{
+	if (onMediaDownloadToFileResult)
+		onMediaDownloadToFileResult(requestId, static_cast<EnumDownloadMediaErrCode>(code));
+}
 void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 {
 	regEvent(rtmEvents->onLoginSuccessEvent, gcnew OnLoginSuccessType::Type(this, &AgoraClrRTM::NativeOnLoginSuccess));
@@ -477,7 +599,7 @@ void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 	regEvent(rtmEvents->onSendMessageResultEvent, gcnew AgoraClrLibrary::RTMEventType::OnSendMessageResultType::Type(this, &AgoraClrRTM::NativeOnSendMessageResult));
 	regEvent(rtmEvents->onMessageReceivedFromPeerEvent, gcnew OnMessageReceivedFromPeerType::Type(this, &AgoraClrRTM::NativeOnMessageReceivedFromPeer));
 	regEvent(rtmEvents->onQueryPeersOnlineStatusResultEvent, gcnew OnQueryPeersOnlineStatusResultType::Type(this, &AgoraClrRTM::NativeOnQueryPeersOnlineStatusResult));
-	regEvent(rtmEvents->onSubscriptionRequestResultEvent, gcnew OnSubscriptionRequestResultType::Type(this, &AgoraClrRTM::NativeOnSubscriptionRequrestResult));
+	regEvent(rtmEvents->onSubscriptionRequestResultEvent, gcnew OnSubscriptionRequestResultType::Type(this, &AgoraClrRTM::NativeOnSubscriptionRequestResult));
 	regEvent(rtmEvents->onPeersOnlineStatusChangedEvent, gcnew OnPeersOnlineStatusChangedType::Type(this, &AgoraClrRTM::NativeOnPeersOnlineStatusChanged));
 	regEvent(rtmEvents->onQueryPeersBySubscriptionOptionResultEvent, gcnew OnQueryPeersBySubscriptionOptionResultType::Type(this, &AgoraClrRTM::NativeOnQueryPeersBySubscriptionOptionResult));
 	regEvent(rtmEvents->onSetLocalUserAttributesResultEvent, gcnew OnSetLocalUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnSetLocalUserAttributesResult));
@@ -487,12 +609,21 @@ void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
 	regEvent(rtmEvents->onGetUserAttributesResultEvent, gcnew OnGetUserAttributesResultType::Type(this, &AgoraClrRTM::NativeOnGetUserAttributesResult));
 	regEvent(rtmEvents->OnSetChannelAttributesResultEvent, gcnew OnSetChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnSetChannelAttributesResult));
 	regEvent(rtmEvents->onAddOrUpdateChannelAttributesResultEvent, gcnew OnAddOrUpdateChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnAddOrUpdateChannelAttributesResult));
-	regEvent(rtmEvents->onDeleteChannelAttributesResultEvent, gcnew OnDeleteChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnDeleteChannelAttriutesResult));
+	regEvent(rtmEvents->onDeleteChannelAttributesResultEvent, gcnew OnDeleteChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnDeleteChannelAttributesResult));
 	regEvent(rtmEvents->onClearChannelAttributesResultEvent, gcnew OnClearChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnCleanChannelAttributesResult));
 	regEvent(rtmEvents->onGetChannelAttributesResultEvent, gcnew OnGetChannelAttributesResultType::Type(this, &AgoraClrRTM::NativeOnGetChannelAttributesResult));
 	regEvent(rtmEvents->onGetChannelMemberCountResultEvent, gcnew OnGetChannelMemberCountResultType::Type(this, &AgoraClrRTM::NativeOnGetChannelMemberCountResult));
 	regEvent(rtmEvents->onTokenExpiredEvent, gcnew OnTokenExpiredType::Type(this, &AgoraClrRTM::NativeOnTokenExpired));
 	regEvent(rtmEvents->onRenewTokenResultEvent, gcnew OnRenewTokenResultType::Type(this, &AgoraClrRTM::NativeOnRenewTokenResult));
 
+	regEvent(rtmEvents->onMediaUploadingProgressEvent, gcnew OnMediaUploadingProgressType::Type(this, &AgoraClrRTM::NativeOnMediaUploadingProgress));
+	regEvent(rtmEvents->onMediaDownloadingProgressEvent, gcnew OnMediaDownloadingProgressType::Type(this, &AgoraClrRTM::NativeOnMediaDownloadingProgress));
+	regEvent(rtmEvents->onMediaCancelResultEvent, gcnew OnMediaCancelResultType::Type(this, &AgoraClrRTM::NativeOnMediaCancelResult));
+	regEvent(rtmEvents->onFileMediaUploadResultEvent, gcnew OnFileMediaUploadResultType::Type(this, &AgoraClrRTM::NativeOnFileMediaUploadResult));
+	regEvent(rtmEvents->onImageMediaUploadResultEvent, gcnew OnImageMediaUploadResultType::Type(this, &AgoraClrRTM::NativeOnImageMediaUploadResult));
+	regEvent(rtmEvents->onFileMessageReceivedFromPeerEvent, gcnew OnFileMessageReceivedFromPeerType::Type(this, &AgoraClrRTM::NativeOnFileMessageReceivedFromPeer));
+	regEvent(rtmEvents->onImageMessageReceivedFromPeerEvent, gcnew OnImageMessageReceivedFromPeerType::Type(this, &AgoraClrRTM::NativeOnImageMessageReceivedFromPeer));
+	regEvent(rtmEvents->onMediaDownloadToMemoryResultEvent, gcnew OnMediaDownloadToMemoryResultType::Type(this, &AgoraClrRTM::NativeOnMediaDownloadToMemoryResult));
+	regEvent(rtmEvents->onMediaDownloadToFileResultEvent, gcnew OnMediaDownloadToFileResultType::Type(this, &AgoraClrRTM::NativeOnMediaDownloadToFileResult));
 }
 

@@ -9,7 +9,7 @@ using namespace msclr::interop;
 
 AgoraClrLibrary::AgoraClrRTMChannel::AgoraClrRTMChannel(IRtmService* service, String^ id)
 {
-	this->events = new AgoraClrRTMChannelEventHandlder();
+	this->events = new AgoraClrRTMChannelEventHandler();
 	IChannel* channel = service->createChannel(marshal_as<std::string>(id).c_str(), this->events);
 	if (channel == nullptr) {
 		delete events;
@@ -53,7 +53,18 @@ void AgoraClrLibrary::AgoraClrRTMChannel::Release()
 int AgoraClrLibrary::AgoraClrRTMChannel::SendMessage(ClrMessage^ msg)
 {
 	IMessage* raw = msg->toMessage(service);
-	int result = channel->sendMessage(raw);
+	SendMessageOptions options;
+	options.enableHistoricalMessaging=false;
+	options.enableOfflineMessaging = false;
+	const int result = channel->sendMessage(raw,options);
+	raw->release();
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClrRTMChannel::SendMessage(ClrMessage^ msg, ClrSendMessageOptions^ options)
+{
+	IMessage* raw = msg->toMessage(service);
+	int result = channel->sendMessage(raw,options);
 	raw->release();
 	return result;
 }
@@ -125,6 +136,18 @@ void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnMemberCountUpdated(int count)
 	if (onMemberCountUpdated) onMemberCountUpdated(count);
 }
 
+void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnFileMessageReceived(const char* userId, const IFileMessage* message)
+{
+	if (onFileMessageReceived)
+		onFileMessageReceived(gcnew String(userId), gcnew ClrFileMessage(const_cast<IFileMessage*>(message)));
+}
+
+void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnImageMessageReceived(const char* userId, const IImageMessage* message)
+{
+	if (onImageMessageReceived)
+		onImageMessageReceived(gcnew String(userId), gcnew ClrImageMessage(const_cast<IImageMessage*>(message)));
+}
+
 void AgoraClrLibrary::AgoraClrRTMChannel::bindEvents()
 {
 	regEvent(events->onJoinSuccessEvent, gcnew OnJoinSuccessType::Type(this, &AgoraClrRTMChannel::NativeOnJoinSuccess));
@@ -136,5 +159,8 @@ void AgoraClrLibrary::AgoraClrRTMChannel::bindEvents()
 	regEvent(events->onMemberLeftEvent, gcnew OnMemberLeftType::Type(this, &AgoraClrRTMChannel::NativeOnMemberLeft));
 	regEvent(events->onGetMembersEvent, gcnew OnGetMembersType::Type(this, &AgoraClrRTMChannel::NativeOnGetMembers));
 	regEvent(events->onAttributesUpdatedEvent, gcnew OnAttributesUpdatedType::Type(this, &AgoraClrRTMChannel::NativeOnAttributesUpdated));
+
+	regEvent(events->onFileMessageReceivedEvent, gcnew OnFileMessageReceivedType::Type(this, &AgoraClrRTMChannel::NativeOnFileMessageReceived));
+	regEvent(events->onImageMessageReceivedEvent, gcnew OnImageMessageReceivedType::Type(this, &AgoraClrRTMChannel::NativeOnImageMessageReceived));
 
 }

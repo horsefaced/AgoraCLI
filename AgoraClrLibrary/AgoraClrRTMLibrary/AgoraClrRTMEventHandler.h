@@ -33,6 +33,18 @@ namespace AgoraClrLibrary {
 		using OnClearChannelAttributesResultType = ET<long long, ATTRIBUTE_OPERATION_ERR>;
 		using OnGetChannelAttributesResultType = ET<long long, const IRtmChannelAttribute * [], int, ATTRIBUTE_OPERATION_ERR>;
 		using OnGetChannelMemberCountResultType = ET<long long, const ChannelMemberCount*, int, GET_CHANNEL_MEMBER_COUNT_ERR_CODE>;
+
+		//1.3版本新增 文件+图片消息 （最大30M，服务器最多放七天）
+		using OnMediaUploadingProgressType = ET<long long,const MediaOperationProgress&>;
+		using OnMediaDownloadingProgressType = ET<long long, const MediaOperationProgress&>;
+		using OnMediaCancelResultType = ET<long long, CANCEL_MEDIA_ERR_CODE>;
+		using OnFileMediaUploadResultType = ET<long long,  IFileMessage*, UPLOAD_MEDIA_ERR_CODE>;
+		using OnImageMediaUploadResultType = ET<long long, IImageMessage*, UPLOAD_MEDIA_ERR_CODE>;
+		using OnFileMessageReceivedFromPeerType = ET<const char*, const IFileMessage*>;
+		using OnImageMessageReceivedFromPeerType = ET<const char*, const IImageMessage*>;
+		using OnMediaDownloadToMemoryResultType = ET<long long, const char*,long long, DOWNLOAD_MEDIA_ERR_CODE>;
+		using OnMediaDownloadToFileResultType = ET<long long, DOWNLOAD_MEDIA_ERR_CODE>;
+
 	}
 
 	using namespace RTMEventType;
@@ -68,11 +80,23 @@ namespace AgoraClrLibrary {
 		OnGetChannelAttributesResultType::Pointer onGetChannelAttributesResultEvent = 0;
 		OnGetChannelMemberCountResultType::Pointer onGetChannelMemberCountResultEvent = 0;
 
+		//1.3版本新增 文件+图片消息 （最大30M，服务器最多放七天）
+		OnMediaUploadingProgressType::Pointer onMediaUploadingProgressEvent = 0;
+		OnMediaDownloadingProgressType::Pointer onMediaDownloadingProgressEvent = 0;
+		OnMediaCancelResultType::Pointer onMediaCancelResultEvent = 0;
+		OnFileMediaUploadResultType::Pointer onFileMediaUploadResultEvent = 0;
+		OnImageMediaUploadResultType::Pointer onImageMediaUploadResultEvent = 0;
+		OnFileMessageReceivedFromPeerType::Pointer onFileMessageReceivedFromPeerEvent = 0;
+		OnImageMessageReceivedFromPeerType::Pointer onImageMessageReceivedFromPeerEvent = 0;
+
+		OnMediaDownloadToMemoryResultType::Pointer onMediaDownloadToMemoryResultEvent = 0;
+		OnMediaDownloadToFileResultType::Pointer onMediaDownloadToFileResultEvent = 0;
+
 		void onLoginSuccess() override { call(onLoginSuccessEvent); }
 		void onLoginFailure(LOGIN_ERR_CODE code) override { call(onLoginFailureEvent, code); }
 		void onRenewTokenResult(const char* token, RENEW_TOKEN_ERR_CODE code) override { call(onRenewTokenResultEvent, token, code); }
 		void onTokenExpired() override { call(onTokenExpiredEvent); }
-		void onLogout(LOGOUT_ERR_CODE code) { call(onLogoutEvent, code); }
+		void onLogout(LOGOUT_ERR_CODE code) override { call(onLogoutEvent, code); }
 		void onConnectionStateChanged(CONNECTION_STATE state, CONNECTION_CHANGE_REASON reason) override { call(onConnectionStateChangedEvent, state, reason); }
 		void onSendMessageResult(long long id, PEER_MESSAGE_ERR_CODE code) override { call(onSendMessageResultEvent, id, code); }
 		void onMessageReceivedFromPeer(const char* id, const IMessage* msg) override { call(onMessageReceivedFromPeerEvent, id, msg); }
@@ -91,6 +115,17 @@ namespace AgoraClrLibrary {
 		void onClearChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code) override { call(onClearChannelAttributesResultEvent, id, code); }
 		void onGetChannelAttributesResult(long long id, const IRtmChannelAttribute* attributes[], int count, ATTRIBUTE_OPERATION_ERR code) override { call(onGetChannelAttributesResultEvent, id, attributes, count, code); }
 		void onGetChannelMemberCountResult(long long id, const ChannelMemberCount* members, int count, GET_CHANNEL_MEMBER_COUNT_ERR_CODE code) override { call(onGetChannelMemberCountResultEvent, id, members, count, code); }
+
+		//1.3版本新增 文件+图片消息 （最大30M，服务器最多放七天）
+		void onMediaUploadingProgress(long long requestId, const MediaOperationProgress& progress) override { call(onMediaUploadingProgressEvent,requestId,progress);}
+		void onMediaDownloadingProgress(long long requestId, const MediaOperationProgress& progress) override{ call(onMediaDownloadingProgressEvent,requestId,progress);}
+		void onMediaCancelResult(long long requestId, CANCEL_MEDIA_ERR_CODE code) override{ call(onMediaCancelResultEvent,requestId,code);}
+		void onFileMediaUploadResult(long long requestId, IFileMessage* fileMessage, UPLOAD_MEDIA_ERR_CODE code) override{ call(onFileMediaUploadResultEvent,requestId,fileMessage,code);}
+		void onImageMediaUploadResult(long long requestId, IImageMessage* imageMessage, UPLOAD_MEDIA_ERR_CODE code) override{ call(onImageMediaUploadResultEvent,requestId,imageMessage,code);}
+		void onFileMessageReceivedFromPeer(const char* peerId, const IFileMessage* message) override{ call(onFileMessageReceivedFromPeerEvent,peerId,message);}
+		void onImageMessageReceivedFromPeer(const char* peerId, const IImageMessage* message) override{ call(onImageMessageReceivedFromPeerEvent,peerId,message);}
+		void onMediaDownloadToMemoryResult(long long requestId, const char* memory, long long length, DOWNLOAD_MEDIA_ERR_CODE code) override{ call(onMediaDownloadToMemoryResultEvent,requestId,memory,length,code);}
+		void onMediaDownloadToFileResult(long long requestId, DOWNLOAD_MEDIA_ERR_CODE code) override{ call(onMediaDownloadToFileResultEvent,requestId,code);}
 	};
 }
 

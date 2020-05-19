@@ -875,5 +875,133 @@ namespace AgoraClrLibrary {
 
     };
 
-    
+	public enum EnumCancelMediaErrCode {
+          /**
+           0: The method call succeeds, or the operation succeeds.
+           */
+          CANCEL_MEDIA_ERR_OK = 0,
+          
+          /**
+           1: Unknown common failure.
+           */
+          CANCEL_MEDIA_ERR_FAILURE = 1,
+          
+          /**
+           2: The task to cancel does not exist. You can only cancel an ongoing download or upload task. If the download or upload task completes, the corresponding @p requestId is no longer valid. 
+           */
+          CANCEL_MEDIA_ERR_NOT_EXIST = 2,
+          
+          /**
+           101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+           */
+          CANCEL_MEDIA_ERR_NOT_INITIALIZED = 101,
+          
+          /**
+           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+           */
+          CANCEL_MEDIA_ERR_NOT_LOGGED_IN = 102,
+      };
+
+	 /**
+       @brief Error codes related to uploading a file or image.
+       */
+     public enum EnumUploadMediaErrCode {
+          /**
+           0: The method call succeeds, or the operation succeeds.
+           */
+          UPLOAD_MEDIA_ERR_OK = 0,
+          
+          /**
+           1: Unknown common failure.
+           */
+          UPLOAD_MEDIA_ERR_FAILURE = 1,
+          
+          /**
+           2: The argument you put is invalid. For example, `mediaId` is in the wrong format. 
+           */
+          UPLOAD_MEDIA_ERR_INVALID_ARGUMENT = 2,
+          
+          /**
+           3: A timeout occurs. The current timeout is set as 120 seconds. The SDK assumes that a timeout occurs if it has not detected any file transmission between the SDK and the file server for 120 seconds.
+           */
+          UPLOAD_MEDIA_ERR_TIMEOUT = 3,
+          
+          /**
+           4: The size of the file or image to upload exceeds 30 MB.
+           */
+          UPLOAD_MEDIA_ERR_SIZE_OVERFLOW = 4,
+          /**
+           5: You have exceeded the upper limit for file upload. You can initiate a maximum of nine file upload or download tasks at the same time (upload and download tasks count together).
+           */
+          UPLOAD_MEDIA_ERR_CONCURRENCY_LIMIT_EXCEEDED = 5,
+          /**
+           6: The file or image upload task is aborted for either of the following reasons:
+           
+           - The user in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" state. 
+           - The user has cancelled the upload task.
+           */
+          UPLOAD_MEDIA_ERR_INTERRUPTED = 6,
+          
+          /**
+           101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+           */
+          UPLOAD_MEDIA_ERR_NOT_INITIALIZED = 101,
+          
+          /**
+           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+           */
+          UPLOAD_MEDIA_ERR_NOT_LOGGED_IN = 102,
+      };
+
+	/**
+       @brief Error codes related to downloading a file or image.
+       */
+      public enum EnumDownloadMediaErrCode {
+          /**
+           0: The method call succeeds, or the operation succeeds.
+           */
+          DOWNLOAD_MEDIA_ERR_OK = 0,
+          
+          /**
+           1: Unknown common failure.
+           */
+          DOWNLOAD_MEDIA_ERR_FAILURE = 1,
+          
+          /**
+           2: An argument you put is invalid. For example, `mediaId` is in the wrong format or `filePath` is set as `null`.
+           */
+          DOWNLOAD_MEDIA_ERR_INVALID_ARGUMENT = 2,
+          /**
+           3: A timeout occurs. The current timeout is set as 120 seconds. The SDK assumes that a timeout occurs if it has not detected any file transmission between the SDK and the file server for 120 seconds.
+           */
+          DOWNLOAD_MEDIA_ERR_TIMEOUT = 3,
+          
+          /**
+           4: The file or image to download does not exist, either because the media ID you input is incorrect or because the validity of the media ID has expired. 
+           */
+          DOWNLOAD_MEDIA_ERR_NOT_EXIST = 4,
+          
+          /**
+           5: You have exceeded the upper limit for file download. You can initiate a maximum of nine file download or upload tasks at the same time (download and upload tasks count together).
+           */
+          DOWNLOAD_MEDIA_ERR_CONCURRENCY_LIMIT_EXCEEDED = 5,
+
+          /**
+           6: The file or image download task is aborted for either of the following reasons:
+
+           - The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" state. 
+           - The user has cancelled the download task.
+           */
+          DOWNLOAD_MEDIA_ERR_INTERRUPTED = 6,
+          
+          /**
+           101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+           */
+          DOWNLOAD_MEDIA_ERR_NOT_INITIALIZED = 101,
+          
+          /**
+           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+           */
+          DOWNLOAD_MEDIA_ERR_NOT_LOGGED_IN = 102,
+      };
 }

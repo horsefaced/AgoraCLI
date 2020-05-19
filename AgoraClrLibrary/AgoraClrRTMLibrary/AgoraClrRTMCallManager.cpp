@@ -103,7 +103,7 @@ void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnRemoteInvitationCanceled(I
 
 void AgoraClrLibrary::AgoraClrRTMCallManager::bindEvents()
 {
-	regEvent(events->onLocalInvitationRecievedByPeerEvent, gcnew OnLocalInvitationReceivedByPeerType::Type(this, &AgoraClrRTMCallManager::NativeOnLocalInvitationReceivedByPeer));
+	regEvent(events->onLocalInvitationReceivedByPeerEvent, gcnew OnLocalInvitationReceivedByPeerType::Type(this, &AgoraClrRTMCallManager::NativeOnLocalInvitationReceivedByPeer));
 	regEvent(events->onLocalInvitationAcceptedEvent, gcnew OnLocalInvitationAcceptedType::Type(this, &AgoraClrRTMCallManager::NativeOnLocalInvitationAccepted));
 	regEvent(events->onLocalInvitationCanceledEvent, gcnew OnLocalInvitationCanceledType::Type(this, &AgoraClrRTMCallManager::NativeOnLocalInvitationCanceled));
 	regEvent(events->onLocalInvitationFailureEvent, gcnew OnLocalInvitationFailureType::Type(this, &AgoraClrRTMCallManager::NativeOnLocalInvitationFailure));

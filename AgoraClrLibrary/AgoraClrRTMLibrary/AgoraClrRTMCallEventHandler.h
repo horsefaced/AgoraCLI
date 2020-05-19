@@ -27,7 +27,7 @@ namespace AgoraClrLibrary {
 	inline void call(F&& event, Args&&... args) { if (event) event(std::forward<Args>(args)...); }
 	
 	public:
-		OnLocalInvitationReceivedByPeerType::Pointer onLocalInvitationRecievedByPeerEvent;
+		OnLocalInvitationReceivedByPeerType::Pointer onLocalInvitationReceivedByPeerEvent;
 		OnLocalInvitationCanceledType::Pointer onLocalInvitationCanceledEvent;
 		OnLocalInvitationFailureType::Pointer onLocalInvitationFailureEvent;
 		OnLocalInvitationAcceptedType::Pointer onLocalInvitationAcceptedEvent;
@@ -38,7 +38,7 @@ namespace AgoraClrLibrary {
 		OnRemoteInvitationFailureType::Pointer onRemoteInvitationFailureEvent;
 		OnRemoteInvitationCanceledType::Pointer onRemoteInvitationCanceledEvent;
 
-		void onLocalInvitationReceivedByPeer(ILocalCallInvitation* lci) override { call(onLocalInvitationRecievedByPeerEvent, lci); }
+		void onLocalInvitationReceivedByPeer(ILocalCallInvitation* lci) override { call(onLocalInvitationReceivedByPeerEvent, lci); }
 		void onLocalInvitationAccepted(ILocalCallInvitation* lci, const char* response) override { call(onLocalInvitationAcceptedEvent, lci, response); }
 		void onLocalInvitationCanceled(ILocalCallInvitation* lci) override { call(onLocalInvitationCanceledEvent, lci); }
 		void onLocalInvitationFailure(ILocalCallInvitation* lci, LOCAL_INVITATION_ERR_CODE code) override { call(onLocalInvitationFailureEvent, lci, code); }

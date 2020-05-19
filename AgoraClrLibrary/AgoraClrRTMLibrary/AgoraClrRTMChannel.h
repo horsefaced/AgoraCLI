@@ -18,6 +18,7 @@ namespace AgoraClrLibrary {
 		int Join();
 		int Leave();
 		int SendMessage(ClrMessage^ msg);
+		int SendMessage(ClrMessage^ msg,ClrSendMessageOptions^ options );
 		void Release();
 		property String^ Id { String^ get() { return id; }}
 		int getMembers();
@@ -32,11 +33,15 @@ namespace AgoraClrLibrary {
 		AT<List<ClrChannelMember^>^, EnumGetMembersErrCode>::Type^ onGetMembers;
 		AT<List<ClrRtmChannelAttribute^>^>::Type^ onAttributesUpdated;
 		AT<int>::Type^ onMemberCountUpdated;
+
+		AT<String^,ClrFileMessage^>::Type^ onFileMessageReceived;
+		AT<String^,ClrImageMessage^>::Type^ onImageMessageReceived;
+
 	private:
 		String^ id;
 		IRtmService* service;
 		IChannel* channel;
-		AgoraClrRTMChannelEventHandlder* events;
+		AgoraClrRTMChannelEventHandler* events;
 		List<GCHandle>^ gchs;
 
 		void NativeOnJoinSuccess();
@@ -49,6 +54,11 @@ namespace AgoraClrLibrary {
 		void NativeOnGetMembers(IChannelMember** members, int count, GET_MEMBERS_ERR code);
 		void NativeOnAttributesUpdated(const IRtmChannelAttribute* attrs[], int count);
 		void NativeOnMemberCountUpdated(int count);
+
+		//1.3版本新增 文件+图片消息 （最大30M，服务器最多放七天）
+		void NativeOnFileMessageReceived(const char * userId, const IFileMessage*  message);
+		void NativeOnImageMessageReceived(const char * userId, const IImageMessage*  message);
+
 	private:
 		template<typename E, typename D>
 		inline void regEvent(E& e, D^ d)
