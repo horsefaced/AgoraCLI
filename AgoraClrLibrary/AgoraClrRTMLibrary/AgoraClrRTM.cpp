@@ -30,13 +30,21 @@ AgoraClrLibrary::AgoraClrRTM::~AgoraClrRTM()
 		handler.Free();
 	}
 	service->release();
+	service = nullptr;
+	appId = nullptr;
 }
 
 int AgoraClrLibrary::AgoraClrRTM::initialize(String^ vendorkey)
 {
+	appId = vendorkey;
 	return service->initialize(marshal_as<std::string>(vendorkey).c_str(), rtmEvents);
 }
 
+int AgoraClrLibrary::AgoraClrRTM::login(String^ userId)
+{
+	const auto token = appId;
+	return service->login(marshal_as<std::string>(token).c_str(), marshal_as<std::string>(userId).c_str());
+}
 int AgoraClrLibrary::AgoraClrRTM::login(String^ token, String^ userId)
 {
 	return service->login(marshal_as<std::string>(token).c_str(), marshal_as<std::string>(userId).c_str());

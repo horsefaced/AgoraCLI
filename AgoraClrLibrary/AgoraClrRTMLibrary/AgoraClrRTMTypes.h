@@ -68,7 +68,7 @@ namespace AgoraClrLibrary {
 			IsOffline = raw->isOfflineMessage();
 		}
 
-		IMessage* toMessage(IRtmService* service) {
+		virtual IMessage* toMessage(IRtmService* service) {
 			IMessage* raw;
 			if (Data == nullptr || Data->Length == 0)
 				raw = service->createMessage();
@@ -113,13 +113,14 @@ namespace AgoraClrLibrary {
 		property array<Byte>^ Thumbnail;
 		property String^ FileName;
 
-		ClrFileMessage() :ClrMessage()
+		ClrFileMessage() : ClrMessage()
 		{
-			Size =0;
+			Size = 0;
 			MediaId = nullptr;
 			Thumbnail = nullptr;
 			FileName = nullptr;
 		}
+
 		ClrFileMessage(IFileMessage* raw) :ClrMessage(raw)
 		{
 			Size = raw->getSize();
@@ -128,12 +129,19 @@ namespace AgoraClrLibrary {
 			FileName = gcnew String(raw->getFileName());
 		}
 
-		//	if (Text != nullptr)
-		//		raw->setText(marshal_as<std::string>(Text).c_str());
 
-		//	ID = raw->getMessageId();*/
-		//	return raw;
-		//}
+		IMessage* toMessage(IRtmService* service) override
+		{
+			IFileMessage* raw;
+			if (MediaId != nullptr )
+			{
+				raw = service->createFileMessageByMediaId(marshal_as<std::string>(MediaId).c_str());
+			}
+			else {
+				raw = nullptr;
+			}
+			return raw;
+		}
 	private:
 		array<Byte>^ getFileRawMessageData(IFileMessage* raw) {
 			const auto size = raw->getThumbnailLength();
@@ -176,6 +184,19 @@ namespace AgoraClrLibrary {
 			Height=raw->getHeight();
 			ThumbnailWidth=raw->getThumbnailWidth();
 			ThumbnailHeight=raw->getThumbnailHeight();
+		}
+
+		IMessage* toMessage(IRtmService* service) override
+		{
+			IImageMessage* raw;
+			if (MediaId != nullptr )
+			{
+				raw = service->createImageMessageByMediaId(marshal_as<std::string>(MediaId).c_str());
+			}
+			else {
+				raw = nullptr;
+			}
+			return raw;
 		}
 		private:
 		array<Byte>^ getImageRawMessageData(IImageMessage* raw) {

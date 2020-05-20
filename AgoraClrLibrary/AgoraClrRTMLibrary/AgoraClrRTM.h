@@ -25,6 +25,7 @@ namespace AgoraClrLibrary {
 		int initialize(String^ vendorkey);
 
 		//登入登出相关
+		int login(String^ userId);
 		int login(String^ token, String^ userId);
 		int logout();
 		AT<>::Type^ onLoginSuccess;
@@ -125,6 +126,7 @@ namespace AgoraClrLibrary {
 		AgoraClrRTMCallManager^ manager;
 
 		List<GCHandle>^ gchs;
+	    String^ appId;
 
 	private:
 		void NativeOnLoginSuccess();

@@ -875,7 +875,7 @@ namespace AgoraClrLibrary {
 
     };
 
-	public enum EnumCancelMediaErrCode {
+	public enum class EnumCancelMediaErrCode {
           /**
            0: The method call succeeds, or the operation succeeds.
            */
@@ -905,7 +905,7 @@ namespace AgoraClrLibrary {
 	 /**
        @brief Error codes related to uploading a file or image.
        */
-     public enum EnumUploadMediaErrCode {
+     public enum class EnumUploadMediaErrCode {
           /**
            0: The method call succeeds, or the operation succeeds.
            */
@@ -956,7 +956,7 @@ namespace AgoraClrLibrary {
 	/**
        @brief Error codes related to downloading a file or image.
        */
-      public enum EnumDownloadMediaErrCode {
+      public enum class EnumDownloadMediaErrCode {
           /**
            0: The method call succeeds, or the operation succeeds.
            */
