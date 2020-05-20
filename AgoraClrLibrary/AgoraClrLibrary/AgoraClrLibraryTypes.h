@@ -231,6 +231,8 @@ namespace AgoraClrLibrary {
 	public
 	ref class ClrAudioFrame
 	{
+	private:
+		agora::media::IAudioFrameObserver::AudioFrame* raw=nullptr;
 	public:
 		EnumAudioFrameType type;
 		int samples;
@@ -272,9 +274,20 @@ namespace AgoraClrLibrary {
 		}
 
 		operator IAudioFrameObserver::AudioFrame* () {
-			agora::media::IAudioFrameObserver::AudioFrame* raw = new agora::media::IAudioFrameObserver::AudioFrame();
+			if(raw)
+				return raw;
+			raw = new agora::media::IAudioFrameObserver::AudioFrame();
 			writeRaw(*raw);
 			return raw;
+		}
+
+		void release()
+		{
+			if(raw)
+			{
+				delete raw;
+				raw = nullptr;
+			}
 		}
 	};
 
@@ -362,6 +375,8 @@ namespace AgoraClrLibrary {
 	public
 	ref class ClrRect
 	{
+	private:
+		agora::rtc::Rect* result=nullptr;
 	public:
 		int top;
 		int left;
@@ -373,18 +388,30 @@ namespace AgoraClrLibrary {
 
 		agora::rtc::Rect* toRaw()
 		{
-			agora::rtc::Rect* result = new agora::rtc::Rect();
+			if(result)
+				return result;
+			result = new agora::rtc::Rect();
 			result->top = top;
 			result->left = left;
 			result->bottom = bottom;
 			result->right = right;
 			return result;
 		}
+		void release()
+		{
+			if(result)
+			{
+				delete result;
+				result = nullptr;
+			}
+		}
 	};
 
 	public
 	ref class ClrTranscodingUser
 	{
+	private:
+		TranscodingUser* result=nullptr;
 	public:
 		int uid;
 
@@ -404,7 +431,9 @@ namespace AgoraClrLibrary {
 
 		operator TranscodingUser* ()
 		{
-			TranscodingUser* result = new TranscodingUser();
+			if(result)
+				return result;
+			result = new TranscodingUser();
 			result->uid = uid;
 			result->x = x;
 			result->y = y;
@@ -415,11 +444,22 @@ namespace AgoraClrLibrary {
 			result->audioChannel = audioChannel;
 			return result;
 		}
+
+		void release()
+		{
+			if(result)
+			{
+				delete result;
+				result=nullptr;
+			}
+		}
 	};
 
 	public
 	ref class ClrRtcImage
 	{
+	private:
+		RtcImage* raw = nullptr;
 	public:
 		ClrRtcImage() : url(nullptr),
 			x(0),
@@ -441,7 +481,9 @@ namespace AgoraClrLibrary {
 
 		operator RtcImage* ()
 		{
-			RtcImage* raw = new RtcImage();
+			if(raw)
+				return raw;
+			raw = new RtcImage();
 			raw->x = x;
 			raw->y = y;
 			raw->width = width;
@@ -450,7 +492,14 @@ namespace AgoraClrLibrary {
 			return raw;
 		}
 
-
+		void release()
+		{
+			if(raw)
+			{
+				delete raw;
+				raw=nullptr;
+			}
+		}
 	};
 
 
@@ -649,6 +698,8 @@ namespace AgoraClrLibrary {
 	public
 	ref class ClrExternalVideoFrame
 	{
+	private:
+		ExternalVideoFrame* result = nullptr;
 	public:
 		VideoBufferType type;
 		VideoPixelFormate format;
@@ -663,9 +714,11 @@ namespace AgoraClrLibrary {
 		long long timestamp;
 
 		operator ExternalVideoFrame* () {
-			ExternalVideoFrame* result = new ExternalVideoFrame();
-			result->type = (ExternalVideoFrame::VIDEO_BUFFER_TYPE)type;
-			result->format = (ExternalVideoFrame::VIDEO_PIXEL_FORMAT)format;
+			if(result)
+				return result;
+			result = new ExternalVideoFrame();
+			result->type = static_cast<ExternalVideoFrame::VIDEO_BUFFER_TYPE>(type);
+			result->format = static_cast<ExternalVideoFrame::VIDEO_PIXEL_FORMAT>(format);
 			result->stride = stride;
 			result->height = height;
 			result->cropLeft = cropLeft;
@@ -677,6 +730,17 @@ namespace AgoraClrLibrary {
 			result->buffer = malloc(buffer->Length * sizeof(Byte));
 			Marshal::Copy(buffer, 0, IntPtr(result->buffer), buffer->Length);
 			return result;
+		}
+
+		void release()
+		{
+			if(result)
+			{
+				free(result->buffer);
+				result->buffer=nullptr;
+				delete result;
+				result = nullptr;
+			}
 		}
 	};
 
@@ -738,17 +802,30 @@ namespace AgoraClrLibrary {
 	};
 
 	public ref class ClrChannelMediaInfo {
+	private:
+		ChannelMediaInfo* info = nullptr;
 	public:
 		String^ channel;
 		String^ token;
 		uid_t uid;
 
 		operator ChannelMediaInfo* () {
-			ChannelMediaInfo* info = new ChannelMediaInfo();
+			if(info)
+				return  info;
+			info = new ChannelMediaInfo();
 			info->channelName = MarshalString(channel).c_str();
 			info->token = MarshalString(token).c_str();
 			info->uid = uid;
 			return info;
+		}
+
+		void release()
+		{
+			if(info)
+			{
+				delete info;
+				info=nullptr;
+			}
 		}
 	};
 
