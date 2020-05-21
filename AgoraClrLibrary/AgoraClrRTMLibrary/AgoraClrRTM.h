@@ -25,6 +25,7 @@ namespace AgoraClrLibrary {
 		int initialize(String^ vendorkey);
 
 		//登入登出相关
+		int login(String^ userId);
 		int login(String^ token, String^ userId);
 		int logout();
 		AT<>::Type^ onLoginSuccess;
@@ -34,6 +35,7 @@ namespace AgoraClrLibrary {
 
 		//点对点消息
 		ClrMessage^ createMessage();
+		int sendMessageToPeer(String^ peerId, String^ msg);
 		int sendMessageToPeer(String^ peerId, ClrMessage^ msg, ClrSendMessageOptions^ options);
 		AT<long long, EnumPeerMessageErrCode>::Type^ onSendMessageResult;
 		AT<String^, ClrMessage^>::Type^ onMessageReceivedFromPeer;
@@ -96,13 +98,35 @@ namespace AgoraClrLibrary {
 		int setLogFile(String^ file);
 		int setLogFilter(EnumLogFilterType filter);
 		int setLogFileSize(int size);
-		String^ getRTMSdkVersion();
+		static String^ getRTMSdkVersion();
+
+		//1.3版本新增 文件+图片消息 （最大30M，服务器最多放七天）
+		int createFileMessageByUploading(String^ filePath,long long% requestId);
+		int createImageMessageByUploading(String^ filePath,long long% requestId);
+		int cancelMediaUpload(long requestId);
+		int cancelMediaDownload(long requestId);
+		ClrFileMessage^ createFileMessageByMediaId(String^ mediaId);
+		ClrImageMessage^ createImageMessageByMediaId(String^ mediaId);
+		int downloadMediaToMemory(String^ mediaId,long long% requestId);
+		int downloadMediaToFile(String^ mediaId,String^ filePath,long long% requestId);
+
+		AT<long long,ClrMediaOperationProgress^>::Type^ onMediaUploadingProgress;
+		AT<long long,ClrMediaOperationProgress^>::Type^ onMediaDownloadingProgress;
+		AT<long long,EnumCancelMediaErrCode>::Type^ onMediaCancelResult;
+		AT<long long,ClrFileMessage^,EnumUploadMediaErrCode>::Type^ onFileMediaUploadResult;
+		AT<long long,ClrImageMessage^,EnumUploadMediaErrCode>::Type^ onImageMediaUploadResult;
+		AT<String^,ClrFileMessage^>::Type^ onFileMessageReceivedFromPeer;
+		AT<String^,ClrImageMessage^>::Type^ onImageMessageReceivedFromPeer;
+		AT<long long,array<Byte>^,EnumDownloadMediaErrCode>::Type^ onMediaDownloadToMemoryResult;
+		AT<long long,EnumDownloadMediaErrCode>::Type^ onMediaDownloadToFileResult;
+		
 	private:
 		IRtmService* service;
 		AgoraClrRTMEventHandler* rtmEvents;
 		AgoraClrRTMCallManager^ manager;
 
 		List<GCHandle>^ gchs;
+	    String^ appId;
 
 	private:
 		void NativeOnLoginSuccess();
@@ -112,7 +136,7 @@ namespace AgoraClrLibrary {
 		void NativeOnSendMessageResult(long long id, PEER_MESSAGE_ERR_CODE code);
 		void NativeOnMessageReceivedFromPeer(const char* peerId, const IMessage* message);
 		void NativeOnQueryPeersOnlineStatusResult(long long requestId, const PeerOnlineStatus* peersStatus, int peerCount, QUERY_PEERS_ONLINE_STATUS_ERR code);
-		void NativeOnSubscriptionRequrestResult(long long requestId, PEER_SUBSCRIPTION_STATUS_ERR code);
+		void NativeOnSubscriptionRequestResult(long long requestId, PEER_SUBSCRIPTION_STATUS_ERR code);
 		void NativeOnPeersOnlineStatusChanged(const PeerOnlineStatus status[], int count);
 		void NativeOnQueryPeersBySubscriptionOptionResult(long long requestId, const char* peerIds[], int peerCount, QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR errorCode);
 		void NativeOnSetLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
@@ -122,12 +146,23 @@ namespace AgoraClrLibrary {
 		void NativeOnGetUserAttributesResult(long long id, const char* userId, const RtmAttribute* attributes, int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnSetChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnAddOrUpdateChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
-		void NativeOnDeleteChannelAttriutesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
+		void NativeOnDeleteChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnCleanChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnGetChannelAttributesResult(long long id, const IRtmChannelAttribute* attributes[], int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code);
 		void NativeOnGetChannelMemberCountResult(long long id, const ChannelMemberCount* members, int count, GET_CHANNEL_MEMBER_COUNT_ERR_CODE code);
 		void NativeOnTokenExpired();
 		void NativeOnRenewTokenResult(const char* token, RENEW_TOKEN_ERR_CODE code);
+
+		//1.3版本新增 文件+图片消息 （最大30M，服务器最多放七天）
+		void NativeOnMediaUploadingProgress(long long requestId,const MediaOperationProgress & progress);
+		void NativeOnMediaDownloadingProgress(long long requestId,const MediaOperationProgress & progress);
+		void NativeOnMediaCancelResult(long long requestId,	CANCEL_MEDIA_ERR_CODE code);
+		void NativeOnFileMediaUploadResult(long long requestId, IFileMessage*  fileMessage,UPLOAD_MEDIA_ERR_CODE code);
+		void NativeOnImageMediaUploadResult(long long requestId, IImageMessage*  fileMessage,UPLOAD_MEDIA_ERR_CODE code);
+		void NativeOnFileMessageReceivedFromPeer(const char * peerId, const IFileMessage*  message);
+		void NativeOnImageMessageReceivedFromPeer(const char * peerId, const IImageMessage*  message);
+		void NativeOnMediaDownloadToMemoryResult(long long requestId,const char * memory,long long length,DOWNLOAD_MEDIA_ERR_CODE code);
+		void NativeOnMediaDownloadToFileResult(long long requestId,DOWNLOAD_MEDIA_ERR_CODE code);
 	private:
 		template<typename E, typename D>
 		inline void regEvent(E &e, D^ d)

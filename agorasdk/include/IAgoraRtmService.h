@@ -2,7 +2,7 @@
 //  The Agora RTM SDK
 //
 //
-//  Copyright (c) 2019 Agora.io. All rights reserved.
+//  Copyright (c) 2020 Agora.io. All rights reserved.
 //
 #pragma once
 
@@ -157,7 +157,7 @@ namespace agora {
       LOGOUT_ERR_OK = 0,
       
       /**
-       1: Logout fails.
+       1: **RESERVED FOR FUTURE USE**
        */
       LOGOUT_ERR_REJECTED = 1,
         
@@ -193,7 +193,7 @@ namespace agora {
       RENEW_TOKEN_ERR_INVALID_ARGUMENT = 2,
         
       /**
-       3: The Agora RTM service is not initialized.
+       3: **RESERVED FOR FUTURE USE**
        */
       RENEW_TOKEN_ERR_REJECTED = 3,
  
@@ -358,6 +358,11 @@ namespace agora {
       7: The message is null or exceeds 32 KB in length.       
 	  */
       PEER_MESSAGE_ERR_INVALID_MESSAGE = 7,
+      
+      /**
+       8: The message receiver‘s SDK is of an earlier version and hence cannot recognize this message.
+       */
+      PEER_MESSAGE_ERR_IMCOMPATIBLE_MESSAGE = 8,
         
      /**
       101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
@@ -447,7 +452,7 @@ namespace agora {
       LEAVE_CHANNEL_ERR_FAILURE = 1,
         
       /**
-       2: The user cannot leave the channel, possibly because the user is not in the channel.
+       2: **RESERVED FOR FUTURE USE**
        */
       LEAVE_CHANNEL_ERR_REJECTED = 2,
         
@@ -499,7 +504,7 @@ namespace agora {
       CHANNEL_MESSAGE_ERR_FAILURE = 1,
              
       /**
-       2: The SDK does not receive a response from the server in five seconds. The current timeout is set as five seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
+       2: The SDK does not receive a response from the server in 10 seconds. The current timeout is set as 10 seconds. Possible reasons: The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" or \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
        */
       CHANNEL_MESSAGE_ERR_SENT_TIMEOUT = 2,
         
@@ -540,7 +545,7 @@ namespace agora {
       GET_MEMBERS_ERR_FAILURE = 1,
         
       /**
-       2: Cannot retrieve a member list of the channel.
+       2: **RESERVED FOR FUTURE USE**
        */
       GET_MEMBERS_ERR_REJECTED = 2,
         
@@ -814,7 +819,7 @@ namespace agora {
         GET_CHANNEL_MEMBER_COUNT_ERR_FAILURE = 1,
         
         /**
-         2: One or several of your channel IDs is invalid, or @p channelCount < 0.
+         2: One or several of your channel IDs is invalid, or @p channelCount &lt; 0.
          */
         GET_CHANNEL_MEMBER_COUNT_ERR_INVALID_ARGUMENT = 2,
         
@@ -844,24 +849,171 @@ namespace agora {
         GET_CHANNEL_MEMBER_COUNT_ERR_USER_NOT_LOGGED_IN = 102,
      };
       
+      /**
+       @brief Error codes related to downloading a file or image.
+       */
+      enum DOWNLOAD_MEDIA_ERR_CODE {
+          /**
+           0: The method call succeeds, or the operation succeeds.
+           */
+          DOWNLOAD_MEDIA_ERR_OK = 0,
+          
+          /**
+           1: Unknown common failure.
+           */
+          DOWNLOAD_MEDIA_ERR_FAILURE = 1,
+          
+          /**
+           2: An argument you put is invalid. For example, `mediaId` is in the wrong format or `filePath` is set as `null`.
+           */
+          DOWNLOAD_MEDIA_ERR_INVALID_ARGUMENT = 2,
+          /**
+           3: A timeout occurs. The current timeout is set as 120 seconds. The SDK assumes that a timeout occurs if it has not detected any file transmission between the SDK and the file server for 120 seconds.
+           */
+          DOWNLOAD_MEDIA_ERR_TIMEOUT = 3,
+          
+          /**
+           4: The file or image to download does not exist, either because the media ID you input is incorrect or because the validity of the media ID has expired. 
+           */
+          DOWNLOAD_MEDIA_ERR_NOT_EXIST = 4,
+          
+          /**
+           5: You have exceeded the upper limit for file download. You can initiate a maximum of nine file download or upload tasks at the same time (download and upload tasks count together).
+           */
+          DOWNLOAD_MEDIA_ERR_CONCURRENCY_LIMIT_EXCEEDED = 5,
+
+          /**
+           6: The file or image download task is aborted for either of the following reasons:
+
+           - The user is in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" state. 
+           - The user has cancelled the download task.
+           */
+          DOWNLOAD_MEDIA_ERR_INTERRUPTED = 6,
+          
+          /**
+           101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+           */
+          DOWNLOAD_MEDIA_ERR_NOT_INITIALIZED = 101,
+          
+          /**
+           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+           */
+          DOWNLOAD_MEDIA_ERR_NOT_LOGGED_IN = 102,
+      };
+      
+      
+      /**
+       @brief Error codes related to uploading a file or image.
+       */
+      enum UPLOAD_MEDIA_ERR_CODE {
+          /**
+           0: The method call succeeds, or the operation succeeds.
+           */
+          UPLOAD_MEDIA_ERR_OK = 0,
+          
+          /**
+           1: Unknown common failure.
+           */
+          UPLOAD_MEDIA_ERR_FAILURE = 1,
+          
+          /**
+           2: The argument you put is invalid. For example, `mediaId` is in the wrong format. 
+           */
+          UPLOAD_MEDIA_ERR_INVALID_ARGUMENT = 2,
+          
+          /**
+           3: A timeout occurs. The current timeout is set as 120 seconds. The SDK assumes that a timeout occurs if it has not detected any file transmission between the SDK and the file server for 120 seconds.
+           */
+          UPLOAD_MEDIA_ERR_TIMEOUT = 3,
+          
+          /**
+           4: The size of the file or image to upload exceeds 30 MB.
+           */
+          UPLOAD_MEDIA_ERR_SIZE_OVERFLOW = 4,
+          /**
+           5: You have exceeded the upper limit for file upload. You can initiate a maximum of nine file upload or download tasks at the same time (upload and download tasks count together).
+           */
+          UPLOAD_MEDIA_ERR_CONCURRENCY_LIMIT_EXCEEDED = 5,
+          /**
+           6: The file or image upload task is aborted for either of the following reasons:
+           
+           - The user in the \ref agora::rtm::CONNECTION_STATE_ABORTED "CONNECTION_STATE_ABORTED" state. 
+           - The user has cancelled the upload task.
+           */
+          UPLOAD_MEDIA_ERR_INTERRUPTED = 6,
+          
+          /**
+           101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+           */
+          UPLOAD_MEDIA_ERR_NOT_INITIALIZED = 101,
+          
+          /**
+           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+           */
+          UPLOAD_MEDIA_ERR_NOT_LOGGED_IN = 102,
+      };
+      
+      /**
+       @brief Error codes related to cancelling a download task or cancelling an upload task.
+       */
+      enum CANCEL_MEDIA_ERR_CODE {
+          /**
+           0: The method call succeeds, or the operation succeeds.
+           */
+          CANCEL_MEDIA_ERR_OK = 0,
+          
+          /**
+           1: Unknown common failure.
+           */
+          CANCEL_MEDIA_ERR_FAILURE = 1,
+          
+          /**
+           2: The task to cancel does not exist. You can only cancel an ongoing download or upload task. If the download or upload task completes, the corresponding @p requestId is no longer valid. 
+           */
+          CANCEL_MEDIA_ERR_NOT_EXIST = 2,
+          
+          /**
+           101: \ref agora::rtm::IRtmService "IRtmService" is not initialized.
+           */
+          CANCEL_MEDIA_ERR_NOT_INITIALIZED = 101,
+          
+          /**
+           102: The user does not call the \ref agora::rtm::IRtmService::login "login" method, or the method call of \ref agora::rtm::IRtmService::login "login" does not succeed before this operation.
+           */
+          CANCEL_MEDIA_ERR_NOT_LOGGED_IN = 102,
+      };
+      
+      
+      
     /**
      @brief Message types.
      */
     enum MESSAGE_TYPE {
         
-      /**
-       0: The message type is undefined.
-       */
-      MESSAGE_TYPE_UNDEFINED = 0,
+        /**
+        0: The message type is undefined.
+        */
+        MESSAGE_TYPE_UNDEFINED = 0,
 
-      /**
-       1: A text message.
-       */
-      MESSAGE_TYPE_TEXT = 1,
-      /**
-       2: A raw message.
-       */
-      MESSAGE_TYPE_RAW = 2,
+        /**
+        1: A text message.
+        */
+        MESSAGE_TYPE_TEXT = 1,
+        
+        /**
+        2: A raw message. A raw message is a binary message whose size does not exceed 32 KB. 
+        */
+        MESSAGE_TYPE_RAW = 2,
+        
+        /**
+         3: A file message. The size of a file message must be less than 32 KB.
+         */
+        MESSAGE_TYPE_FILE = 3,
+        
+        /**
+         4: An image message. The size of an image message must be less than 32 KB.
+         */
+        MESSAGE_TYPE_IMAGE = 4,
     };
      
      /**
@@ -869,20 +1021,27 @@ namespace agora {
       */
     struct SendMessageOptions{
       /**
-      Enables offline messaging.
+      Set the message as an offline message.
 
-      - true: Enables offline messaging.
-      - false: (default) Disables offline messaging.
+      - true: Set the message as an offline message.
+      - false: (default) Do not set the message as an offline message.
+       
+      @note This setting applies to the peer-to-peer message only, not to the channel message. 
       */
       bool enableOfflineMessaging;
-      /// @cond
+      /**
+       <b>PRIVATE BETA</b> Save the message to message history.
+     
+       - true: Save the message to message history.
+       - false: (default) Do not save the message to message history.
+       */
       bool enableHistoricalMessaging;
-      /// @endcond
+
       SendMessageOptions()
       : enableOfflineMessaging(false)
-      /// @cond
+
       , enableHistoricalMessaging(false)
-      /// @endcond
+
       {}
     };
    
@@ -901,6 +1060,21 @@ namespace agora {
          Value of the user attribute. Must not exceed 8 KB.
          */
         const char* value;
+    };
+
+    /**
+     @brief A data structure representing the upload ratio or download ratio.
+     */
+    struct MediaOperationProgress
+    {
+        /**
+         The total size of the file or image being loaded.
+         */
+        long long totalSize;
+        /**
+         The size of the loaded part of the file or image. 
+         */
+        long long currentSize;
     };
       
      /**
@@ -1030,7 +1204,10 @@ namespace agora {
       /**
        Allows the receiver to retrieve the timestamp of when the messaging server receives this message.
        
-       @note The returned timestamp is on a millisecond time-scale. It is for demonstration purposes only, not for strict ordering of messages.
+       @note
+       - You can infer from the returned timestamp the *approximate* time as to when this message was sent.
+       - The returned timestamp is on a millisecond time-scale. It is for demonstration purposes only, not for strict ordering of messages.
+       
        
        @return The timestamp (ms) of when the messaging server receives this message.
        */
@@ -1056,7 +1233,205 @@ namespace agora {
        */
       virtual void release() = 0;
     };
-      
+    
+    /**
+     @brief The class for setting and retrieving attributes of a file message.
+     */
+    class IFileMessage : public IMessage
+    {
+    public:
+        
+        /**
+         Gets the size of the uploaded file.
+
+         @return The size of the uploaded file in bytes.
+         */
+        virtual long long getSize() const = 0;
+        
+        /**
+         Gets the media ID of the uploaded file.
+         
+         @note
+         - The media ID is automatically populated once the file is uploaded to the file server.
+         - The media ID is valid for 7 days because the file server keeps all uploaded files for 7 days only. 
+
+         @return The media ID of the uploaded file.
+         */
+        virtual const char* getMediaId() const = 0;
+        
+        /**
+         Sets the thumbnail of the uploaded file.
+
+         @param thumbnail The thumbnail of the uploaded file. Must be binary data. 
+         @param length The length of the thumbnail. The size of @p thumbnail and @p fileName combined must not exceed 32 KB.
+         */
+        virtual void setThumbnail(const uint8_t* thumbnail, int length) = 0;
+        
+        /**
+         Gets the thumbnail of the uploaded file.
+
+         @return The thumbnail of the uploaded file.
+         */
+        virtual const char* getThumbnailData() const = 0;
+        
+        /**
+         Gets the length of the thumbnail.
+
+         @return The length of the thumbnail.
+         */
+        virtual const long long getThumbnailLength() const = 0;
+        
+        /**
+         Sets the name of the uploaded file.
+
+         @param fileName The name of the uploaded file. The size of @p thumbnail and @p fileName combined must not exceed 32 KB.
+         */
+        virtual void setFileName(const char* fileName) = 0;
+        
+        /**
+         Gets the name of the uploaded file.
+
+         @return The name of the uploaded file.
+         */
+        virtual const char* getFileName() const = 0;
+    };
+    
+    /**
+     @brief The class for setting and retrieving attributes of an image message.
+     */
+    class IImageMessage : public IMessage
+    {
+    public:
+        /**
+         Gets the size of the uploaded image.
+
+         @return The size of the uploaded image in bytes.
+         */
+        virtual long long getSize() const = 0;
+        
+        /**
+         Gets the media ID of the uploaded image.
+         
+         @note
+         - The media ID is automatically populated once the image is uploaded to the file server.
+         - The media ID is valid for 7 days because the file server keeps all uploaded files for 7 days only.
+
+         @return The media ID of the uploaded image.
+         */
+        virtual const char* getMediaId() const = 0;
+        
+        /**
+         Sets the thumbnail of the uploaded image.
+
+         @param thumbnail The thumbnail of the uploaded image.
+         @param length The length of the thumbnail in bytes. The size of @p thumbnail and @p fileName combined must not exceed 32 KB.
+         */
+        virtual void setThumbnail(const uint8_t* thumbnail, long long length) = 0;
+        
+        /**
+         Gets the thumbnail data of the uploaded image.
+
+         @return The thumbnail data of the uploaded image.
+         */
+        virtual const char* getThumbnailData() const = 0;
+        
+        /**
+         Gets the length of the thumbnail data.
+
+         @return The length of the thumbnail data.
+         */
+        virtual const long long getThumbnailLength() const = 0;
+        
+        /**
+         Sets the file name of the uploaded image.
+
+         @param fileName The file name of the uploaded image. The size of @p thumbnail and @p fileName combined must not exceed 32 KB.
+         */
+        virtual void setFileName(const char* fileName) = 0;
+        
+        /**
+         Gets the file name of the uploaded image.
+
+         @return The file name of the uploaded image.
+         */
+        virtual const char* getFileName() const = 0;
+        
+        /**
+         Sets the width of the uploaded image.
+
+         @note
+         - If the uploaded image is in JPG, JPEG, BMP, or PNG format, the SDK automatically calculates the width and height of the image. You can call \ref agora::rtm::IImageMessage::getWidth() "getWidth" directly to get the width of the image.
+         - Image width that is set by calling this method overrides the width calculated by the SDK. 
+
+         @param width The width of the uploaded image.
+         */
+        virtual void setWidth(int width) = 0;
+        
+        /**
+         Gets the width of the uploaded image.
+
+         @note
+         - If the uploaded image is in JPG, JPEG, BMP, or PNG format, the SDK automatically calculates the width and height of the image. You can call this method directly to get the width of the image.
+         - Image width that is set by calling \ref agora::rtm::IImageMessage::setWidth() "setWidth" overrides the width calculated by the SDK. 
+
+         @return The width of the uploaded image. Is 0 if the SDK does not support the format of the uploaded image.
+         */
+        virtual int getWidth() const = 0;
+        
+        /**
+         Sets the height of the uploaded image.
+
+         @note
+         - If the uploaded image is in JPG, JPEG, BMP, or PNG format, the SDK automatically calculates the width and height of the image. You can call \ref agora::rtm::IImageMessage::getHeight() "getHeight" directly to get the height of the image.
+         - Image height that is set by calling this method overrides the height calculated by the SDK. 
+
+         @param height The height of the uploaded image. Is 0 if the SDK does not support the format of the uploaded image.
+         */
+        virtual void setHeight(int height) = 0;
+        
+        /**
+         Gets the height of the uploaded image.
+
+         @note
+         - If the uploaded image is in JPG, JPEG, BMP, or PNG format, the SDK automatically calculates the width and height of the image. You can call this method directly to get the height of the image.
+         - Image height that is set by calling \ref agora::rtm::IImageMessage::setHeight() "setHeight" overrides the height calculated by the SDK. 
+
+         @return The height of the uploaded image.
+         */
+        virtual int getHeight() const = 0;
+        
+        /**
+         Sets the width of the thumbnail.
+
+         @note You need to work out the width of the thumbnail by yourself, because the SDK does not work out the value for you.
+
+         @param width The width of the thumbnail.
+         */
+        virtual void setThumbnailWidth(int width) = 0;
+        
+        /**
+         Gets the width of the thumbnail.
+
+         @return The width of the thumbnail.
+         */
+        virtual int getThumbnailWidth() const = 0;
+        
+        /**
+         Sets the height of the thumbnail.
+
+         @note You need to work out the height of the thumbnail by yourself, because the SDK does not work out the value for you.
+
+         @param height The height of the thumbnail.
+         */
+        virtual void setThumbnailHeight(int height) = 0;
+        
+        /**
+         Gets the height of the thumbnail.
+
+         @return The height of the thumbnail.
+         */
+        virtual int getThumbnailHeight() const = 0;
+    };
 
     /**
      @brief The class for retrieving the attributes of a channel member.
@@ -1088,7 +1463,7 @@ namespace agora {
     };
     
     /**
-     @brief The data structure holding an RTM user and his/her online status.
+     @brief The data structure holding an RTM user and the user's online status.
      */
     struct PeerOnlineStatus
     {
@@ -1191,6 +1566,27 @@ namespace agora {
           (const char *) userId;
           (IMessage *) message;
       }
+        /**
+         Occurs when receiving a channel image message.
+         
+         @param userId The message sender.
+         @param message The received channel image message. See \ref agora::rtm::IImageMessage "IImageMessage".
+         */
+        virtual void onImageMessageReceived(const char *userId, const IImageMessage* message)
+        {
+            (IImageMessage *) message;
+        }
+        
+        /**
+         Occurs when receiving a channel file message.
+         
+         @param userId The message sender. 
+         @param message The received channel file message. See \ref agora::rtm::IFileMessage "IFileMessage".
+         */
+        virtual void onFileMessageReceived(const char *userId, const IFileMessage* message)
+        {
+            (IFileMessage *) message;
+        }
 
       /**
        Returns the result of the \ref agora::rtm::IChannel::sendMessage "sendMessage" method call.
@@ -1267,7 +1663,7 @@ namespace agora {
        @note 
        - When the number of channel members &le; 512, the SDK returns this callback when the number changes and at a MAXIMUM speed of once per second.
        - When the number of channel members exceeds 512, the SDK returns this callback when the number changes and at a MAXIMUM speed of once every three seconds.
-       - You will receive this callback when successfully joining an RTM channel, so we recommend implementing this callback to receive timely updates on the number of the channel members.
+       - You will receive this callback when successfully joining an RTM channel, so Agore recommends implementing this callback to receive timely updates on the number of the channel members.
 
        @param memberCount Member count of this channel.
        */
@@ -1316,7 +1712,9 @@ namespace agora {
       virtual int leave() = 0;
  
       /**
-       Allows a channel member to send a message to all members in the channel.
+       @deprecated Allows a channel member to send a message to all members in the channel.
+       
+       Agora does not recommend using this method to send a channel message. Use \ref agora::rtm::IChannel::sendMessage(const IMessage *message, const SendMessageOptions &options) "sendMessage" instead.
 
        If this method call succeeds:
        - The \ref agora::rtm::IChannelEventHandler::onSendMessageResult "onSendMessageResult" callback returns the result.
@@ -1331,17 +1729,29 @@ namespace agora {
        */
       virtual int sendMessage(const IMessage *message) = 0;
 
+      /**
+       Allows a channel member to send a message to all members in the channel.
+       
+       If this method call succeeds:
+       - The \ref agora::rtm::IChannelEventHandler::onSendMessageResult "onSendMessageResult" callback returns the result.
+       - All remote users in the channel receive the \ref agora::rtm::IChannelEventHandler::onMessageReceived "onMessageReceived" callback.
+       
+       @note You can send messages, including peer-to-peer and channel messages, at a maximum speed of 60 queries per second.
 
-      virtual int sendMessage(const IMessage *message, const SendMessageOptions& options) = 0;
-
+       @param message The message to be sent. See \ref agora::rtm::IMessage "IMessage".
+       @param options Options when sending the channel message. See See \ref agora::rtm::SendMessageOptions "SendMessageOptions".
+       @return
+       - 0: Success.
+       - &ne;0: Failure. See #CHANNEL_MESSAGE_ERR_CODE for the error codes.
+       */
+      virtual int sendMessage(const IMessage *message, const SendMessageOptions &options) = 0;
+        
       /**
        Retrieves the channel ID.
 
        @return The channel ID of the channel.
        */
       virtual const char *getId() const = 0;
-        
-        
         
       /**
        Retrieves a member list of the channel.
@@ -1389,7 +1799,7 @@ namespace agora {
       }
 
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::renewToken "renewToken" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::renewToken "renewToken" method call.
        
        @param token Your new token.
        @param errorCode The error code. See #RENEW_TOKEN_ERR_CODE.
@@ -1401,9 +1811,10 @@ namespace agora {
       }
  
       /**
-       Occurs when the current RTM Token exceeds the 24-hour validity period.
+       Occurs when the RTM server detects that the RTM token has exceeded the 24-hour validity period and when the SDK is in the \ref agora::rtm::CONNECTION_STATE_RECONNECTING "CONNECTION_STATE_RECONNECTING" state.
        
-       This callback occurs when the current RTM Token exceeds the 24-hour validity period and reminds the user to renew it. When receiving this callback, generate a new RTM Token on the server and call the \ref agora::rtm::IRtmService::renewToken "renewToken" method to pass the new Token on to the server.
+       - This callback occurs only when the SDK is reconnecting to the server. You will not receive this callback when the SDK is in the \ref agora::rtm::CONNECTION_STATE_CONNECTED "CONNECTION_STATE_CONNECTED" state. 
+       - When receiving this callback, generate a new RTM Token on the server and call the \ref agora::rtm::IRtmService::renewToken "renewToken" method to pass the new Token on to the server.
        */
       virtual void onTokenExpired()
       {
@@ -1430,7 +1841,7 @@ namespace agora {
       }
         
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::sendMessageToPeer "sendMessageToPeer" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::sendMessageToPeer "sendMessageToPeer" method call.
 
        @param messageId The ID of the sent message.
        @param errorCode The peer-to-peer message state. See #PEER_MESSAGE_ERR_CODE.
@@ -1445,24 +1856,150 @@ namespace agora {
       /**
        Occurs when receiving a peer-to-peer message.
 
-       @param peerId User ID of the sender.
-       @param message The message sent by the sender. See \ref agora::rtm::IMessage "IMessage".
+       @param peerId The ID of the message sender.
+       @param message The received peer-to-peer message. See \ref agora::rtm::IMessage "IMessage".
        */
       virtual void onMessageReceivedFromPeer(const char *peerId, const IMessage *message)
       {
           (char *) peerId;
           (IMessage *) message;
       }
+        
+      /**
+       Occurs when receiving a peer-to-peer image message.
+       
+       @param peerId The ID of the message sender.
+       @param message The received peer-to-peer image message. See \ref agora::rtm::IImageMessage "IImageMessage".
+       */
+      virtual void onImageMessageReceivedFromPeer(const char *peerId, const IImageMessage* message)
+      {
+          (char *) peerId;
+          (IImageMessage *) message;
+      }
+        
+      /**
+       Occurs when receiving a peer-to-peer file message.
+     
+       @param peerId The ID of the message sender.
+       @param message The received peer-to-peer file message. See \ref agora::rtm::IFileMessage "IFileMessage".
+       */
+      virtual void onFileMessageReceivedFromPeer(const char *peerId, const IFileMessage* message)
+      {
+          (char *) peerId;
+          (IFileMessage *) message;
+      }
+        
+      /**
+       Reports the progress of an ongoing upload task.
+       
+       @note
+       - If the upload task is ongoing, the SDK returns this callback once every second.
+       - If the upload task comes to a halt, the SDK stops returning this callback until the task is going again.
+
+       @param requestId The unique ID of the upload request.
+       @param progress The progress of the ongoing upload task. See \ref agora::rtm::MediaOperationProgress "MediaOperationProgress".
+       */
+      virtual void onMediaUploadingProgress(long long requestId, const MediaOperationProgress &progress)
+      {
+          (long long) requestId;
+          (MediaOperationProgress) progress;
+      }
+        
+      /**
+       Reports the progress of an ongoing download task.
+       
+       @note
+       - If the download task is ongoing, the SDK returns this callback once every second.
+       - If the download task comes to a halt, the SDK stops returning this callback until the task is going again.
+     
+       @param requestId The unique ID of the download request.
+       @param progress The progress of the ongoing download task. See \ref agora::rtm::MediaOperationProgress "MediaOperationProgress".
+       */
+      virtual void onMediaDownloadingProgress(long long requestId, const MediaOperationProgress &progress)
+      {
+          (long long) requestId;
+          (MediaOperationProgress) progress;
+      }
 
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::queryPeersOnlineStatus "queryPeersOnlineStatus" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::createFileMessageByUploading "createFileMessageByUploading" method call.
+     
+       @param requestId The unique ID of the upload request.
+       @param fileMessage An \ref agora::rtm::IFileMessage "IFileMessage" instance.
+       @param code Error codes. See #UPLOAD_MEDIA_ERR_CODE.
+       */
+      virtual void onFileMediaUploadResult(long long requestId, IFileMessage* fileMessage, UPLOAD_MEDIA_ERR_CODE code)
+      {
+          (long long) requestId;
+          (IFileMessage *) fileMessage;
+          (UPLOAD_MEDIA_ERR_CODE) code;
+      }
+   
+      /**
+       Reports the result of the \ref agora::rtm::IRtmService::createImageMessageByUploading "createImageMessageByUploading" method call.
+
+       @param requestId The unique ID of the upload request.
+       @param imageMessage An \ref agora::rtm::IImageMessage "IImageMessage" instance.
+       @param code Error codes. See #UPLOAD_MEDIA_ERR_CODE.
+       */
+      virtual void onImageMediaUploadResult(long long requestId, IImageMessage* imageMessage, UPLOAD_MEDIA_ERR_CODE code)
+      {
+          (long long) requestId;
+          (IImageMessage *) imageMessage;
+          (UPLOAD_MEDIA_ERR_CODE) code;
+      }
+
+      /**
+       Reports the result of the \ref agora::rtm::IRtmService::downloadMediaToFile "downloadMediaToFile" method call.
+     
+       @param requestId The unique ID of the download request.
+       @param code Error codes. See #DOWNLOAD_MEDIA_ERR_CODE.
+       */
+      virtual void onMediaDownloadToFileResult(long long requestId, DOWNLOAD_MEDIA_ERR_CODE code)
+      {
+          (long long)requestId;
+          (DOWNLOAD_MEDIA_ERR_CODE)code;
+      }
+        
+      /**
+       Reports the result of the \ref agora::rtm::IRtmService::downloadMediaToMemory "downloadMediaToMemory" method call.
+       
+       @note The SDK releases the downloaded file or image immediately after returning this callback.
+     
+       @param requestId The unique ID of the download request.
+       @param memory The memory address where the downloaded file or image is stored.
+       @param length The size of the downloaded file or image.
+       @param code Error codes. See #DOWNLOAD_MEDIA_ERR_CODE.
+       */
+      virtual void onMediaDownloadToMemoryResult(long long requestId, const char* memory, long long length, DOWNLOAD_MEDIA_ERR_CODE code)
+      {
+          (long long) requestId;
+          (const char*) memory;
+          (long long) length;
+          (DOWNLOAD_MEDIA_ERR_CODE) code;
+      }
+        
+      /**
+       Reports the result of the \ref agora::rtm::IRtmService::cancelMediaDownload "cancelMediaDownload" or \ref agora::rtm::IRtmService::cancelMediaUpload "cancelMediaUpload" method call.
+     
+       @param requestId The unique ID of the cancel request.
+       @param code Error codes. See #CANCEL_MEDIA_ERR_CODE.
+       */
+      virtual void onMediaCancelResult(long long requestId, CANCEL_MEDIA_ERR_CODE code)
+      {
+          (long long) requestId;
+          (CANCEL_MEDIA_ERR_CODE) code;
+      }
+
+      /**
+       Reports the result of the \ref agora::rtm::IRtmService::queryPeersOnlineStatus "queryPeersOnlineStatus" method call.
 
        @param requestId The unique ID of this request.
        @param peersStatus The online status of the peer. See PeerOnlineStatus.
        @param peerCount The number of the queried peers.
        @param errorCode Error Codes. See #QUERY_PEERS_ONLINE_STATUS_ERR.
        */
-      virtual void onQueryPeersOnlineStatusResult(long long requestId, const PeerOnlineStatus* peersStatus , int peerCount, QUERY_PEERS_ONLINE_STATUS_ERR errorCode)
+      virtual void onQueryPeersOnlineStatusResult(long long requestId, const PeerOnlineStatus* peersStatus, int peerCount, QUERY_PEERS_ONLINE_STATUS_ERR errorCode)
       {
           (long long) requestId; 
           (const PeerOnlineStatus*) peersStatus;
@@ -1514,7 +2051,7 @@ namespace agora {
       }
 
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::setLocalUserAttributes "setLocalUserAttributes" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::setLocalUserAttributes "setLocalUserAttributes" method call.
 
        @param requestId The unique ID of this request.
        @param errorCode Error Codes. See #ATTRIBUTE_OPERATION_ERR.
@@ -1526,7 +2063,7 @@ namespace agora {
       }
 
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::addOrUpdateLocalUserAttributes "addOrUpdateLocalUserAttributes" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::addOrUpdateLocalUserAttributes "addOrUpdateLocalUserAttributes" method call.
 
        @param requestId The unique ID of this request.
        @param errorCode Error Codes. See #ATTRIBUTE_OPERATION_ERR.
@@ -1538,7 +2075,7 @@ namespace agora {
       }
 
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::deleteLocalUserAttributesByKeys "deleteLocalUserAttributesByKeys" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::deleteLocalUserAttributesByKeys "deleteLocalUserAttributesByKeys" method call.
 
        @param requestId The unique ID of this request.
        @param errorCode Error Codes. See #ATTRIBUTE_OPERATION_ERR.
@@ -1550,7 +2087,7 @@ namespace agora {
       }
 
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::clearLocalUserAttributes "clearLocalUserAttributes" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::clearLocalUserAttributes "clearLocalUserAttributes" method call.
 
        @param requestId The unique ID of this request.
        @param errorCode Error Codes. See #ATTRIBUTE_OPERATION_ERR.
@@ -1562,7 +2099,7 @@ namespace agora {
       }
 
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::getUserAttributes "getUserAttributes" or \ref agora::rtm::IRtmService::getUserAttributesByKeys "getUserAttributesByKeys" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::getUserAttributes "getUserAttributes" or \ref agora::rtm::IRtmService::getUserAttributesByKeys "getUserAttributesByKeys" method call.
 
        @param requestId The unique ID of this request.
        @param userId The user ID of the specified user.
@@ -1579,7 +2116,7 @@ namespace agora {
       }
       
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes" method call.
 
        @param requestId The unique ID of this request.
        @param errorCode Error Codes. See #ATTRIBUTE_OPERATION_ERR.
@@ -1591,7 +2128,7 @@ namespace agora {
       }
       
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes" method call.
 
        @param requestId The unique ID of this request.
        @param errorCode Error Codes. See #ATTRIBUTE_OPERATION_ERR.
@@ -1603,7 +2140,7 @@ namespace agora {
       }
       
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" method call.
 
        @param requestId The unique ID of this request.
        @param errorCode Error Codes. See #ATTRIBUTE_OPERATION_ERR.
@@ -1615,7 +2152,7 @@ namespace agora {
       }
       
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" method call.
 
        @param requestId The unique ID of this request.
        @param errorCode Error Codes. See #ATTRIBUTE_OPERATION_ERR.
@@ -1627,7 +2164,7 @@ namespace agora {
       }
       
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" or \ref agora::rtm::IRtmService::getChannelAttributesByKeys "getChannelAttributesByKeys" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" or \ref agora::rtm::IRtmService::getChannelAttributesByKeys "getChannelAttributesByKeys" method call.
 
        @param requestId The unique ID of this request.
        @param attributes An array of the returned channel attributes. 
@@ -1643,7 +2180,7 @@ namespace agora {
       }
        
       /**
-       Returns the result of the \ref agora::rtm::IRtmService::getChannelMemberCount "getChannelMemberCount" method call.
+       Reports the result of the \ref agora::rtm::IRtmService::getChannelMemberCount "getChannelMemberCount" method call.
 
        @param requestId The unique ID of this request.
        @param channelMemberCounts An array of the channel member counts.
@@ -1657,7 +2194,6 @@ namespace agora {
           (int) channelCount;
           (GET_CHANNEL_MEMBER_COUNT_ERR_CODE)errorCode;
        }
-
     };
 
     class IRtmCallManager;
@@ -1748,7 +2284,7 @@ namespace agora {
        - The call frequency limit for this method is 2 queries per second.
        - Only after you successfully call this method (when the local user receives the \ref agora::rtm::IRtmServiceEventHandler::onLoginSuccess "onLoginSuccess" callback), can you call the key RTM methods except:
             - \ref agora::rtm::IRtmService::createChannel "createChannel"
-            - \ref agora::rtm::IRtmService::createMessage() "createMessage"
+            - \ref agora::rtm::IRtmService::createMessage "createMessage"
             - \ref agora::rtm::IMessage::setText "setText"
             - \ref agora::rtm::IRtmService::getRtmCallManager "getRtmCallManager"
             - \ref agora::rtm::IRtmCallManager::createLocalCallInvitation "createLocalCallInvitation"
@@ -1757,11 +2293,11 @@ namespace agora {
        @param token Token used to log in the Agora RTM system and used when dynamic authentication is enabled. Set @p token as @p nil in the integration and test stages.
        @param userId The user ID of the user logging in Agora's RTM system. The string must not exceed 64 bytes in length. It cannot be empty, null or "null".
        Supported characters:
-       - The 26 lowercase English letters: a to z
-       - The 26 uppercase English letters: A to Z
-       - The 10 numbers: 0 to 9
-       - Space
-       - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
+       - All lowercase English letters: a to z
+       - All uppercase English letters: A to Z
+       - All numeric characters: 0 to 9
+       - The space character.
+       - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
        @return
        - 0: Success.
        - &ne;0: Failure. See #LOGIN_ERR_CODE for the error codes.
@@ -1772,6 +2308,7 @@ namespace agora {
        Logs out of the Agora RTM system.
 
        The local user receives the \ref agora::rtm::IRtmServiceEventHandler::onLogout "onLogout" callback. See \ref agora::rtm::LOGOUT_ERR_CODE "LOGIN_ERR_CODE" for the error codes.
+       
        @return
        - 0: Success.
        - &ne;0: Failure. See #LOGOUT_ERR_CODE for the error codes.
@@ -1804,18 +2341,81 @@ namespace agora {
        - &ne;0: Failure. See #PEER_MESSAGE_ERR_CODE for the error codes.
        */
       virtual int sendMessageToPeer(const char *peerId, const IMessage *message) = 0;
+      
+      /**
+       Downloads a file or image from the Agora server to the local memory by media ID.
+
+       The SDK returns the result of this method call by the \ref agora::rtm::IRtmServiceEventHandler::onMediaDownloadToFileResult "onMediaDownloadToMemoryResult" callback.
+       
+       @note 
+       - This method applies to scenarios requiring quick access to the downloaded file or image.
+       - The SDK releases the downloaded file or image immediately after returning the \ref agora::rtm::IRtmServiceEventHandler::onMediaDownloadToFileResult "onMediaDownloadToMemoryResult" callback.
+
+       @param mediaId The media ID of the file or image on the Agora server.
+       @param requestId The unique ID of this download request.
+       @return
+       - 0: Success.
+       - &ne;0: Failure. See #DOWNLOAD_MEDIA_ERR_CODE for the error codes.
+       */
+      virtual int downloadMediaToMemory(const char* mediaId, long long &requestId) = 0;
+      
+      /**
+       Downloads a file or image from the Agora server to a specified local directory by media ID.
+
+       The SDK returns the result of this method call by the \ref agora::rtm::IRtmServiceEventHandler::onMediaDownloadToFileResult "onMediaDownloadToFileResult" callback.
+
+       @param mediaId The media ID of the file or image on the Agora server.
+       @param filePath The full path to the downloaded file or image. Must be in UTF-8.
+       @param requestId The unique ID of this download request.
+       @return
+       - 0: Success.
+       - &ne;0: Failure. See #DOWNLOAD_MEDIA_ERR_CODE for the error codes.
+       */
+      virtual int downloadMediaToFile(const char* mediaId, const char* filePath, long long &requestId) = 0;
+      
+      /**
+       Cancels an ongoing file or image download task by request ID.
+
+       The SDK returns the result of this method call with the \ref agora::rtm::IRtmServiceEventHandler::onMediaCancelResult "onMediaCancelResult" callback.
+       
+       @note
+       You can only cancel an ongoing download task. After a download task completes, the corresponding request ID is no longer valid and hence you cannot cancel it.
+
+       @param requestId The unique ID of the download request to cancel.
+       @return
+       - 0: Success.
+       - &ne;0: Failure. See #CANCEL_MEDIA_ERR_CODE for the error codes.
+       */
+      virtual int cancelMediaDownload(long long requestId) = 0;
+      
+      /**
+       Cancels an ongoing file or image upload task by request ID.
+
+       The SDK returns the result of this method call with the \ref agora::rtm::IRtmServiceEventHandler::onMediaCancelResult "onMediaCancelResult" callback.
+       
+       @note
+       You can only cancel an ongoing upload task. After an upload task completes, you cannot cancel it and the corresponding request ID is no longer valid.
+
+       @param requestId The unique ID of the upload request to cancel.
+       @return
+       - 0: Success.
+       - &ne;0: Failure. See #CANCEL_MEDIA_ERR_CODE for the error codes.
+       */
+      virtual int cancelMediaUpload(long long requestId) = 0;
+      
         
       /**
        Sends an (offline) peer-to-peer message to a specified user (receiver).
   
-       This method allows you to send a message to a specified user when he/she is offline. If you set a message as an offline message and the specified user is offline when you send it, the RTM server caches it. Please note that for now we only cache 200 offline messages for up to seven days for each receiver. When the number of the cached messages reaches this limit, the newest message overrides the oldest one
+       This method allows you to send a message to a specified user when he/she is offline. If you set a message as an offline message and the specified user is offline when you send it, the RTM server caches it. Please note that for now we only cache 200 offline messages for up to seven days for each receiver. When the number of the cached messages reaches this limit, the newest message overrides the oldest one.
+       
+       If you use this method to send off a <i>text</i> message that starts off with AGORA_RTM_ENDCALL_PREFIX_\<channelId\>_\<your additional information\>, then this method is compatible with the endCall method of the legacy Agora Signaling SDK. Replace \<channelId\> with the channel ID from which you want to leave (end call), and replace \<your additional information\> with any additional information. Note that you must not put any "_" (underscore" in your additional information but you can set \<your additional information\> as empty "".
        
        - The \ref agora::rtm::IRtmServiceEventHandler::onSendMessageResult "onSendMessageResult" callback returns the result of this method call.
        - When the message arrives at the receiver, the receiver receives the \ref agora::rtm::IRtmServiceEventHandler::onMessageReceivedFromPeer "onMessageReceivedFromPeer" callback.
        
-       
-       If you use this method to send off a <i>text</i> message that starts off with AGORA_RTM_ENDCALL_PREFIX_<channelId>_<your additional information>, then this method is compatible with the endCall method of the legacy Agora Signaling SDK. Replace <channelId> with the channel ID from which you want to leave (end call), and replace <your additional information> with any additional information. Note that you must not put any "_" (underscore" in your additional information but you can set <your additional information> as empty "". 
-       
+       If you use this method to send off a <i>text</i> message that starts off with AGORA_RTM_ENDCALL_PREFIX_\<channelId\>_\<your additional information\>, then this method is compatible with the endCall method of the legacy Agora Signaling SDK. Replace \<channelId\> with the channel ID from which you want to leave (end call), and replace \<your additional information\> with any additional information. Note that you must not put any "_" (underscore" in your additional information but you can set \<your additional information\> as empty "".
+
        @note You can send messages, including peer-to-peer and channel messages, at a maximum speed of 60 queries per second.
 
        @param peerId User ID of the receiver. The string must not exceed 64 bytes in length. It cannot be empty, null, or "null". Supported characters:
@@ -1830,7 +2430,7 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #PEER_MESSAGE_ERR_CODE for the error codes.
        */
-      virtual int sendMessageToPeer(const char *peerId, const IMessage *message, const SendMessageOptions& options) = 0;
+      virtual int sendMessageToPeer(const char *peerId, const IMessage *message, const SendMessageOptions &options) = 0;
 
       /**
        Creates an Agora RTM channel.
@@ -1838,15 +2438,15 @@ namespace agora {
        - If the method call succeeds, the SDK returns an IChannel instance.
        - If this method call fails, the SDK returns @p null.
 
-       @note You can create multiple channels in an IRtmService instance. But you can only join a maximum of 20 channels at the same time. As a good practice, we recommend calling the \ref agora::rtm::IChannel::release "release" method to release all resources of an RTM channel that you no longer use.
+       @note You can create multiple channels in an IRtmService instance. But you can only join a maximum of 20 channels at the same time. As a good practice, Agore recommends calling the \ref agora::rtm::IChannel::release "release" method to release all resources of an RTM channel that you no longer use.
 
        @param channelId The unique channel name. A @p channelId cannot be empty, null, or "null". Must be less than 64 bytes in length.
        Supported characters:
-       - The 26 lowercase English letters: a to z
-       - The 26 uppercase English letters: A to Z
-       - The 10 numbers: 0 to 9
-       - Space
-       - "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
+       - All lowercase English letters: a to z
+       - All uppercase English letters: A to Z
+       - All numeric characters: 0 to 9
+       - The space character.
+       - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ","
        @param eventHandler See IChannelEventHandler.
        @return
        - An \ref agora::rtm::IChannel "IChannel" object: Success.
@@ -1905,6 +2505,7 @@ namespace agora {
        @return A raw \ref agora::rtm::IMessage "IMessage" instance.
        */
       virtual IMessage *createMessage(const uint8_t* rawData, int length) = 0;
+        
       /**
        Creates a raw \ref agora::rtm::IMessage "IMessage" instance and sets its description.
      
@@ -1914,18 +2515,78 @@ namespace agora {
        - You can set @p description as "" and add a brief text description of the raw message at a later point using the \ref agora::rtm::IMessage::setText "setText" method, but please ensure that the size of the raw message and the description combined does not exceed 32 KB.
        
        @param rawData The starting address of the raw message.
-       @param length Length of the raw message. Must not exceed 32 KB in length.
+       @param length The length of the raw message. Must not exceed 32 KB in length.
        @param description A brief text description of the raw message. If you set a text description, ensure that the size of the raw message and the description combined does not exceed 32 KB.
      
        @return A raw \ref agora::rtm::IMessage "IMessage" instance with a brief text description.
        */
       virtual IMessage *createMessage(const uint8_t* rawData, int length, const char* description) = 0;
-
-    /**
-     Creates an \ref agora::rtm::IRtmChannelAttribute "IRtmChannelAttribute" instance.
+        
+      /**
+       Creates an \ref agora::rtm::IFileMessage "IFileMessage" instance by media ID.
+       
+       - If you have at hand the media ID of a file on the Agora server, you can call this method to create an \ref agora::rtm::IFileMessage "IFileMessage" instance.
+       - If you do not have a media ID, then you must call \ref agora::rtm::IRtmService::createFileMessageByUploading "createFileMessageByUploading" to get a corresponding \ref agora::rtm::IFileMessage "IFileMessage" instance by uploading a file to the Agora RTM server.
      
-     @return An \ref agora::rtm::IRtmChannelAttribute "IRtmChannelAttribute" instance.
-     */
+       @param mediaId The media ID of an uploaded file on the Agora server.
+       @return An \ref agora::rtm::IFileMessage "IFileMessage" instance.
+       */
+      virtual IFileMessage *createFileMessageByMediaId(const char* mediaId) = 0;
+        
+      /**
+       Creates an \ref agora::rtm::IImageMessage "IImageMessage" instance by media ID.
+       
+       - If you have at hand the media ID of an image on the Agora server, you can call this method to create an \ref agora::rtm::IImageMessage "IImageMessage" instance.
+       - If you do not have a media ID, then you must call \ref agora::rtm::IRtmService::createImageMessageByUploading "createImageMessageByUploading" to get a corresponding \ref agora::rtm::IImageMessage "IImageMessage" instance by uploading an image to the Agora RTM server.
+       
+       @param mediaId The media ID of an uploaded image on the Agora server.
+       @return An \ref agora::rtm::IImageMessage "IImageMessage" instance.
+       */
+      virtual IImageMessage *createImageMessageByMediaId(const char* mediaId) = 0;
+        
+      /**
+       Gets an \ref agora::rtm::IFileMessage "IFileMessage" instance by uploading a file to the Agora server.
+       
+       The SDK returns the result with the \ref agora::rtm::IRtmServiceEventHandler::onFileMediaUploadResult callback. If success, this callback returns a corresponding \ref agora::rtm::IFileMessage "IFileMessage" instance.
+       
+       @note
+       - If you have at hand the media ID of a file on the Agora server, you can call \ref agora::rtm::IRtmService::createFileMessageByMediaId "createFileMessageByMediaId" to create an \ref agora::rtm::IFileMessage "IFileMessage" instance.
+       - To cancel an ongoing file upload task, call \ref agora::rtm::IRtmService::cancelMediaUpload "cancelMediaUpload".
+
+     
+       @param filePath The full path to the local file to upload. Must be in UTF-8.
+       @param requestId The unique ID of this upload request.
+       @return
+       - 0: Success.
+       - &ne;0: Failure. See #UPLOAD_MEDIA_ERR_CODE for the error codes.
+       */
+      virtual int createFileMessageByUploading(const char* filePath, long long &requestId) = 0;
+        
+      /**
+       Gets an \ref agora::rtm::IImageMessage "IImageMessage" instance by uploading an image to the Agora server.
+     
+       The SDK returns the result by the \ref agora::rtm::IRtmServiceEventHandler::onImageMediaUploadResult callback. If success, this callback returns a corresponding \ref agora::rtm::IImageMessage "ImageMessage" instance.
+       
+       - If the uploaded image is in JPEG, JPG, BMP, or PNG format, the SDK calculates the width and height of the image. You can call \ref agora::rtm::IImageMessage::getWidth "getWidth" and \ref agora::rtm::IImageMessage::getHeight "getHeight" to get the calculated width and height.
+       - Otherwise, you need to call \ref agora::rtm::IImageMessage::setWidth "setWidth" and \ref agora::rtm::IImageMessage::setHeight "setHeight" to set the width and height of the uploaded image by yourself.
+
+       @note
+       - If you have at hand the media ID of an image on the Agora server, you can call \ref agora::rtm::IRtmService::createImageMessageByMediaId "createImageMessageByMediaId" to create an \ref agora::rtm::IImageMessage "IImageMessage" instance.
+       - To cancel an ongoing image upload task, call \ref agora::rtm::IRtmService::cancelMediaUpload "cancelMediaUpload".
+     
+       @param filePath The full path to the local image to upload. Must be in UTF-8.
+       @param requestId The unique ID of the upload request.
+       @return
+       - 0: Success.
+       - &ne;0: Failure. See #UPLOAD_MEDIA_ERR_CODE for the error codes.
+       */
+      virtual int createImageMessageByUploading(const char* filePath, long long &requestId) = 0;
+        
+      /**
+       Creates an \ref agora::rtm::IRtmChannelAttribute "IRtmChannelAttribute" instance.
+     
+       @return An \ref agora::rtm::IRtmChannelAttribute "IRtmChannelAttribute" instance.
+       */
       virtual IRtmChannelAttribute *createChannelAttribute() = 0;
         
       /**
@@ -1956,7 +2617,7 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #QUERY_PEERS_ONLINE_STATUS_ERR for the error codes.
        */
-      virtual int queryPeersOnlineStatus(const char* peerIds[], int peerCount, long long& requestId) = 0;
+      virtual int queryPeersOnlineStatus(const char* peerIds[], int peerCount, long long &requestId) = 0;
 
       /**
        Subscribes to the online status of the specified user(s)
@@ -1978,7 +2639,7 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #PEER_SUBSCRIPTION_STATUS_ERR for the error codes.
        */
-      virtual int subscribePeersOnlineStatus(const char* peerIds[], int peerCount, long long& requestId) = 0;
+      virtual int subscribePeersOnlineStatus(const char* peerIds[], int peerCount, long long &requestId) = 0;
 
       /**
        Unsubscribes from the online status of the specified user(s).
@@ -1992,7 +2653,7 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #PEER_SUBSCRIPTION_STATUS_ERR for the error codes.
        */
-      virtual int unsubscribePeersOnlineStatus(const char* peerIds[], int peerCount, long long& requestId) = 0;
+      virtual int unsubscribePeersOnlineStatus(const char* peerIds[], int peerCount, long long &requestId) = 0;
 
       /**
        Gets a list of the peers, to whose specific status you have subscribed.
@@ -2005,7 +2666,7 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR for the error codes.
        */
-      virtual int queryPeersBySubscriptionOption(PEER_SUBSCRIPTION_OPTION option, long long& requestId) = 0;
+      virtual int queryPeersBySubscriptionOption(PEER_SUBSCRIPTION_OPTION option, long long &requestId) = 0;
 
       /**
        Substitutes the local user's attributes with new ones.
@@ -2104,12 +2765,14 @@ namespace agora {
       virtual int getUserAttributesByKeys(const char* userId, const char* attributeKeys[], int numberOfKeys, long long &requestId) = 0;
         
       /**
-       Sets the attributes of a specified channel with new ones.
+       Resets the attributes of a specified channel.
 
        The SDK returns the result by the \ref agora::rtm::IRtmServiceEventHandler::onSetChannelAttributesResult "onSetChannelAttributesResult" callback.
        
-       @note 
-       - If more than one user can update channel attributes, then we recommend calling \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" to update the cache before calling this method. 
+       @note
+       - You do not have to join the specified channel to update its attributes.
+       - The attributes of a channel will be cleared if the channel remains empty (has no members) for a couple of minutes.
+       - If more than one user can update the channel attributes, then Agora recommends calling \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" to update the cache before calling this method.
        - For \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes", \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes", \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" and \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" taken together: the call frequency limit is 10 queries every five seconds.
        
        @param channelId The channel ID of the specified channel.
@@ -2121,7 +2784,7 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #ATTRIBUTE_OPERATION_ERR for the error codes.
        */
-      virtual int setChannelAttributes(const char* channelId, const IRtmChannelAttribute* attributes[], int numberOfAttributes, const ChannelAttributeOptions& options, long long &requestId) = 0;
+      virtual int setChannelAttributes(const char* channelId, const IRtmChannelAttribute* attributes[], int numberOfAttributes, const ChannelAttributeOptions &options, long long &requestId) = 0;
       
       /**
        Adds or updates the attribute(s) of a specified channel.
@@ -2130,8 +2793,10 @@ namespace agora {
 
        The SDK returns the result by the \ref agora::rtm::IRtmServiceEventHandler::onAddOrUpdateChannelAttributesResult "onAddOrUpdateChannelAttributesResult" callback.
        
-       @note 
-       - If more than one user can update channel attributes, then we recommend calling \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" to update the cache before calling this method. 
+       @note
+       - You do not have to join the specified channel to update its attributes.
+       - The attributes of a channel will be cleared if the channel remains empty (has no members) for a couple of minutes.
+       - If more than one user can update the channel attributes, then Agora recommends calling \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" to update the cache before calling this method.
        - For \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes", \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes", \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" and \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" taken together: the call frequency limit is 10 queries every five seconds.
 
        @param channelId The channel ID of the specified channel.
@@ -2143,15 +2808,17 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #ATTRIBUTE_OPERATION_ERR for the error codes.
        */
-      virtual int addOrUpdateChannelAttributes(const char* channelId, const IRtmChannelAttribute* attributes[], int numberOfAttributes, const ChannelAttributeOptions& options, long long &requestId) = 0;
+      virtual int addOrUpdateChannelAttributes(const char* channelId, const IRtmChannelAttribute* attributes[], int numberOfAttributes, const ChannelAttributeOptions &options, long long &requestId) = 0;
         
       /**
        Deletes the attributes of a specified channel by attribute keys.
 
        The SDK returns the result by the \ref agora::rtm::IRtmServiceEventHandler::onDeleteChannelAttributesResult "onDeleteChannelAttributesResult" callback.
        
-       @note 
-       - If more than one user can update channel attributes, then we recommend calling \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" to update the cache before calling this method. 
+       @note
+       - You do not have to join the specified channel to update its attributes.
+       - The attributes of a channel will be cleared if the channel remains empty (has no members) for a couple of minutes.
+       - If more than one user can update the channel attributes, then Agora recommends calling \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" to update the cache before calling this method.
        - For \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes", \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes", \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" and \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" taken together: the call frequency limit is 10 queries every five seconds.
 
        @param channelId The channel ID of the specified channel.
@@ -2163,14 +2830,17 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #ATTRIBUTE_OPERATION_ERR for the error codes.
        */
-      virtual int deleteChannelAttributesByKeys(const char* channelId, const char* attributeKeys[], int numberOfKeys, const ChannelAttributeOptions& options, long long &requestId) = 0;
+      virtual int deleteChannelAttributesByKeys(const char* channelId, const char* attributeKeys[], int numberOfKeys, const ChannelAttributeOptions &options, long long &requestId) = 0;
         
       /**
        Clears all attributes of a specified channel.
 
        The SDK returns the result by the \ref agora::rtm::IRtmServiceEventHandler::onClearChannelAttributesResult "onClearChannelAttributesResult" callback.
        
-       @note For \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes", \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes", \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" and \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" taken together: the call frequency limit is 10 queries every five seconds.
+       @note
+       - You do not have to join the specified channel to clear its attributes.
+       - The attributes of a channel will be cleared if the channel remains empty (has no members) for a couple of minutes.
+       - For \ref agora::rtm::IRtmService::setChannelAttributes "setChannelAttributes", \ref agora::rtm::IRtmService::addOrUpdateChannelAttributes "addOrUpdateChannelAttributes", \ref agora::rtm::IRtmService::deleteChannelAttributesByKeys "deleteChannelAttributesByKeys" and \ref agora::rtm::IRtmService::clearChannelAttributes "clearChannelAttributes" taken together: the call frequency limit is 10 queries every five seconds.
 
        @param channelId The channel ID of the specified channel.
        @param options Options for this attribute operation. See ChannelAttributeOptions.
@@ -2179,14 +2849,16 @@ namespace agora {
        - 0: Success.
        - &ne;0: Failure. See #ATTRIBUTE_OPERATION_ERR for the error codes.
        */
-      virtual int clearChannelAttributes(const char* channelId, const ChannelAttributeOptions& options, long long &requestId) = 0;
+      virtual int clearChannelAttributes(const char* channelId, const ChannelAttributeOptions &options, long long &requestId) = 0;
         
       /**
        Gets all attributes of a specified channel.
        
        The SDK returns the result by the \ref agora::rtm::IRtmServiceEventHandler::onGetChannelAttributesResult "onGetChannelAttributesResult" callback.
        
-       @note For \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" and \ref agora::rtm::IRtmService::getChannelAttributesByKeys "getChannelAttributesByKeys" taken together, the call frequency limit is 10 queries every five seconds.
+       @note
+       - You do not have to join the specified channel to get its attributes.
+       - For \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" and \ref agora::rtm::IRtmService::getChannelAttributesByKeys "getChannelAttributesByKeys" taken together, the call frequency limit is 10 queries every five seconds.
 
        @param channelId The channel ID of the specified channel.
        @param requestId The unique ID of this request.
@@ -2201,7 +2873,9 @@ namespace agora {
        
        The SDK returns the result by the \ref agora::rtm::IRtmServiceEventHandler::onGetChannelAttributesResult "onGetChannelAttributesResult" callback.
        
-       @note For \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" and \ref agora::rtm::IRtmService::getChannelAttributesByKeys "getChannelAttributesByKeys" taken together, the call frequency limit is 10 queries every five seconds.
+       @note
+       - You do not have to join the specified channel to get its attributes.
+       - For \ref agora::rtm::IRtmService::getChannelAttributes "getChannelAttributes" and \ref agora::rtm::IRtmService::getChannelAttributesByKeys "getChannelAttributesByKeys" taken together, the call frequency limit is 10 queries every five seconds.
 
        @param channelId The channel ID of the specified channel.
        @param attributeKeys An array of attribute keys.
@@ -2221,6 +2895,7 @@ namespace agora {
        @note
        - The call frequency limit for this method is one query per second.
        - We do not support getting the member counts of more than 32 channels in one method call.
+       - You do not have to join the specified channel(s) to call this method. 
 
        @param channelIds An array of the specified channel ID(s).
        @param channelCount The total number of the channels.
@@ -2272,29 +2947,40 @@ namespace agora {
        */
       virtual int setLogFileSize(int fileSizeInKBytes) = 0;
     };
-    ////////////////////////////////////////////////////////
-    /** \addtogroup getRtmSdkVersion
-    @{
-    */
-    ////////////////////////////////////////////////////////
-    /**
-    Creates an \ref agora::rtm::IRtmService "IRtmService" instance.
+////////////////////////////////////////////////////////
+/** \addtogroup createRtmService
+@{
+*/
+////////////////////////////////////////////////////////
+      
+/**
+Creates an \ref agora::rtm::IRtmService "IRtmService" instance.
 
-    @note When you no longer need an \ref agora::base::IAgoraService "IAgoraService" instance, ensure that you call the \ref agora::rtm::IRtmService::release "release" method to release all resources that it uses.
+@note When you no longer need an \ref agora::rtm::IRtmService "IRtmService" instance, ensure that you call the \ref agora::rtm::IRtmService::release "release" method to release all resources that it uses.
 
-    @return An \ref agora::rtm::IRtmService "IRtmService" instance.
-    */
-    AGORA_API IRtmService* AGORA_CALL createRtmService();
+@return An \ref agora::rtm::IRtmService "IRtmService" instance.
+*/
+AGORA_API IRtmService* AGORA_CALL createRtmService();
 
-    /**
-    Gets the version of the Agora RTM SDK.
+////////////////////////////////////////////////////////
+/** @} */
+////////////////////////////////////////////////////////
 
-    @return The version of the Agora RTM SDK.
-    */
-    AGORA_API const char* AGORA_CALL getRtmSdkVersion();
+////////////////////////////////////////////////////////
+/** \addtogroup getRtmSdkVersion
+@{
+*/
+////////////////////////////////////////////////////////
 
-    ////////////////////////////////////////////////////////
-    /** @} */
-    ////////////////////////////////////////////////////////
+/**
+Gets the version of the Agora RTM SDK.
+
+@return The version of the Agora RTM SDK.
+*/
+AGORA_API const char* AGORA_CALL getRtmSdkVersion();
+
+////////////////////////////////////////////////////////
+/** @} */
+////////////////////////////////////////////////////////
   }
 }

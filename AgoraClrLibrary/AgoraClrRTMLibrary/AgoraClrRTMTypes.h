@@ -49,7 +49,7 @@ namespace AgoraClrLibrary {
 		property long long ServerReceivedTs { long long get() { return ts; }}
 		property bool IsOffline;
 
-		ClrMessage() : ts(0)
+		ClrMessage() : id(0), ts(0)
 		{
 			ID = 0;
 			Type = EnumMessageType::MESSAGE_TYPE_UNDEFINED;
@@ -68,7 +68,7 @@ namespace AgoraClrLibrary {
 			IsOffline = raw->isOfflineMessage();
 		}
 
-		IMessage* toMessage(IRtmService* service) {
+		virtual IMessage* toMessage(IRtmService* service) {
 			IMessage* raw;
 			if (Data == nullptr || Data->Length == 0)
 				raw = service->createMessage();
@@ -103,6 +103,108 @@ namespace AgoraClrLibrary {
 			return std::tuple<const void*, int>(raw, size);
 		}
 
+	};
+
+	public ref class ClrFileMessage : public ClrMessage
+	{
+	public:
+		property long long Size;
+		property String^ MediaId;
+		property array<Byte>^ Thumbnail;
+		property String^ FileName;
+
+		ClrFileMessage() : ClrMessage()
+		{
+			Size = 0;
+			MediaId = nullptr;
+			Thumbnail = nullptr;
+			FileName = nullptr;
+		}
+
+		ClrFileMessage(IFileMessage* raw) :ClrMessage(raw)
+		{
+			Size = raw->getSize();
+			MediaId = gcnew String( raw->getMediaId());
+			Thumbnail = getFileRawMessageData(raw);
+			FileName = gcnew String(raw->getFileName());
+		}
+
+
+		IMessage* toMessage(IRtmService* service) override
+		{
+			IFileMessage* raw;
+			if (MediaId != nullptr )
+			{
+				raw = service->createFileMessageByMediaId(marshal_as<std::string>(MediaId).c_str());
+			}
+			else {
+				raw = nullptr;
+			}
+			return raw;
+		}
+	private:
+		array<Byte>^ getFileRawMessageData(IFileMessage* raw) {
+			const auto size = raw->getThumbnailLength();
+			const auto result = gcnew array<Byte>(size);
+			if (size > 0) Marshal::Copy(IntPtr(reinterpret_cast<void*>(const_cast<char*>(raw->getThumbnailData()))), result, 0, size);
+			return result;
+		}
+	};
+
+	public ref class ClrImageMessage : public ClrMessage
+	{
+	public:
+		property long long Size;
+		property String^ MediaId;
+		property array<Byte>^ Thumbnail;
+		property String^ FileName;
+		property int Width;
+		property int Height;
+		property int ThumbnailWidth;
+		property int ThumbnailHeight;
+		ClrImageMessage() :ClrMessage()
+		{
+			Size =0;
+			MediaId = nullptr;
+			Thumbnail = nullptr;
+			FileName = nullptr;
+			Width = 0;
+			Height=0;
+			ThumbnailWidth=0;
+			ThumbnailHeight=0;
+		}
+		ClrImageMessage(IImageMessage* raw) :ClrMessage(raw)
+		{
+			Size = raw->getSize();
+			MediaId = gcnew String( raw->getMediaId());
+			Thumbnail = getImageRawMessageData(raw);
+			FileName = gcnew String(raw->getFileName());
+
+			Width = raw->getWidth();
+			Height=raw->getHeight();
+			ThumbnailWidth=raw->getThumbnailWidth();
+			ThumbnailHeight=raw->getThumbnailHeight();
+		}
+
+		IMessage* toMessage(IRtmService* service) override
+		{
+			IImageMessage* raw;
+			if (MediaId != nullptr )
+			{
+				raw = service->createImageMessageByMediaId(marshal_as<std::string>(MediaId).c_str());
+			}
+			else {
+				raw = nullptr;
+			}
+			return raw;
+		}
+		private:
+		array<Byte>^ getImageRawMessageData(IImageMessage* raw) {
+			const auto size = raw->getThumbnailLength();
+			const auto result = gcnew array<Byte>(size);
+			if (size > 0) Marshal::Copy(IntPtr(reinterpret_cast<void*>(const_cast<char*>(raw->getThumbnailData()))), result, 0, size);
+			return result;
+		}
 	};
 
 	public ref class ClrSendMessageOptions {
@@ -145,29 +247,29 @@ namespace AgoraClrLibrary {
 			value = gcnew String(attr.value);
 		}
 
-		operator RtmAttribute* () {
-			RtmAttribute* attr = new RtmAttribute;
+		operator RtmAttribute () {
+			RtmAttribute attr;
 			String^ k = key;
 			String^ v = value;
-			attr->key = marshal_as<std::string>(k).c_str();
-			attr->value = marshal_as<std::string>(v).c_str();
+			attr.key = _strdup(marshal_as<std::string>(k).data());
+			attr.value =  _strdup(marshal_as<std::string>(v).data());
 			return attr;
 		}
 
-		static void release(const RtmAttribute* attr) {
-			delete attr->key;
-			delete attr->value;
-			delete attr;
+		static void release(const RtmAttribute attr) {
+			delete attr.key;
+			delete attr.value;
+			//delete attr;
 		}
 
-		static const RtmAttribute** createAttrs(List<ClrRtmAttribute^>^ attrs) {
-			int count = attrs->Count;
-			const RtmAttribute** result = new const RtmAttribute * [count];
+		static const RtmAttribute* createAttrs(List<ClrRtmAttribute^>^ attrs) {
+			const int count = attrs->Count;
+			RtmAttribute* result = new  RtmAttribute  [count];
 			for (int i = 0; i < count; i++) result[i] = attrs[i];
 			return result;
 		}
 
-		static void releaseAttrs(const RtmAttribute** attrs, int count) {
+		static void releaseAttrs(const RtmAttribute* attrs, int count) {
 			for (int i = 0; i < count; i++) release(attrs[i]);
 
 			delete[] attrs;
@@ -240,7 +342,7 @@ namespace AgoraClrLibrary {
 		property String^ ChannelId { String^ get() { return channelId; } }
 
 		ClrChannelMember(IChannelMember* member) :
-			userId(gcnew String(member->getChannelId())),
+			userId(gcnew String(member->getUserId())),
 			channelId(gcnew String(member->getChannelId()))
 		{
 		}
@@ -311,5 +413,24 @@ namespace AgoraClrLibrary {
 		IRemoteCallInvitation* raw;
 	};
 
+	public ref class ClrMediaOperationProgress {
+	public:
+		long long totalSize;
+		long long currentSize;
+
+		ClrMediaOperationProgress() : totalSize(0), currentSize(0) {}
+		ClrMediaOperationProgress(const MediaOperationProgress& progress)
+		{
+			totalSize = progress.totalSize;
+			currentSize=progress.currentSize;
+		}
+
+		operator MediaOperationProgress() {
+			MediaOperationProgress progress;
+			progress.totalSize = totalSize;
+			progress.currentSize = currentSize;
+			return progress;
+		}
+	};
 
 }

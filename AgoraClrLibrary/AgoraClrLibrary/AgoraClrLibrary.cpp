@@ -77,12 +77,12 @@ void AgoraClrLibrary::AgoraClr::release()
 	{
 		if (agoraMediaEngine)
 			agoraMediaEngine->release();
+		rtcEngine->release();
 
 		delete agoraEventHandler;
 		delete agoraPacketObserver;
 		delete agoraRawObserver;
 
-		rtcEngine->release();
 		rtcEngine = nullptr;
 	}
 }

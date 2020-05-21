@@ -18,11 +18,15 @@ namespace AgoraClrLibrary {
 		using OnGetMembersType = ET<IChannelMember**, int, GET_MEMBERS_ERR>;
 		using OnAttributesUpdatedType = ET<const IRtmChannelAttribute**, int>;
 		using OnMemberCountUpdatedType = ET<int>;
+
+		//1.3版本新增 文件+图片消息 （最大30M，服务器最多放七天）
+		using OnFileMessageReceivedType = ET<const char*, const IFileMessage*>;
+		using OnImageMessageReceivedType = ET<const char*, const IImageMessage*>;
 	}
 
 	using namespace ChannelEventType;
 
-	public class AgoraClrRTMChannelEventHandlder : public IChannelEventHandler {
+	public class AgoraClrRTMChannelEventHandler : public IChannelEventHandler {
 	public:
 		OnJoinSuccessType::Pointer onJoinSuccessEvent = 0;
 		OnJoinFailureType::Pointer onJoinFailureEvent = 0;
@@ -34,6 +38,10 @@ namespace AgoraClrLibrary {
 		OnGetMembersType::Pointer onGetMembersEvent = 0;
 		OnAttributesUpdatedType::Pointer onAttributesUpdatedEvent = 0;
 		OnMemberCountUpdatedType::Pointer onMemberCountUpdatedEvent = 0;
+
+		//1.3版本新增 文件+图片消息 （最大30M，服务器最多放七天）
+		OnFileMessageReceivedType::Pointer onFileMessageReceivedEvent = 0;
+		OnImageMessageReceivedType::Pointer onImageMessageReceivedEvent = 0;
 
 		void onJoinSuccess() override { call(onJoinSuccessEvent); }
 		void onJoinFailure(JOIN_CHANNEL_ERR code) override { call(onJoinFailureEvent, code); }
@@ -59,6 +67,8 @@ namespace AgoraClrLibrary {
 			call(onMemberCountUpdatedEvent, count);
 		}
 
+		void onFileMessageReceived(const char* userId, const IFileMessage* message) override{ call(onFileMessageReceivedEvent, userId,message); }
+		void onImageMessageReceived(const char* userId, const IImageMessage* message) override{ call(onImageMessageReceivedEvent, userId,message); }
 	private:
 		template<typename F, typename ...Args>
 		inline void call(F&& event, Args&&... args)

@@ -144,7 +144,7 @@ namespace agora {
       REMOTE_INVITATION_ERR_PEER_OFFLINE = 1,
         
       /**
-       2: <b>RETURNED TO THE CALLEE.</b> The call invitation received by callee fails: the acceptance of the call invitation fails.
+       2: <b>RETURNED TO THE CALLEE.</b> The call invitation received by callee fails: The callee does not ACK within a set time after the callee accepts the call invitation. This is usually a result of a network interruption.
        */
       REMOTE_INVITATION_ERR_ACCEPT_FAILURE = 2,
         
@@ -165,7 +165,7 @@ namespace agora {
       INVITATION_API_CALL_ERR_OK = 0,
         
       /**
-       1: The method call fails. The argument is invalid.
+       1: The method call fails. The argument is invalid, for example, the value of the @p content parameter exceeds 8K bytes.
        */
       INVITATION_API_CALL_ERR_INVALID_ARGUMENT = 1,
         
