@@ -4,10 +4,11 @@
 
 #include <msclr/marshal_cppstd.h>
 #include <string>
-using namespace System::Collections::Generic;
+using namespace Collections::Generic;
 using namespace msclr::interop;
+using namespace AgoraClrLibrary;
 
-AgoraClrLibrary::AgoraClrRTMChannel::AgoraClrRTMChannel(IRtmService* service, String^ id)
+AgoraClrRTMChannel::AgoraClrRTMChannel(IRtmService* service, String^ id)
 {
 	this->events = new AgoraClrRTMChannelEventHandler();
 	IChannel* channel = service->createChannel(marshal_as<std::string>(id).c_str(), this->events);
@@ -24,7 +25,7 @@ AgoraClrLibrary::AgoraClrRTMChannel::AgoraClrRTMChannel(IRtmService* service, St
 	bindEvents();
 }
 
-AgoraClrLibrary::AgoraClrRTMChannel::~AgoraClrRTMChannel()
+AgoraClrRTMChannel::~AgoraClrRTMChannel()
 {
 	this->service = nullptr;
 	for each (GCHandle handler in this->gchs)
@@ -35,22 +36,22 @@ AgoraClrLibrary::AgoraClrRTMChannel::~AgoraClrRTMChannel()
 	this->channel->release();
 }
 
-int AgoraClrLibrary::AgoraClrRTMChannel::Join()
+int AgoraClrRTMChannel::Join()
 {
 	return channel->join();
 }
 
-int AgoraClrLibrary::AgoraClrRTMChannel::Leave()
+int AgoraClrRTMChannel::Leave()
 {
 	return channel->leave();
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::Release()
+void AgoraClrRTMChannel::Release()
 {
 	channel ->release();
 }
 
-int AgoraClrLibrary::AgoraClrRTMChannel::SendMessage(ClrMessage^ msg)
+int AgoraClrRTMChannel::SendMessage(ClrMessage^ msg)
 {
 	IMessage* raw = msg->toMessage(service);
 	SendMessageOptions options;
@@ -61,7 +62,7 @@ int AgoraClrLibrary::AgoraClrRTMChannel::SendMessage(ClrMessage^ msg)
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTMChannel::SendMessage(ClrMessage^ msg, ClrSendMessageOptions^ options)
+int AgoraClrRTMChannel::SendMessage(ClrMessage^ msg, ClrSendMessageOptions^ options)
 {
 	IMessage* raw = msg->toMessage(service);
 	int result = channel->sendMessage(raw,options);
@@ -69,49 +70,49 @@ int AgoraClrLibrary::AgoraClrRTMChannel::SendMessage(ClrMessage^ msg, ClrSendMes
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTMChannel::getMembers()
+int AgoraClrRTMChannel::getMembers()
 {
 	return channel->getMembers();
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnJoinSuccess()
+void AgoraClrRTMChannel::NativeOnJoinSuccess()
 {
 	if (onJoinSuccess) onJoinSuccess();
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnJoinFailure(JOIN_CHANNEL_ERR code)
+void AgoraClrRTMChannel::NativeOnJoinFailure(JOIN_CHANNEL_ERR code)
 {
 	if (onJoinFailure) onJoinFailure(static_cast<EnumJoinChannelErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnLeave(LEAVE_CHANNEL_ERR code)
+void AgoraClrRTMChannel::NativeOnLeave(LEAVE_CHANNEL_ERR code)
 {
 	if (onLeave) onLeave(static_cast<EnumLeaveChannelErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnMessageReceived(const char* userId, const IMessage* msg)
+void AgoraClrRTMChannel::NativeOnMessageReceived(const char* userId, const IMessage* msg)
 {
 	if (onMessageReceived)
 		onMessageReceived(gcnew String(userId), gcnew ClrMessage(const_cast<IMessage*>(msg)));
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnSendMessageResult(long long id, CHANNEL_MESSAGE_ERR_CODE code)
+void AgoraClrRTMChannel::NativeOnSendMessageResult(long long id, CHANNEL_MESSAGE_ERR_CODE code)
 {
 	if (onSendMessageResult)
 		onSendMessageResult(id, static_cast<EnumChannelMessageErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnMemberJoined(IChannelMember* member)
+void AgoraClrRTMChannel::NativeOnMemberJoined(IChannelMember* member)
 {
 	if (onMemberJoined) onMemberJoined(gcnew ClrChannelMember(member));
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnMemberLeft(IChannelMember* member)
+void AgoraClrRTMChannel::NativeOnMemberLeft(IChannelMember* member)
 {
 	if (onMemberLeft) onMemberLeft(gcnew ClrChannelMember(member));
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnGetMembers(IChannelMember** members, int count, GET_MEMBERS_ERR code)
+void AgoraClrRTMChannel::NativeOnGetMembers(IChannelMember** members, int count, GET_MEMBERS_ERR code)
 {
 	if (onGetMembers) {
 		List<ClrChannelMember^>^ list = gcnew List<ClrChannelMember^>;
@@ -121,7 +122,7 @@ void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnGetMembers(IChannelMember** me
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnAttributesUpdated(const IRtmChannelAttribute* attrs[], int count)
+void AgoraClrRTMChannel::NativeOnAttributesUpdated(const IRtmChannelAttribute* attrs[], int count)
 {
 	if (onAttributesUpdated) {
 		List<ClrRtmChannelAttribute^>^ list = gcnew List<ClrRtmChannelAttribute^>;
@@ -131,24 +132,24 @@ void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnAttributesUpdated(const IRtmCh
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnMemberCountUpdated(int count)
+void AgoraClrRTMChannel::NativeOnMemberCountUpdated(int count)
 {
 	if (onMemberCountUpdated) onMemberCountUpdated(count);
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnFileMessageReceived(const char* userId, const IFileMessage* message)
+void AgoraClrRTMChannel::NativeOnFileMessageReceived(const char* userId, const IFileMessage* message)
 {
 	if (onFileMessageReceived)
 		onFileMessageReceived(gcnew String(userId), gcnew ClrFileMessage(const_cast<IFileMessage*>(message)));
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::NativeOnImageMessageReceived(const char* userId, const IImageMessage* message)
+void AgoraClrRTMChannel::NativeOnImageMessageReceived(const char* userId, const IImageMessage* message)
 {
 	if (onImageMessageReceived)
 		onImageMessageReceived(gcnew String(userId), gcnew ClrImageMessage(const_cast<IImageMessage*>(message)));
 }
 
-void AgoraClrLibrary::AgoraClrRTMChannel::bindEvents()
+void AgoraClrRTMChannel::bindEvents()
 {
 	regEvent(events->onJoinSuccessEvent, gcnew OnJoinSuccessType::Type(this, &AgoraClrRTMChannel::NativeOnJoinSuccess));
 	regEvent(events->onJoinFailureEvent, gcnew OnJoinFailureType::Type(this, &AgoraClrRTMChannel::NativeOnJoinFailure));

@@ -36,6 +36,7 @@ namespace AgoraClrLibrary {
 		//点对点消息
 		ClrMessage^ createMessage();
 		int sendMessageToPeer(String^ peerId, String^ msg);
+		int sendMessageToPeer(String^ peerId, ClrMessage^ msg);
 		int sendMessageToPeer(String^ peerId, ClrMessage^ msg, ClrSendMessageOptions^ options);
 		AT<long long, EnumPeerMessageErrCode>::Type^ onSendMessageResult;
 		AT<String^, ClrMessage^>::Type^ onMessageReceivedFromPeer;

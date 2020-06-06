@@ -17,16 +17,17 @@ namespace AgoraClrLibrary {
 
 	public class AgoraClrPacketObserver : public IPacketObserver {
 	public:
+		virtual ~AgoraClrPacketObserver() = default;
 		PFOnSendAudioPacket onSendAudioPacketEvent = 0;
 		PFOnSendVideoPacket onSendVideoPacketEvent = 0;
 		PFOnReceiveAudioPacket onReceiveAudioPacketEvent = 0;
 		PFOnReceiveVideoPacket onReceiveVideoPacketEvent = 0;
 
 		// Inherited via IPacketObserver
-		virtual bool onSendAudioPacket(Packet & packet) override;
-		virtual bool onSendVideoPacket(Packet & packet) override;
-		virtual bool onReceiveAudioPacket(Packet & packet) override;
-		virtual bool onReceiveVideoPacket(Packet & packet) override;
+		bool onSendAudioPacket(Packet & packet) override;
+		bool onSendVideoPacket(Packet & packet) override;
+		bool onReceiveAudioPacket(Packet & packet) override;
+		bool onReceiveVideoPacket(Packet & packet) override;
 	};
 }
 

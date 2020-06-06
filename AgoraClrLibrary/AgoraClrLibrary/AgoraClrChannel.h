@@ -11,8 +11,8 @@
 
 using namespace System;
 using namespace agora::rtc;
-using namespace System::Collections::Generic;
-using namespace System::Runtime::InteropServices;
+using namespace Collections::Generic;
+using namespace Runtime::InteropServices;
 
 namespace AgoraClrLibrary {
 	public ref class AgoraClrChannel

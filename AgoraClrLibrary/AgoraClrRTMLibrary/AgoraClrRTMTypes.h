@@ -136,6 +136,8 @@ namespace AgoraClrLibrary {
 			if (MediaId != nullptr )
 			{
 				raw = service->createFileMessageByMediaId(marshal_as<std::string>(MediaId).c_str());
+				if(FileName !=nullptr)
+					raw->setFileName(marshal_as<std::string>(FileName).data());
 			}
 			else {
 				raw = nullptr;
@@ -192,6 +194,8 @@ namespace AgoraClrLibrary {
 			if (MediaId != nullptr )
 			{
 				raw = service->createImageMessageByMediaId(marshal_as<std::string>(MediaId).c_str());
+				if(FileName !=nullptr)
+					raw->setFileName(marshal_as<std::string>(FileName).data());
 			}
 			else {
 				raw = nullptr;

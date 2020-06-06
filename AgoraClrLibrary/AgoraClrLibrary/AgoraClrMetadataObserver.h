@@ -20,10 +20,10 @@ namespace AgoraClrLibrary {
 		PFOnGetMaxMetadataSize onGetMaxMetadataSizeEvent = 0;
 		PFOnReadyToSendMetadata onReadyToSendMetadataEvent = 0;
 		PFOnMetadataReceived onMetadataReceivedEvent = 0;
-		
-		virtual int getMaxMetadataSize() override;
-		virtual bool onReadyToSendMetadata(Metadata& metadata) override;
-		virtual void onMetadataReceived(const Metadata& metadata) override;
+
+		int getMaxMetadataSize() override;
+		bool onReadyToSendMetadata(Metadata& metadata) override;
+		void onMetadataReceived(const Metadata& metadata) override;
 	};
 
 }

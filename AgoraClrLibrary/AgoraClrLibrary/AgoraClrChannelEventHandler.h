@@ -75,115 +75,115 @@ namespace AgoraClrLibrary {
 		OnRemoteSubscribeFallbackToAudioOnlyType::Pointer onRemoteSubscribeFallbackToAudioOnlyEvent;
 		OnConnectionStateChangedType::Pointer onConnectionStateChangedEvent;
 
-		virtual void onChannelWarning(IChannel* channel, int warn, const char* msg) override { 
+		void onChannelWarning(IChannel* channel, int warn, const char* msg) override { 
 			call(onChannelWarningEvent, channel, warn, msg);
 		}
 
-		virtual void onChannelError(IChannel* channel, int err, const char* msg) override {
+		void onChannelError(IChannel* channel, int err, const char* msg) override {
 			call(onChannelErrorEvent, channel, err, msg);
 		}
 
-		virtual void onJoinChannelSuccess(IChannel* channel, uid_t uid, int elapsed) override {
+		void onJoinChannelSuccess(IChannel* channel, uid_t uid, int elapsed) override {
 			call(onJoinChannelSuccessEvent, channel, uid, elapsed);
 		}
 
-		virtual void onRejoinChannelSuccess(IChannel* channel, uid_t uid, int elapsed) override {
+		void onRejoinChannelSuccess(IChannel* channel, uid_t uid, int elapsed) override {
 			call(onRejoinChannelSuccessEvent, channel, uid, elapsed);
 		}
 
-		virtual void onLeaveChannel(IChannel* channel, const RtcStats& stats) override {
+		void onLeaveChannel(IChannel* channel, const RtcStats& stats) override {
 			call(onLeaveChannelEvent, channel, stats);
 		}
 
-		virtual void onClientRoleChanged(IChannel* channel, CLIENT_ROLE_TYPE old, CLIENT_ROLE_TYPE newer) {
+		void onClientRoleChanged(IChannel* channel, CLIENT_ROLE_TYPE old, CLIENT_ROLE_TYPE newer) {
 			call(onClientRoleChangedEvent, channel, old, newer);
 		}
 
-		virtual void onUserJoined(IChannel* channel, uid_t uid, int elapsed) override {
+		void onUserJoined(IChannel* channel, uid_t uid, int elapsed) override {
 			call(onUserJoinEvent, channel, uid, elapsed);
 		}
 
-		virtual void onUserOffline(IChannel* channel, uid_t uid, USER_OFFLINE_REASON_TYPE reason) override {
+		void onUserOffline(IChannel* channel, uid_t uid, USER_OFFLINE_REASON_TYPE reason) override {
 			call(onUserOfflineEvent, channel, uid, reason);
 		}
 		
-		virtual void onConnectionLost(IChannel* channel) override {
+		void onConnectionLost(IChannel* channel) override {
 			call(onConnectionLostEvent, channel);
 		}
 
-		virtual void onRequestToken(IChannel* channel) override {
+		void onRequestToken(IChannel* channel) override {
 			call(onRequestTokenEvent, channel);
 		}
 
-		virtual void onTokenPrivilegeWillExpire(IChannel* channel, const char* token) override {
+		void onTokenPrivilegeWillExpire(IChannel* channel, const char* token) override {
 			call(onTokePrivilegeWillExpireEvent, channel, token);
 		}
 
-		virtual void onRtcStats(IChannel* channel, const RtcStats& stats) override {
+		void onRtcStats(IChannel* channel, const RtcStats& stats) override {
 			call(onRtcStatsEvent, channel, stats);
 		}
 
-		virtual void onNetworkQuality(IChannel* channel, uid_t uid, int txQuality, int rxQuaity) override {
+		void onNetworkQuality(IChannel* channel, uid_t uid, int txQuality, int rxQuaity) override {
 			call(onNetworkQualityEvent, channel, uid, txQuality, rxQuaity);
 		}
 
-		virtual void onRemoteVideoStats(IChannel* channel, const RemoteVideoStats& stats) override {
+		void onRemoteVideoStats(IChannel* channel, const RemoteVideoStats& stats) override {
 			call(onRemoteVideoStatsEvent, channel, stats);
 		}
 
-		virtual void onRemoteAudioStats(IChannel* channel, const RemoteAudioStats& stats) override {
+		void onRemoteAudioStats(IChannel* channel, const RemoteAudioStats& stats) override {
 			call(onRemoteAudioStatsEvent, channel, stats);
 		}
 
-		virtual void onRemoteAudioStateChanged(IChannel* channel, uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override {
+		void onRemoteAudioStateChanged(IChannel* channel, uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override {
 			call(onRemoteAudioStateChangedEvent, channel, uid, state, reason, elapsed);
 		}
 
-		virtual void onActiveSpeaker(IChannel* channel, uid_t uid) {
+		void onActiveSpeaker(IChannel* channel, uid_t uid) {
 			call(onActiveSpeakerEvent, channel, uid);
 		}
 
-		virtual void onVideoSizeChanged(IChannel* channel, uid_t uid, int width, int height, int rotation) override {
+		void onVideoSizeChanged(IChannel* channel, uid_t uid, int width, int height, int rotation) override {
 			call(onVideoSizeChangedEvent, channel, uid, width, height, rotation);
 		}
 
-		virtual void onRemoteVideoStateChanged(IChannel* channel, uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override {
+		void onRemoteVideoStateChanged(IChannel* channel, uid_t uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed) override {
 			call(onRemoteVideoStateChangedEvent, channel, uid, state, reason, elapsed);
 		}
 
-		virtual void onStreamMessage(IChannel* channel, uid_t uid, int streamId, const char* data, size_t length) override {
+		void onStreamMessage(IChannel* channel, uid_t uid, int streamId, const char* data, size_t length) override {
 			call(onStreamMessageEvent, channel, uid, streamId, data, length);
 		}
 
-		virtual void onStreamMessageError(IChannel* channel, uid_t uid, int streamId, int code, int missed, int cached) override {
+		void onStreamMessageError(IChannel* channel, uid_t uid, int streamId, int code, int missed, int cached) override {
 			call(onStreamMessageErrorEvent, channel, uid, streamId, code, missed, cached);
 		}
 
-		virtual void onChannelMediaRelayStateChanged(IChannel* channel, CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR code) override {
+		void onChannelMediaRelayStateChanged(IChannel* channel, CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR code) override {
 			call(onChannelMediaRelayStateChangedEvent, channel, state, code);
 		}
 
-		virtual void onChannelMediaRelayEvent(IChannel* channel, CHANNEL_MEDIA_RELAY_EVENT code) override {
+		void onChannelMediaRelayEvent(IChannel* channel, CHANNEL_MEDIA_RELAY_EVENT code) override {
 			call(onChannelMediaRelayEventEvent, channel, code);
 		}
 
-		virtual void onRtmpStreamingStateChanged(IChannel* channel, const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR code) override {
+		void onRtmpStreamingStateChanged(IChannel* channel, const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR code) override {
 			call(onRtmpStreamingStateChangedEvent, channel, url, state, code);
 		}
 
-		virtual void onTranscodingUpdated(IChannel* channel) override {
+		void onTranscodingUpdated(IChannel* channel) override {
 			call(onTranscodingUpdatedEvent, channel);
 		}
 
-		virtual void onStreamInjectedStatus(IChannel* channel, const char* url, uid_t uid, int status) override {
+		void onStreamInjectedStatus(IChannel* channel, const char* url, uid_t uid, int status) override {
 			call(onStreamInjectedStatusEvent, channel, url, uid, status);
 		}
 
-		virtual void onRemoteSubscribeFallbackToAudioOnly(IChannel* channel, uid_t uid, bool isFallbackOrRecover) override {
+		void onRemoteSubscribeFallbackToAudioOnly(IChannel* channel, uid_t uid, bool isFallbackOrRecover) override {
 			call(onRemoteSubscribeFallbackToAudioOnlyEvent, channel, uid, isFallbackOrRecover);
 		}
 
-		virtual void onConnectionStateChanged(IChannel* channel, CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override {
+		void onConnectionStateChanged(IChannel* channel, CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason) override {
 			call(onConnectionStateChangedEvent, channel, state, reason);
 		}
 
