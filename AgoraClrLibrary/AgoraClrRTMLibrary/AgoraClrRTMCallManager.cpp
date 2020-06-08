@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "AgoraClrRTMCallManager.h"
+using namespace AgoraClrLibrary;
 
-AgoraClrLibrary::AgoraClrRTMCallManager::AgoraClrRTMCallManager(IRtmService* service)
+AgoraClrRTMCallManager::AgoraClrRTMCallManager(IRtmService* service)
 {
 	this->service = service;
 	this->events = new AgoraClrRTMCallEventHandler();
@@ -9,7 +10,7 @@ AgoraClrLibrary::AgoraClrRTMCallManager::AgoraClrRTMCallManager(IRtmService* ser
 	this->manager = service->getRtmCallManager(this->events);
 }
 
-AgoraClrLibrary::AgoraClrRTMCallManager::~AgoraClrRTMCallManager()
+AgoraClrRTMCallManager::~AgoraClrRTMCallManager()
 {
 	this->manager->release();
 	delete this->events;
@@ -17,17 +18,17 @@ AgoraClrLibrary::AgoraClrRTMCallManager::~AgoraClrRTMCallManager()
 	gchs->Clear();
 }
 
-int AgoraClrLibrary::AgoraClrRTMCallManager::acceptRemoteInvitation(ClrRemoteCallInvitation^ rci)
+int AgoraClrRTMCallManager::acceptRemoteInvitation(ClrRemoteCallInvitation^ rci)
 {
 	return manager->acceptRemoteInvitation(rci);
 }
 
-int AgoraClrLibrary::AgoraClrRTMCallManager::refuseRemoteInvitation(ClrRemoteCallInvitation^ rci)
+int AgoraClrRTMCallManager::refuseRemoteInvitation(ClrRemoteCallInvitation^ rci)
 {
 	return manager->refuseRemoteInvitation(rci);
 }
 
-int AgoraClrLibrary::AgoraClrRTMCallManager::sendLocalInvitation(ClrLocalCallInvation^ lci)
+int AgoraClrRTMCallManager::sendLocalInvitation(ClrLocalCallInvation^ lci)
 {
 	auto ilci = lci->toILCI(manager);
 	int result = manager->sendLocalInvitation(ilci);
@@ -35,7 +36,7 @@ int AgoraClrLibrary::AgoraClrRTMCallManager::sendLocalInvitation(ClrLocalCallInv
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTMCallManager::cancelLocalInvitation(ClrLocalCallInvation^ lci)
+int AgoraClrRTMCallManager::cancelLocalInvitation(ClrLocalCallInvation^ lci)
 {
 	auto ilci = lci->toILCI(manager);
 	int result = manager->cancelLocalInvitation(ilci);
@@ -43,65 +44,65 @@ int AgoraClrLibrary::AgoraClrRTMCallManager::cancelLocalInvitation(ClrLocalCallI
 	return result;
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnLocalInvitationReceivedByPeer(ILocalCallInvitation* lci)
+void AgoraClrRTMCallManager::NativeOnLocalInvitationReceivedByPeer(ILocalCallInvitation* lci)
 {
 	if (onLocalInvitationReceivedByPeer) onLocalInvitationReceivedByPeer(gcnew ClrLocalCallInvation(lci));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnLocalInvitationAccepted(ILocalCallInvitation* lci, const char* response)
+void AgoraClrRTMCallManager::NativeOnLocalInvitationAccepted(ILocalCallInvitation* lci, const char* response)
 {
 	if (onLocalInvitationAccepted) onLocalInvitationAccepted(gcnew ClrLocalCallInvation(lci), gcnew String(response));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnLocalInvitationCanceled(ILocalCallInvitation* lci)
+void AgoraClrRTMCallManager::NativeOnLocalInvitationCanceled(ILocalCallInvitation* lci)
 {
 	if (onLocalInvitationCanceled)
 		onLocalInvitationCanceled(gcnew ClrLocalCallInvation(lci));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnLocalInvitationFailure(ILocalCallInvitation* lci, LOCAL_INVITATION_ERR_CODE code)
+void AgoraClrRTMCallManager::NativeOnLocalInvitationFailure(ILocalCallInvitation* lci, LOCAL_INVITATION_ERR_CODE code)
 {
 	if (onLocalInvitationFailure)
 		onLocalInvitationFailure(gcnew ClrLocalCallInvation(lci), static_cast<EnumLocalInvitationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnLocalInvitationRefused(ILocalCallInvitation* lci, const char* response)
+void AgoraClrRTMCallManager::NativeOnLocalInvitationRefused(ILocalCallInvitation* lci, const char* response)
 {
 	if (onLocalInvitationRefused)
 		onLocalInvitationRefused(gcnew ClrLocalCallInvation(lci), gcnew String(response));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnRemoteInvitationRefused(IRemoteCallInvitation* rci)
+void AgoraClrRTMCallManager::NativeOnRemoteInvitationRefused(IRemoteCallInvitation* rci)
 {
 	if (onRemoteInvitationRefused)
 		onRemoteInvitationRefused(gcnew ClrRemoteCallInvitation(rci));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnRemoteInvitationAccepted(IRemoteCallInvitation* rci)
+void AgoraClrRTMCallManager::NativeOnRemoteInvitationAccepted(IRemoteCallInvitation* rci)
 {
 	if (onRemoteInvitationAccepted)
 		onRemoteInvitationAccepted(gcnew ClrRemoteCallInvitation(rci));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnRemoteInvitationReceived(IRemoteCallInvitation* rci)
+void AgoraClrRTMCallManager::NativeOnRemoteInvitationReceived(IRemoteCallInvitation* rci)
 {
 	if (onRemoteInvitationReceived)
 		onRemoteInvitationReceived(gcnew ClrRemoteCallInvitation(rci));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnRemoteInvitationFailure(IRemoteCallInvitation* rci, REMOTE_INVITATION_ERR_CODE code)
+void AgoraClrRTMCallManager::NativeOnRemoteInvitationFailure(IRemoteCallInvitation* rci, REMOTE_INVITATION_ERR_CODE code)
 {
 	if (onRemoteInvitationFailure)
 		onRemoteInvitationFailure(gcnew ClrRemoteCallInvitation(rci), static_cast<EnumRemoteInvitationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::NativeOnRemoteInvitationCanceled(IRemoteCallInvitation* rci)
+void AgoraClrRTMCallManager::NativeOnRemoteInvitationCanceled(IRemoteCallInvitation* rci)
 {
 	if (onRemoteInvitationCanceled)
 		onRemoteInvitationCanceled(gcnew ClrRemoteCallInvitation(rci));
 }
 
-void AgoraClrLibrary::AgoraClrRTMCallManager::bindEvents()
+void AgoraClrRTMCallManager::bindEvents()
 {
 	regEvent(events->onLocalInvitationReceivedByPeerEvent, gcnew OnLocalInvitationReceivedByPeerType::Type(this, &AgoraClrRTMCallManager::NativeOnLocalInvitationReceivedByPeer));
 	regEvent(events->onLocalInvitationAcceptedEvent, gcnew OnLocalInvitationAcceptedType::Type(this, &AgoraClrRTMCallManager::NativeOnLocalInvitationAccepted));

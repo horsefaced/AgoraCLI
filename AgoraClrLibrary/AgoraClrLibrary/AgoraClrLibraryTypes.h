@@ -159,12 +159,12 @@ namespace AgoraClrLibrary {
 			rendererOutputFrameRate(stats.rendererOutputFrameRate),
 			targetBitrate(stats.targetBitrate),
 			targetFrameRate(stats.targetFrameRate),
-			qualityAdaptIndication((QualityAdaptIndication)stats.qualityAdaptIndication),
+			qualityAdaptIndication(static_cast<QualityAdaptIndication>(stats.qualityAdaptIndication)),
 			encodedBitrate(stats.encodedBitrate),
 			encodedFrameWidth(stats.encodedFrameWidth),
 			encodedFrameHeight(stats.encodedFrameHeight),
 			encodedFrameCount(stats.encodedFrameCount),
-			codecType((VideoCodecType)stats.codecType)
+			codecType(static_cast<VideoCodecType>(stats.codecType))
 		{}
 	};
 
@@ -185,6 +185,7 @@ namespace AgoraClrLibrary {
 
 		int totalFrozenTime;
 		int frozenRate;
+		int totalActiveTime;
 
 		ClrRemoteVideoStats(agora::rtc::RemoteVideoStats stats)
 		{
@@ -197,10 +198,11 @@ namespace AgoraClrLibrary {
 			rendererOutputFrameRate = stats.rendererOutputFrameRate;
 			packedLossRate = stats.packetLossRate;
 
-			rxStreamType = (EnumRemoteVideoStreamType)stats.rxStreamType;
+			rxStreamType = static_cast<EnumRemoteVideoStreamType>(stats.rxStreamType);
 
 			totalFrozenTime = stats.totalFrozenTime;
 			frozenRate = stats.frozenRate;
+			totalActiveTime = stats.totalActiveTime;
 		}
 	};
 
@@ -223,7 +225,7 @@ namespace AgoraClrLibrary {
 			void* tmp = malloc(size);
 			Marshal::Copy(buffer, 0, IntPtr(tmp), buffer->Length);
 			delete packet.buffer;
-			packet.buffer = reinterpret_cast<unsigned char*>(tmp);
+			packet.buffer = static_cast<unsigned char*>(tmp);
 			packet.size = buffer->Length;
 		}
 	};
@@ -259,7 +261,7 @@ namespace AgoraClrLibrary {
 		void writeRaw(agora::media::IAudioFrameObserver::AudioFrame& raw)
 		{
 			bool sizeModified = (samples * bytesPerSample) != (raw.samples * raw.bytesPerSample);
-			raw.type = (agora::media::IAudioFrameObserver::AUDIO_FRAME_TYPE)type;
+			raw.type = static_cast<agora::media::IAudioFrameObserver::AUDIO_FRAME_TYPE>(type);
 			raw.samples = samples;
 			raw.bytesPerSample = bytesPerSample;
 			raw.channels = channels;
@@ -582,7 +584,7 @@ namespace AgoraClrLibrary {
 			raw.videoGop = videoGop;
 			raw.videoFramerate = videoFramerate;
 			raw.videoBitrate = videoBitrate;
-			raw.audioSampleRate = (AUDIO_SAMPLE_RATE_TYPE)audioSampleRate;
+			raw.audioSampleRate = static_cast<AUDIO_SAMPLE_RATE_TYPE>(audioSampleRate);
 			raw.audioBitrate = audioBitrate;
 			raw.audioChannels = audioChannels;
 			return raw;
@@ -682,12 +684,12 @@ namespace AgoraClrLibrary {
 		operator VideoEncoderConfiguration() {
 			VideoEncoderConfiguration raw;
 			raw.dimensions = VideoDimensions(dimensions->width, dimensions->height);
-			raw.frameRate = (FRAME_RATE)frameRate;
+			raw.frameRate = static_cast<FRAME_RATE>(frameRate);
 			raw.minFrameRate = minFrameRate;
 			raw.bitrate = bitrate;
 			raw.minBitrate = minBitrate;
-			raw.orientationMode = (ORIENTATION_MODE)orientationMode;
-			raw.degradationPreference = (DEGRADATION_PREFERENCE)degradationPreference;
+			raw.orientationMode = static_cast<ORIENTATION_MODE>(orientationMode);
+			raw.degradationPreference = static_cast<DEGRADATION_PREFERENCE>(degradationPreference);
 			raw.mirrorMode = static_cast<VIDEO_MIRROR_MODE_TYPE>(mirrorMode);
 			return raw;
 		}
@@ -759,6 +761,7 @@ namespace AgoraClrLibrary {
 		int receivedBitrate;
 		int totalFrozenTime;
 		int frozenRate;
+		int totalActiveTime;
 
 		ClrRemoteAudioStats() {}
 
@@ -772,7 +775,9 @@ namespace AgoraClrLibrary {
 			receivedSampleRate(raw.receivedSampleRate),
 			receivedBitrate(raw.receivedBitrate),
 			totalFrozenTime(raw.totalFrozenTime),
-			frozenRate(raw.frozenRate)
+			frozenRate(raw.frozenRate),
+			totalActiveTime(raw.totalActiveTime)
+		
 		{
 		}
 
@@ -788,6 +793,7 @@ namespace AgoraClrLibrary {
 			raw.receivedBitrate = receivedBitrate;
 			raw.totalFrozenTime = totalFrozenTime;
 			raw.frozenRate = frozenRate;
+			raw.totalActiveTime = totalActiveTime;
 		}
 	};
 

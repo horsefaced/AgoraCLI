@@ -16,8 +16,8 @@
 #include <string>
 
 using namespace System;
-using namespace System::Runtime::InteropServices;
-using namespace System::Collections::Generic;
+using namespace Runtime::InteropServices;
+using namespace Collections::Generic;
 using namespace agora::rtc;
 
 namespace AgoraClrLibrary
@@ -36,7 +36,7 @@ namespace AgoraClrLibrary
 		void release();
 		int setChannelProfile(ChannelProfile profile);
 		int setClientRole(ClientRoleType role);
-		int joinChannel(String^ token, String^ channelName, String^ channelInfo, int uid);
+		int joinChannel(String^ token, String^ channelName, String^ channelInfo, UINT uid);
 		int switchChannel(String^ token, String^ channelId);
 		int leaveChannel();
 		int renewToken(String^ token);
@@ -161,6 +161,7 @@ namespace AgoraClrLibrary
 		int pauseAllEffects();
 		int resumeEffect(int soundId);
 		int resumeAllEffects();
+		int setAudioMixingPitch(int pitch);
 
 		//音效文件播放管理事件
 		onAudioEffectFinished^ onAudioEffectFinished;
@@ -258,10 +259,14 @@ namespace AgoraClrLibrary
 		onCaptureVideoFrame^ onCaptureVideoFrame;
 		onPreEncodeVideoFrame^ onPreEncodeVideoFrame;
 		onRenderVideoFrame^ onRenderVideoFrame;
+		onRenderVideoFrameEx^ onRenderVideoFrameEx;
 		property bool IsSmoothRenderingEnabled;
 		property VideoFrameType VideoFormatPreference;
 		property bool IsVideoRotationApplied;
 		property bool IsVideoMirrorApplied;
+		property bool IsMultipleChannelVideoFrameWanted;
+		property bool IsMultipleChannelAudioFrameWanted;
+		property UINT ObservedVideoFramePosition;
 
 		//媒体附属信息
 		property int MaxMetadataSize;
@@ -366,7 +371,8 @@ namespace AgoraClrLibrary
 
 		AgoraClrEventHandler* agoraEventHandler;
 		AgoraClrPacketObserver* agoraPacketObserver;
-		AgoraClrRawFrameObserver* agoraRawObserver;
+		AgoraClrAudioFrameObserver* agoraAudioObserver;
+		AgoraClrVideoFrameObserver* agoraVideoObserver;
 		AgoraClrMetadataObserver* agoraMetadataObserver;
 
 		agora::media::IMediaEngine* agoraMediaEngine;
@@ -452,9 +458,14 @@ namespace AgoraClrLibrary
 		bool NativeOnPreEncodeVideoFrame(agora::media::IVideoFrameObserver::VideoFrame& frame);
 		bool NativeOnGetSmoothRenderingEnabled();
 		bool NativeOnRenderVideoFrame(uid_t uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
+		bool NativeOnRenderVideoFrameEx(const char* channelId,uid_t uid, agora::media::IVideoFrameObserver::VideoFrame& frame);
 		IVideoFrameObserver::VIDEO_FRAME_TYPE NativeOnGetVideoFormatPreference();
 		bool NativeOnGetRotationApplied();
 		bool NativeOnGetMirrorApplied();
+		bool NativeIsMultipleChannelVideoFrameWanted();
+		bool NativeIsMultipleChannelAudioFrameWanted();
+		UINT NativeObservedVideoFramePosition();
+		
 
 		void NativeOnNetworkTypeChanged(agora::rtc::NETWORK_TYPE type);
 		void NativeOnLocalAudioStateChanged(agora::rtc::LOCAL_AUDIO_STREAM_STATE state, agora::rtc::LOCAL_AUDIO_STREAM_ERROR error);

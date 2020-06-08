@@ -3,73 +3,109 @@
 
 using namespace AgoraClrLibrary;
 
-AgoraClrRawFrameObserver::AgoraClrRawFrameObserver()
+AgoraClrAudioFrameObserver::AgoraClrAudioFrameObserver()
 {
 
 }
 
-bool AgoraClrRawFrameObserver::onRecordAudioFrame(AudioFrame & audioFrame)
+bool AgoraClrAudioFrameObserver::onRecordAudioFrame(AudioFrame & audioFrame)
 {
 	if (onRecordAudioFrameEvent) return onRecordAudioFrameEvent(audioFrame);
-	else return true;
+	return true;
 }
 
-bool AgoraClrRawFrameObserver::onPlaybackAudioFrame(AudioFrame & audioFrame)
+bool AgoraClrAudioFrameObserver::onPlaybackAudioFrame(AudioFrame & audioFrame)
 {
 	if (onPlaybackAudioFrameEvent) return onPlaybackAudioFrameEvent(audioFrame);
-	else return true;
+	return true;
 }
 
-bool AgoraClrLibrary::AgoraClrRawFrameObserver::onMixedAudioFrame(AudioFrame & audioFrame)
+bool AgoraClrAudioFrameObserver::onMixedAudioFrame(AudioFrame & audioFrame)
 {
 	if (onMixedAudioFrameEvent) return onMixedAudioFrameEvent(audioFrame);
-	else return false;
+	return false;
 }
 
-bool AgoraClrRawFrameObserver::onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame & audioFrame)
+bool AgoraClrAudioFrameObserver::onPlaybackAudioFrameBeforeMixing(unsigned int uid, AudioFrame & audioFrame)
 {
 	if (onPlaybackAudioFrameBeforeMixingEvent) return onPlaybackAudioFrameBeforeMixingEvent(uid, audioFrame);
-	else return true;
+	return true;
 }
 
-bool AgoraClrRawFrameObserver::onCaptureVideoFrame(VideoFrame & videoFrame)
+bool AgoraClrAudioFrameObserver::isMultipleChannelFrameWanted()
+{
+	if (isMultipleChannelFrameWantedEvent) return isMultipleChannelFrameWantedEvent();
+	return false;
+}
+
+bool AgoraClrAudioFrameObserver::onPlaybackAudioFrameBeforeMixingEx(const char* channelId, unsigned uid,
+	AudioFrame& audioFrame)
+{
+	if (onPlaybackAudioFrameBeforeMixingExEvent) return onPlaybackAudioFrameBeforeMixingExEvent(channelId,uid, audioFrame);
+	return true;
+}
+
+AgoraClrVideoFrameObserver::AgoraClrVideoFrameObserver()
+{
+}
+bool AgoraClrVideoFrameObserver::onCaptureVideoFrame(VideoFrame & videoFrame)
 {
 	if (onCaptureVideoFrameEvent) return onCaptureVideoFrameEvent(videoFrame);
-	else return true;
+	return true;
 }
 
-bool AgoraClrLibrary::AgoraClrRawFrameObserver::onPreEncodeVideoFrame(VideoFrame& videoFrame)
+bool AgoraClrVideoFrameObserver::onPreEncodeVideoFrame(VideoFrame& videoFrame)
 {
 	if (onPreEncodeVideoFrameEvent) return onPreEncodeVideoFrameEvent(videoFrame);
-	else return true;
+	return true;
 }
 
-bool AgoraClrLibrary::AgoraClrRawFrameObserver::getSmoothRenderingEnabled()
+bool AgoraClrVideoFrameObserver::getSmoothRenderingEnabled()
 {
 	if (getSmoothRenderingEnabledEvent) return getSmoothRenderingEnabledEvent();
-	else return false;
+	return false;
 }
 
-bool AgoraClrRawFrameObserver::onRenderVideoFrame(unsigned int uid, VideoFrame & videoFrame)
+bool AgoraClrVideoFrameObserver::onRenderVideoFrame(unsigned int uid, VideoFrame & videoFrame)
 {
 	if (onRenderVideoFrameEvent) return onRenderVideoFrameEvent(uid, videoFrame);
-	else return true;
+	return true;
 }
 
-agora::media::IVideoFrameObserver::VIDEO_FRAME_TYPE AgoraClrLibrary::AgoraClrRawFrameObserver::getVideoFormatPreference()
+agora::media::IVideoFrameObserver::VIDEO_FRAME_TYPE AgoraClrVideoFrameObserver::getVideoFormatPreference()
 {
-	if (onGetVideoFormatePreferenceEvent) return onGetVideoFormatePreferenceEvent();
-	else return FRAME_TYPE_YUV420;
+	if (onGetVideoFormatPreferenceEvent) return onGetVideoFormatPreferenceEvent();
+	return FRAME_TYPE_YUV420;
 }
 
-bool AgoraClrLibrary::AgoraClrRawFrameObserver::getRotationApplied()
+bool AgoraClrVideoFrameObserver::getRotationApplied()
 {
 	if (onGetRotationAppliedEvent) return onGetRotationAppliedEvent();
-	else return false;
+	return false;
 }
 
-bool AgoraClrLibrary::AgoraClrRawFrameObserver::getMirrorApplied()
+bool AgoraClrVideoFrameObserver::getMirrorApplied()
 {
 	if (onGetMirrorAppliedEvent) return onGetMirrorAppliedEvent();
-	else return false;
+	return false;
 }
+
+bool AgoraClrVideoFrameObserver::isMultipleChannelFrameWanted()
+{
+	if (isMultipleChannelFrameWantedEvent) return isMultipleChannelFrameWantedEvent();
+	return false;
+}
+
+bool AgoraClrVideoFrameObserver::onRenderVideoFrameEx(const char* channelId, unsigned uid, VideoFrame& videoFrame)
+{
+	if (onRenderVideoFrameExEvent) return onRenderVideoFrameExEvent(channelId,uid, videoFrame);
+	return true;
+}
+
+UINT AgoraClrVideoFrameObserver::getObservedFramePosition()
+{
+	if (getObservedFramePositionEvent) return getObservedFramePositionEvent();
+	return static_cast<uint32_t>(POSITION_POST_CAPTURER | POSITION_PRE_RENDERER);
+}
+
+

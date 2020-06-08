@@ -173,6 +173,7 @@ namespace AgoraClrLibrary {
 		delegate bool onGetSmoothRenderingEnabled();
 	public
 		delegate bool onRenderVideoFrame(int uid, ClrVideoFrame^ frame);
+	public delegate bool onRenderVideoFrameEx(String^channelId,int uid, ClrVideoFrame^ frame);
 
 	public
 		delegate void onNetworkTypeChanged(NetworkType type);

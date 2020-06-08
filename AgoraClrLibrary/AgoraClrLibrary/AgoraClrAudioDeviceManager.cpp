@@ -11,22 +11,22 @@ ClrAudioDeviceCollection::ClrAudioDeviceCollection(IAudioDeviceCollection* rawCo
 
 }
 
-AgoraClrLibrary::ClrAudioDeviceCollection::~ClrAudioDeviceCollection()
+ClrAudioDeviceCollection::~ClrAudioDeviceCollection()
 {
 	this->release();
 	this->!ClrAudioDeviceCollection();
 }
 
-AgoraClrLibrary::ClrAudioDeviceCollection::!ClrAudioDeviceCollection()
+ClrAudioDeviceCollection::!ClrAudioDeviceCollection()
 {
 }
 
-int AgoraClrLibrary::ClrAudioDeviceCollection::getCount()
+int ClrAudioDeviceCollection::getCount()
 {
 	return raw->getCount();
 }
 
-int AgoraClrLibrary::ClrAudioDeviceCollection::getDevice(int index, String ^% deviceName, String ^% deviceId)
+int ClrAudioDeviceCollection::getDevice(int index, String ^% deviceName, String ^% deviceId)
 {
 	char deviceNameBuffer[MAX_DEVICE_ID_LENGTH] = { 0 }; 
 	char deviceIdBuffer[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -37,17 +37,17 @@ int AgoraClrLibrary::ClrAudioDeviceCollection::getDevice(int index, String ^% de
 	//	return raw->getDevice(index, const_cast<char*>(MarshalString(deviceName).c_str()), const_cast<char*>(MarshalString(deviceId).c_str()));
 }
 
-int AgoraClrLibrary::ClrAudioDeviceCollection::setDevice(String ^ deviceId)
+int ClrAudioDeviceCollection::setDevice(String ^ deviceId)
 {
 	return raw->setDevice(MarshalString(deviceId).c_str());
 }
 
-int AgoraClrLibrary::ClrAudioDeviceCollection::setApplicationVolume(int volume)
+int ClrAudioDeviceCollection::setApplicationVolume(int volume)
 {
 	return raw->setApplicationVolume(volume);
 }
 
-int AgoraClrLibrary::ClrAudioDeviceCollection::getApplicationVolume(int% volume)
+int ClrAudioDeviceCollection::getApplicationVolume(int% volume)
 {
 	int vol;
 	int result = raw->getApplicationVolume(vol);
@@ -55,12 +55,12 @@ int AgoraClrLibrary::ClrAudioDeviceCollection::getApplicationVolume(int% volume)
 	return result;
 }
 
-int AgoraClrLibrary::ClrAudioDeviceCollection::setApplicationMute(bool mute)
+int ClrAudioDeviceCollection::setApplicationMute(bool mute)
 {
 	return raw->setApplicationMute(mute);
 }
 
-int AgoraClrLibrary::ClrAudioDeviceCollection::isApplicationMute(bool% mute)
+int ClrAudioDeviceCollection::isApplicationMute(bool% mute)
 {
 	bool mu;
 	int result = raw->isApplicationMute(mu);
@@ -68,47 +68,47 @@ int AgoraClrLibrary::ClrAudioDeviceCollection::isApplicationMute(bool% mute)
 	return result;
 }
 
-void AgoraClrLibrary::ClrAudioDeviceCollection::release()
+void ClrAudioDeviceCollection::release()
 {
 	raw->release();
 }
 
-AgoraClrLibrary::AgoraClrAudioDeviceManager::AgoraClrAudioDeviceManager(IRtcEngine* engine)
+AgoraClrAudioDeviceManager::AgoraClrAudioDeviceManager(IRtcEngine* engine)
 {
 	this->engine = engine;
 }
 
-ClrAudioDeviceCollection ^ AgoraClrLibrary::AgoraClrAudioDeviceManager::enumeratePlaybackDevices()
+ClrAudioDeviceCollection ^ AgoraClrAudioDeviceManager::enumeratePlaybackDevices()
 {
 	AAudioDeviceManager manager(engine);
 	return gcnew ClrAudioDeviceCollection(manager->enumeratePlaybackDevices());
 }
 
-ClrAudioDeviceCollection ^ AgoraClrLibrary::AgoraClrAudioDeviceManager::enumerateRecordingDevices()
+ClrAudioDeviceCollection ^ AgoraClrAudioDeviceManager::enumerateRecordingDevices()
 {
 	AAudioDeviceManager manager(engine);
 	return gcnew ClrAudioDeviceCollection(manager->enumerateRecordingDevices());
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::setPlaybackDevice(String ^ deviceId)
+int AgoraClrAudioDeviceManager::setPlaybackDevice(String ^ deviceId)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->setPlaybackDevice(MarshalString(deviceId).c_str());
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::setRecordingDevice(String ^ deviceId)
+int AgoraClrAudioDeviceManager::setRecordingDevice(String ^ deviceId)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->setRecordingDevice(MarshalString(deviceId).c_str());
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::setPlaybackDeviceVolume(int volume)
+int AgoraClrAudioDeviceManager::setPlaybackDeviceVolume(int volume)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->setPlaybackDeviceVolume(volume);
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDeviceVolume(int % volume)
+int AgoraClrAudioDeviceManager::getPlaybackDeviceVolume(int % volume)
 {
 	int v;
 	AAudioDeviceManager manager(engine);
@@ -117,13 +117,13 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDeviceVolume(int % v
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::setRecordingDeviceVolume(int volume)
+int AgoraClrAudioDeviceManager::setRecordingDeviceVolume(int volume)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->setRecordingDeviceVolume(volume);
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDeviceVolume(int % volume)
+int AgoraClrAudioDeviceManager::getRecordingDeviceVolume(int % volume)
 {
 	int v, result;
 	AAudioDeviceManager manager(engine);
@@ -132,13 +132,13 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDeviceVolume(int % 
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::setPlaybackDeviceMute(bool mute)
+int AgoraClrAudioDeviceManager::setPlaybackDeviceMute(bool mute)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->setPlaybackDeviceMute(mute);
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDeviceMute(bool % mute)
+int AgoraClrAudioDeviceManager::getPlaybackDeviceMute(bool % mute)
 {
 	bool m;
 	AAudioDeviceManager manager(engine);
@@ -147,13 +147,13 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDeviceMute(bool % mu
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::setRecordingDeviceMute(bool mute)
+int AgoraClrAudioDeviceManager::setRecordingDeviceMute(bool mute)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->setRecordingDeviceMute(mute);
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDeviceMute(bool & mute)
+int AgoraClrAudioDeviceManager::getRecordingDeviceMute(bool & mute)
 {
 	bool m;
 	AAudioDeviceManager manager(engine);
@@ -162,31 +162,31 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDeviceMute(bool & m
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::startPlaybackDeviceTest(String ^ path)
+int AgoraClrAudioDeviceManager::startPlaybackDeviceTest(String ^ path)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->startPlaybackDeviceTest(MarshalString(path).c_str());
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::stopPlaybackDeviceTest()
+int AgoraClrAudioDeviceManager::stopPlaybackDeviceTest()
 {
 	AAudioDeviceManager manager(engine);
 	return manager->stopPlaybackDeviceTest();
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::startRecordingDeviceTest(int indicationInterval)
+int AgoraClrAudioDeviceManager::startRecordingDeviceTest(int indicationInterval)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->startRecordingDeviceTest(indicationInterval);
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::stopRecordingDeviceTest()
+int AgoraClrAudioDeviceManager::stopRecordingDeviceTest()
 {
 	AAudioDeviceManager manager(engine);
 	return manager->stopRecordingDeviceTest();
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDevice(String^% deviceId)
+int AgoraClrAudioDeviceManager::getPlaybackDevice(String^% deviceId)
 {
 	AAudioDeviceManager manager(engine);
 	char tmp[MAX_DEVICE_ID_LENGTH];
@@ -196,7 +196,7 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDevice(String^% devi
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDeviceInfo(String^% deviceId, String^% deviceName)
+int AgoraClrAudioDeviceManager::getPlaybackDeviceInfo(String^% deviceId, String^% deviceName)
 {
 	AAudioDeviceManager manager(engine);
 	char tmpId[MAX_DEVICE_ID_LENGTH];
@@ -213,7 +213,7 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::getPlaybackDeviceInfo(String^% 
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDevice(String^% deviceId)
+int AgoraClrAudioDeviceManager::getRecordingDevice(String^% deviceId)
 {
 	AAudioDeviceManager manager(engine);
 	char tmpId[MAX_DEVICE_ID_LENGTH];
@@ -223,7 +223,7 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDevice(String^% dev
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDeviceInfo(String^% deviceId, String^% deviceName)
+int AgoraClrAudioDeviceManager::getRecordingDeviceInfo(String^% deviceId, String^% deviceName)
 {
 	AAudioDeviceManager manager(engine);
 	char tmpId[MAX_DEVICE_ID_LENGTH];
@@ -240,13 +240,13 @@ int AgoraClrLibrary::AgoraClrAudioDeviceManager::getRecordingDeviceInfo(String^%
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::startAudioDeviceLoopbackTest(int interval)
+int AgoraClrAudioDeviceManager::startAudioDeviceLoopbackTest(int interval)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->startAudioDeviceLoopbackTest(interval);
 }
 
-int AgoraClrLibrary::AgoraClrAudioDeviceManager::stopAudioDeviceLoopbackTest()
+int AgoraClrAudioDeviceManager::stopAudioDeviceLoopbackTest()
 {
 	AAudioDeviceManager manager(engine);
 	return manager->stopAudioDeviceLoopbackTest();

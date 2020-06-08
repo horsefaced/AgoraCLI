@@ -9,9 +9,10 @@
 #include <tuple>
 
 using namespace msclr::interop;
-using namespace System::Collections::Generic;
+using namespace Collections::Generic;
+using namespace AgoraClrLibrary;
 
-AgoraClrLibrary::AgoraClrRTM::AgoraClrRTM() :
+AgoraClrRTM::AgoraClrRTM() :
 	service(createRtmService()),
 	rtmEvents(new AgoraClrRTMEventHandler()),
 	manager(nullptr),
@@ -20,7 +21,7 @@ AgoraClrLibrary::AgoraClrRTM::AgoraClrRTM() :
 	bindEventHandler();
 }
 
-AgoraClrLibrary::AgoraClrRTM::~AgoraClrRTM()
+AgoraClrRTM::~AgoraClrRTM()
 {
 	delete manager;
 	service->removeEventHandler(rtmEvents);
@@ -34,33 +35,33 @@ AgoraClrLibrary::AgoraClrRTM::~AgoraClrRTM()
 	appId = nullptr;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::initialize(String^ vendorkey)
+int AgoraClrRTM::initialize(String^ vendorkey)
 {
 	appId = vendorkey;
 	return service->initialize(marshal_as<std::string>(vendorkey).c_str(), rtmEvents);
 }
 
-int AgoraClrLibrary::AgoraClrRTM::login(String^ userId)
+int AgoraClrRTM::login(String^ userId)
 {
 	const auto token = appId;
 	return service->login(marshal_as<std::string>(token).c_str(), marshal_as<std::string>(userId).c_str());
 }
-int AgoraClrLibrary::AgoraClrRTM::login(String^ token, String^ userId)
+int AgoraClrRTM::login(String^ token, String^ userId)
 {
 	return service->login(marshal_as<std::string>(token).c_str(), marshal_as<std::string>(userId).c_str());
 }
 
-int AgoraClrLibrary::AgoraClrRTM::logout()
+int AgoraClrRTM::logout()
 {
 	return service->logout();
 }
 
-AgoraClrLibrary::ClrMessage^ AgoraClrLibrary::AgoraClrRTM::createMessage()
+ClrMessage^ AgoraClrRTM::createMessage()
 {
 	return gcnew ClrMessage();
 }
 
-int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, String^ msg)
+int AgoraClrRTM::sendMessageToPeer(String^ peerId, String^ msg)
 {
 	try
 	{
@@ -81,50 +82,60 @@ int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, String^ msg)
 		return FALSE;
 	}
 }
-int AgoraClrLibrary::AgoraClrRTM::sendMessageToPeer(String^ peerId, ClrMessage^ msg, ClrSendMessageOptions^ options)
+
+int AgoraClrRTM::sendMessageToPeer(String^ peerId, ClrMessage^ msg)
+{
+	const auto msgOption = gcnew ClrSendMessageOptions();
+		msgOption->enableHistoricalMessaging = false;
+		msgOption->enableOfflineMessaging = false;
+
+	return this->sendMessageToPeer(peerId,msg,msgOption);
+}
+
+int AgoraClrRTM::sendMessageToPeer(String^ peerId, ClrMessage^ msg, ClrSendMessageOptions^ options)
 {
 	IMessage* raw = msg->toMessage(service);
-	int result = service->sendMessageToPeer(marshal_as<std::string>(peerId).c_str(), raw, options);
+	const auto result = service->sendMessageToPeer(marshal_as<std::string>(peerId).c_str(), raw, options);
 	raw->release();
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::queryPeersOnlineStatus(List<String^>^ ids, long long% requestId)
+int AgoraClrRTM::queryPeersOnlineStatus(List<String^>^ ids, long long% requestId)
 {
 	AutoChars context(ids);
 	long long backId;
-	int result = service->queryPeersOnlineStatus(context.chars, context.count, backId);
+	const auto  result = service->queryPeersOnlineStatus(context.chars, context.count, backId);
 	requestId = backId;
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::subscribePeersOnlineStatus(List<String^>^ ids, long long% requestId)
+int AgoraClrRTM::subscribePeersOnlineStatus(List<String^>^ ids, long long% requestId)
 {
 	AutoChars context(ids);
 	long long tmpId;
-	int result = service->subscribePeersOnlineStatus(context.chars, context.count, tmpId);
+	const auto  result = service->subscribePeersOnlineStatus(context.chars, context.count, tmpId);
 	requestId = tmpId;
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::unsubscribePeersOnlineStatus(List<String^>^ ids, long long% requestId)
+int AgoraClrRTM::unsubscribePeersOnlineStatus(List<String^>^ ids, long long% requestId)
 {
 	AutoChars context(ids);
 	long long tmpId;
-	int result = service->unsubscribePeersOnlineStatus(context.chars, context.count, tmpId);
+	const auto  result = service->unsubscribePeersOnlineStatus(context.chars, context.count, tmpId);
 	requestId = tmpId;
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::queryPeersBySubscriptionOption(EnumPeerSubscriptionOption option, long long% requestId)
+int AgoraClrRTM::queryPeersBySubscriptionOption(EnumPeerSubscriptionOption option, long long% requestId)
 {
 	long long tmpId = requestId;
-	int result = service->queryPeersBySubscriptionOption(static_cast<PEER_SUBSCRIPTION_OPTION>(option), tmpId);
+	const auto  result = service->queryPeersBySubscriptionOption(static_cast<PEER_SUBSCRIPTION_OPTION>(option), tmpId);
 	requestId = tmpId;
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::addOrUpdateLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
+int AgoraClrRTM::addOrUpdateLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
 {
 
 	const int count = attributes->Count;
@@ -136,43 +147,43 @@ int AgoraClrLibrary::AgoraClrRTM::addOrUpdateLocalUserAttributes(List<ClrRtmAttr
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::deleteLocalUserAttributesByKeys(List<String^>^ keys, long long% requestId)
+int AgoraClrRTM::deleteLocalUserAttributesByKeys(List<String^>^ keys, long long% requestId)
 {
 	AutoChars context(keys);
 	long long tmpId;
-	int result = service->deleteLocalUserAttributesByKeys(context.chars, context.count, tmpId);
+	const auto  result = service->deleteLocalUserAttributesByKeys(context.chars, context.count, tmpId);
 	requestId = tmpId;
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::clearLocalUserAttributes(long long% requestId)
+int AgoraClrRTM::clearLocalUserAttributes(long long% requestId)
 {
 	long long tmpId;
-	int result = service->clearLocalUserAttributes(tmpId);
+	const auto  result = service->clearLocalUserAttributes(tmpId);
 	requestId = tmpId;
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::getUserAttributes(String^ userId, long long% requestId)
+int AgoraClrRTM::getUserAttributes(String^ userId, long long% requestId)
 {
 	long long tmpId;
-	int result = service->getUserAttributes(marshal_as<std::string>(userId).c_str(), tmpId);
+	const auto  result = service->getUserAttributes(marshal_as<std::string>(userId).c_str(), tmpId);
 	requestId = tmpId;
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::getUserAttributesByKeys(String^ userId, List<String^>^ keys, long long% requestId)
+int AgoraClrRTM::getUserAttributesByKeys(String^ userId, List<String^>^ keys, long long% requestId)
 {
 	AutoChars context(keys);
 
 	long long tmpId;
-	int result = service->getUserAttributesByKeys(context.marshal_as(userId), context.chars, context.count, tmpId);
+	const auto  result = service->getUserAttributesByKeys(context.marshal_as(userId), context.chars, context.count, tmpId);
 	requestId = tmpId;
 
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::setLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
+int AgoraClrRTM::setLocalUserAttributes(List<ClrRtmAttribute^>^ attributes, long long% requestId)
 {
 	long long tmpId;
 	const RtmAttribute* attrs = ClrRtmAttribute::createAttrs(attributes);
@@ -182,12 +193,12 @@ int AgoraClrLibrary::AgoraClrRTM::setLocalUserAttributes(List<ClrRtmAttribute^>^
 	return result;
 }
 
-AgoraClrLibrary::ClrRtmChannelAttribute^ AgoraClrLibrary::AgoraClrRTM::createChannelAttribute()
+ClrRtmChannelAttribute^ AgoraClrRTM::createChannelAttribute()
 {
 	return gcnew ClrRtmChannelAttribute();
 }
 
-int AgoraClrLibrary::AgoraClrRTM::addOrUpdateChannelAttributes(String^ channelId, List<ClrRtmChannelAttribute^>^ attributes, ClrChannelAttributeOptions^ options, long long% requestId)
+int AgoraClrRTM::addOrUpdateChannelAttributes(String^ channelId, List<ClrRtmChannelAttribute^>^ attributes, ClrChannelAttributeOptions^ options, long long% requestId)
 {
 	long long tmpId;
 	auto [tmpAttrs, count] = ClrRtmChannelAttribute::toArray(service, attributes);
@@ -204,7 +215,7 @@ int AgoraClrLibrary::AgoraClrRTM::addOrUpdateChannelAttributes(String^ channelId
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::deleteChannelAttributesByKeys(String^ channelId, List<String^>^ keys, ClrChannelAttributeOptions^ options, long long% requestId)
+int AgoraClrRTM::deleteChannelAttributesByKeys(String^ channelId, List<String^>^ keys, ClrChannelAttributeOptions^ options, long long% requestId)
 {
 	long long tmpId;
 	AutoChars context(keys);
@@ -217,7 +228,7 @@ int AgoraClrLibrary::AgoraClrRTM::deleteChannelAttributesByKeys(String^ channelI
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::clearChannelAttributes(String^ channelId, ClrChannelAttributeOptions^ options, long long% requestId)
+int AgoraClrRTM::clearChannelAttributes(String^ channelId, ClrChannelAttributeOptions^ options, long long% requestId)
 {
 	long long tmpId;
 	ChannelAttributeOptions tmpOptions;
@@ -230,7 +241,7 @@ int AgoraClrLibrary::AgoraClrRTM::clearChannelAttributes(String^ channelId, ClrC
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::getChannelAttributes(String^ channelId, long long% requestId)
+int AgoraClrRTM::getChannelAttributes(String^ channelId, long long% requestId)
 {
 	long long tmpId;
 	int result = service->getChannelAttributes(
@@ -240,7 +251,7 @@ int AgoraClrLibrary::AgoraClrRTM::getChannelAttributes(String^ channelId, long l
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::getChannelAttributesByKeys(String^ channelId, List<String^>^ keys, long long% requestId)
+int AgoraClrRTM::getChannelAttributesByKeys(String^ channelId, List<String^>^ keys, long long% requestId)
 {
 	AutoChars context(keys);
 	long long tmpId;
@@ -251,7 +262,7 @@ int AgoraClrLibrary::AgoraClrRTM::getChannelAttributesByKeys(String^ channelId, 
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::setChannelAttributes(String^ channelId, List<ClrRtmChannelAttribute^>^ attributes, ClrChannelAttributeOptions^ options, long long% requestId)
+int AgoraClrRTM::setChannelAttributes(String^ channelId, List<ClrRtmChannelAttribute^>^ attributes, ClrChannelAttributeOptions^ options, long long% requestId)
 {
 	long long tmpId;
 	auto [tmpAttrs, count] = ClrRtmChannelAttribute::toArray(service, attributes);
@@ -270,7 +281,7 @@ int AgoraClrLibrary::AgoraClrRTM::setChannelAttributes(String^ channelId, List<C
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::getChannelMemberCount(List<String^>^ ids, long long% requestId)
+int AgoraClrRTM::getChannelMemberCount(List<String^>^ ids, long long% requestId)
 {
 	AutoChars context(ids);
 	long long tmpId;
@@ -279,44 +290,44 @@ int AgoraClrLibrary::AgoraClrRTM::getChannelMemberCount(List<String^>^ ids, long
 	return result;
 }
 
-AgoraClrLibrary::AgoraClrRTMChannel^ AgoraClrLibrary::AgoraClrRTM::createChannel(String^ id)
+AgoraClrRTMChannel^ AgoraClrRTM::createChannel(String^ id)
 {
 	return gcnew AgoraClrRTMChannel(service, id);
 }
 
-AgoraClrLibrary::AgoraClrRTMCallManager^ AgoraClrLibrary::AgoraClrRTM::getRtmCallManager()
+AgoraClrRTMCallManager^ AgoraClrRTM::getRtmCallManager()
 {
 	if (manager == nullptr) manager = gcnew AgoraClrRTMCallManager(service);
 	return manager;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::renewToken(String^ token)
+int AgoraClrRTM::renewToken(String^ token)
 {
 	marshal_context context;
 	return service->renewToken(context.marshal_as<const char*>(token));
 }
 
-int AgoraClrLibrary::AgoraClrRTM::setLogFile(String^ file)
+int AgoraClrRTM::setLogFile(String^ file)
 {
 	return service->setLogFile(marshal_as<std::string>(file).c_str());
 }
 
-int AgoraClrLibrary::AgoraClrRTM::setLogFilter(EnumLogFilterType filter)
+int AgoraClrRTM::setLogFilter(EnumLogFilterType filter)
 {
 	return service->setLogFilter(static_cast<LOG_FILTER_TYPE>(filter));
 }
 
-int AgoraClrLibrary::AgoraClrRTM::setLogFileSize(int size)
+int AgoraClrRTM::setLogFileSize(int size)
 {
 	return service->setLogFileSize(size);
 }
 
-String^ AgoraClrLibrary::AgoraClrRTM::getRTMSdkVersion()
+String^ AgoraClrRTM::getRTMSdkVersion()
 {
 	return gcnew String(getRtmSdkVersion());
 }
 
-int AgoraClrLibrary::AgoraClrRTM::createFileMessageByUploading(String^ filePath, long long% requestId)
+int AgoraClrRTM::createFileMessageByUploading(String^ filePath, long long% requestId)
 {
 	long long backId;
 	const int result =  service->createFileMessageByUploading(marshal_as<std::string>(filePath).data(),backId);
@@ -324,7 +335,7 @@ int AgoraClrLibrary::AgoraClrRTM::createFileMessageByUploading(String^ filePath,
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::createImageMessageByUploading(String^ filePath, long long% requestId)
+int AgoraClrRTM::createImageMessageByUploading(String^ filePath, long long% requestId)
 {
 	long long backId;
 	const int result =  service->createImageMessageByUploading(marshal_as<std::string>(filePath).data(),backId);
@@ -332,17 +343,17 @@ int AgoraClrLibrary::AgoraClrRTM::createImageMessageByUploading(String^ filePath
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::cancelMediaUpload(long requestId)
+int AgoraClrRTM::cancelMediaUpload(long requestId)
 {
 	return service->cancelMediaDownload(requestId);
 }
 
-int AgoraClrLibrary::AgoraClrRTM::cancelMediaDownload(long requestId)
+int AgoraClrRTM::cancelMediaDownload(long requestId)
 {
 	return service->cancelMediaDownload(requestId);
 }
 
-AgoraClrLibrary::ClrFileMessage^ AgoraClrLibrary::AgoraClrRTM::createFileMessageByMediaId(String^ mediaId)
+ClrFileMessage^ AgoraClrRTM::createFileMessageByMediaId(String^ mediaId)
 {
 	const auto raw = service->createFileMessageByMediaId(marshal_as<std::string>(mediaId).data());
 	if(nullptr == raw)
@@ -350,7 +361,7 @@ AgoraClrLibrary::ClrFileMessage^ AgoraClrLibrary::AgoraClrRTM::createFileMessage
 	return gcnew ClrFileMessage(raw );
 }
 
-AgoraClrLibrary::ClrImageMessage^ AgoraClrLibrary::AgoraClrRTM::createImageMessageByMediaId(String^ mediaId)
+ClrImageMessage^ AgoraClrRTM::createImageMessageByMediaId(String^ mediaId)
 {
 	const auto raw = service->createImageMessageByMediaId(marshal_as<std::string>(mediaId).data());
 	if(nullptr == raw)
@@ -358,7 +369,7 @@ AgoraClrLibrary::ClrImageMessage^ AgoraClrLibrary::AgoraClrRTM::createImageMessa
 	return gcnew ClrImageMessage(raw );
 }
 
-int AgoraClrLibrary::AgoraClrRTM::downloadMediaToMemory(String^ mediaId, long long% requestId)
+int AgoraClrRTM::downloadMediaToMemory(String^ mediaId, long long% requestId)
 {
 	long long backId;
 	const int result =  service->downloadMediaToMemory(marshal_as<std::string>(mediaId).data(),backId);
@@ -366,7 +377,7 @@ int AgoraClrLibrary::AgoraClrRTM::downloadMediaToMemory(String^ mediaId, long lo
 	return result;
 }
 
-int AgoraClrLibrary::AgoraClrRTM::downloadMediaToFile(String^ mediaId, String^ filePath, long long% requestId)
+int AgoraClrRTM::downloadMediaToFile(String^ mediaId, String^ filePath, long long% requestId)
 {
 	long long backId;
 	const int result =  service->downloadMediaToFile(marshal_as<std::string>(mediaId).data(),
@@ -374,37 +385,37 @@ int AgoraClrLibrary::AgoraClrRTM::downloadMediaToFile(String^ mediaId, String^ f
 	requestId = backId;
 	return result;
 }
-void AgoraClrLibrary::AgoraClrRTM::NativeOnLoginSuccess()
+void AgoraClrRTM::NativeOnLoginSuccess()
 {
 	if (onLoginSuccess) onLoginSuccess();
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnLoginFailure(LOGIN_ERR_CODE code)
+void AgoraClrRTM::NativeOnLoginFailure(LOGIN_ERR_CODE code)
 {
 	if (onLoginFailure) onLoginFailure(static_cast<EnumLoginErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnLogout(LOGOUT_ERR_CODE code)
+void AgoraClrRTM::NativeOnLogout(LOGOUT_ERR_CODE code)
 {
 	if (onLogout) onLogout(static_cast<EnumLogoutErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnConnectionStateChanged(CONNECTION_STATE state, CONNECTION_CHANGE_REASON reason)
+void AgoraClrRTM::NativeOnConnectionStateChanged(CONNECTION_STATE state, CONNECTION_CHANGE_REASON reason)
 {
 	if (onConnectionStateChanged) onConnectionStateChanged(static_cast<EnumConnectionState>(state), static_cast<EnumConnectionChangeReason>(reason));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnSendMessageResult(long long id, PEER_MESSAGE_ERR_CODE code)
+void AgoraClrRTM::NativeOnSendMessageResult(long long id, PEER_MESSAGE_ERR_CODE code)
 {
 	if (onSendMessageResult) onSendMessageResult(id, static_cast<EnumPeerMessageErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnMessageReceivedFromPeer(const char* peerId, const IMessage* message)
+void AgoraClrRTM::NativeOnMessageReceivedFromPeer(const char* peerId, const IMessage* message)
 {
 	if (onMessageReceivedFromPeer) onMessageReceivedFromPeer(gcnew String(peerId), gcnew ClrMessage(const_cast<IMessage*>(message)));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnQueryPeersOnlineStatusResult(long long requestId, const PeerOnlineStatus* peersStatus, int peerCount, QUERY_PEERS_ONLINE_STATUS_ERR code)
+void AgoraClrRTM::NativeOnQueryPeersOnlineStatusResult(long long requestId, const PeerOnlineStatus* peersStatus, int peerCount, QUERY_PEERS_ONLINE_STATUS_ERR code)
 {
 	if (onQueryPeersOnlineStatusResult) {
 		List<ClrPeerOnlineStatus^>^ list = gcnew List<ClrPeerOnlineStatus^>();
@@ -415,12 +426,12 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnQueryPeersOnlineStatusResult(long lon
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnSubscriptionRequestResult(long long requestId, PEER_SUBSCRIPTION_STATUS_ERR code)
+void AgoraClrRTM::NativeOnSubscriptionRequestResult(long long requestId, PEER_SUBSCRIPTION_STATUS_ERR code)
 {
 	if (onSubscriptionRequestResult) onSubscriptionRequestResult(requestId, static_cast<EnumPeerSubscriptionStatusErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnPeersOnlineStatusChanged(const PeerOnlineStatus status[], int count)
+void AgoraClrRTM::NativeOnPeersOnlineStatusChanged(const PeerOnlineStatus status[], int count)
 {
 	if (onPeersOnlineStatusChanged) {
 		List<ClrPeerOnlineStatus^>^ list = gcnew List<ClrPeerOnlineStatus^>();
@@ -433,7 +444,7 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnPeersOnlineStatusChanged(const PeerOn
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnQueryPeersBySubscriptionOptionResult(long long requestId, const char* peerIds[], int peerCount, QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR errorCode)
+void AgoraClrRTM::NativeOnQueryPeersBySubscriptionOptionResult(long long requestId, const char* peerIds[], int peerCount, QUERY_PEERS_BY_SUBSCRIPTION_OPTION_ERR errorCode)
 {
 	if (onQueryPeersBySubscriptionOptionResult) {
 		List<String^>^ list = gcnew List<String^>();
@@ -444,29 +455,29 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnQueryPeersBySubscriptionOptionResult(
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnSetLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnSetLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onSetLocalUserAttributesResult) {
 		onSetLocalUserAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnAddOrUpdateLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnAddOrUpdateLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onAddOrUpdateLocalUserAttributesResult) onAddOrUpdateLocalUserAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnDeleteLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnDeleteLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onDeleteLocalUserAttributesResult) onDeleteLocalUserAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnClearLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnClearLocalUserAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onClearLocalUserAttributesResult) onClearLocalUserAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnGetUserAttributesResult(long long id, const char* userId, const RtmAttribute* attributes, int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnGetUserAttributesResult(long long id, const char* userId, const RtmAttribute* attributes, int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onGetUserAttributesResult) {
 		List<ClrRtmAttribute^>^ list = gcnew List <ClrRtmAttribute^>;
@@ -478,30 +489,30 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnGetUserAttributesResult(long long id,
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnSetChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnSetChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onSetChannelAttributesResult) onSetChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnAddOrUpdateChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnAddOrUpdateChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onAddOrUpdateChannelAttributesResult)
 		onAddOrUpdateChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnDeleteChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnDeleteChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onDeleteChannelAttributesResult)
 		onDeleteChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnCleanChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnCleanChannelAttributesResult(long long id, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onClearChannelAttributesResult)
 		onClearChannelAttributesResult(id, static_cast<EnumAttributeOperationErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnGetChannelAttributesResult(long long id, const IRtmChannelAttribute* attributes[], int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code)
+void AgoraClrRTM::NativeOnGetChannelAttributesResult(long long id, const IRtmChannelAttribute* attributes[], int numberOfAttributes, ATTRIBUTE_OPERATION_ERR code)
 {
 	if (onGetChannelAttributesResult) {
 		List<ClrRtmChannelAttribute^>^ list = gcnew List<ClrRtmChannelAttribute^>;
@@ -512,7 +523,7 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnGetChannelAttributesResult(long long 
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnGetChannelMemberCountResult(long long id, const ChannelMemberCount* members, int count, GET_CHANNEL_MEMBER_COUNT_ERR_CODE code)
+void AgoraClrRTM::NativeOnGetChannelMemberCountResult(long long id, const ChannelMemberCount* members, int count, GET_CHANNEL_MEMBER_COUNT_ERR_CODE code)
 {
 	if (onGetChannelMemberCountResult) {
 		List<ClrChannelMemberCount^>^ list = gcnew List<ClrChannelMemberCount^>;
@@ -523,65 +534,65 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnGetChannelMemberCountResult(long long
 	}
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnTokenExpired()
+void AgoraClrRTM::NativeOnTokenExpired()
 {
 	if (onTokenExpired) onTokenExpired();
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnRenewTokenResult(const char* token, RENEW_TOKEN_ERR_CODE code)
+void AgoraClrRTM::NativeOnRenewTokenResult(const char* token, RENEW_TOKEN_ERR_CODE code)
 {
 	if (onRenewTokenResult)
 		onRenewTokenResult(gcnew String(token), static_cast<EnumRenewTokenErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaUploadingProgress(long long requestId,
+void AgoraClrRTM::NativeOnMediaUploadingProgress(long long requestId,
 	const MediaOperationProgress& progress)
 {
 	if (onMediaUploadingProgress)
 		onMediaUploadingProgress(requestId, gcnew ClrMediaOperationProgress(progress));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaDownloadingProgress(long long requestId,
+void AgoraClrRTM::NativeOnMediaDownloadingProgress(long long requestId,
 	const MediaOperationProgress& progress)
 {
 	if (onMediaDownloadingProgress)
 		onMediaDownloadingProgress(requestId, gcnew ClrMediaOperationProgress(progress));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaCancelResult(long long requestId, CANCEL_MEDIA_ERR_CODE code)
+void AgoraClrRTM::NativeOnMediaCancelResult(long long requestId, CANCEL_MEDIA_ERR_CODE code)
 {
 	if (onMediaCancelResult)
 		onMediaCancelResult(requestId, static_cast<EnumCancelMediaErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnFileMediaUploadResult(long long requestId,  IFileMessage* fileMessage,
+void AgoraClrRTM::NativeOnFileMediaUploadResult(long long requestId,  IFileMessage* fileMessage,
 	UPLOAD_MEDIA_ERR_CODE code)
 {
 	if (onFileMediaUploadResult)
 		onFileMediaUploadResult(requestId, gcnew ClrFileMessage(fileMessage), static_cast<EnumUploadMediaErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnImageMediaUploadResult(long long requestId,  IImageMessage* fileMessage,
+void AgoraClrRTM::NativeOnImageMediaUploadResult(long long requestId,  IImageMessage* fileMessage,
 	UPLOAD_MEDIA_ERR_CODE code)
 {
 	if (onImageMediaUploadResult)
 		onImageMediaUploadResult(requestId, gcnew ClrImageMessage(fileMessage), static_cast<EnumUploadMediaErrCode>(code));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnFileMessageReceivedFromPeer(const char* peerId, const IFileMessage* message)
+void AgoraClrRTM::NativeOnFileMessageReceivedFromPeer(const char* peerId, const IFileMessage* message)
 {
 	if (onFileMessageReceivedFromPeer)
 		onFileMessageReceivedFromPeer(gcnew String(peerId), gcnew ClrFileMessage(const_cast<IFileMessage*>(message)));
 }
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnImageMessageReceivedFromPeer(const char* peerId, const IImageMessage* message)
+void AgoraClrRTM::NativeOnImageMessageReceivedFromPeer(const char* peerId, const IImageMessage* message)
 {
 	if (onImageMessageReceivedFromPeer)
 		onImageMessageReceivedFromPeer(gcnew String(peerId), gcnew ClrImageMessage(const_cast<IImageMessage*>(message)));
 }
 
 
-void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaDownloadToMemoryResult(long long requestId, const char* memory,
+void AgoraClrRTM::NativeOnMediaDownloadToMemoryResult(long long requestId, const char* memory,
 		long long length, DOWNLOAD_MEDIA_ERR_CODE code)
 {
 	if (onMediaDownloadToMemoryResult)
@@ -592,19 +603,19 @@ void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaDownloadToMemoryResult(long long
 		onMediaDownloadToMemoryResult(requestId, result,static_cast<EnumDownloadMediaErrCode>(code));
 	}
 }
-void AgoraClrLibrary::AgoraClrRTM::NativeOnMediaDownloadToFileResult(long long requestId,
+void AgoraClrRTM::NativeOnMediaDownloadToFileResult(long long requestId,
 	DOWNLOAD_MEDIA_ERR_CODE code)
 {
 	if (onMediaDownloadToFileResult)
 		onMediaDownloadToFileResult(requestId, static_cast<EnumDownloadMediaErrCode>(code));
 }
-void AgoraClrLibrary::AgoraClrRTM::bindEventHandler()
+void AgoraClrRTM::bindEventHandler()
 {
 	regEvent(rtmEvents->onLoginSuccessEvent, gcnew OnLoginSuccessType::Type(this, &AgoraClrRTM::NativeOnLoginSuccess));
 	regEvent(rtmEvents->onLoginFailureEvent, gcnew OnLoginFailureType::Type(this, &AgoraClrRTM::NativeOnLoginFailure));
 	regEvent(rtmEvents->onLogoutEvent, gcnew OnLogoutType::Type(this, &AgoraClrRTM::NativeOnLogout));
 	regEvent(rtmEvents->onConnectionStateChangedEvent,gcnew OnConnectionStateChangedType::Type(this,&AgoraClrRTM::NativeOnConnectionStateChanged));
-	regEvent(rtmEvents->onSendMessageResultEvent, gcnew AgoraClrLibrary::RTMEventType::OnSendMessageResultType::Type(this, &AgoraClrRTM::NativeOnSendMessageResult));
+	regEvent(rtmEvents->onSendMessageResultEvent, gcnew RTMEventType::OnSendMessageResultType::Type(this, &AgoraClrRTM::NativeOnSendMessageResult));
 	regEvent(rtmEvents->onMessageReceivedFromPeerEvent, gcnew OnMessageReceivedFromPeerType::Type(this, &AgoraClrRTM::NativeOnMessageReceivedFromPeer));
 	regEvent(rtmEvents->onQueryPeersOnlineStatusResultEvent, gcnew OnQueryPeersOnlineStatusResultType::Type(this, &AgoraClrRTM::NativeOnQueryPeersOnlineStatusResult));
 	regEvent(rtmEvents->onSubscriptionRequestResultEvent, gcnew OnSubscriptionRequestResultType::Type(this, &AgoraClrRTM::NativeOnSubscriptionRequestResult));

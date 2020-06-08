@@ -7,9 +7,6 @@
 #include "../../agorasdk/include/IAgoraMediaEngine.h"
 #include "../../agorasdk/include/IAgoraRtcEngine.h"
 #include "../../agorasdk/include/IAgoraService.h"
-#include "../../agorasdk/include/IAgoraLiveEngine.h"
-#include "../../agorasdk/include/IAgoraLivePublisher.h"
-#include "../../agorasdk/include/IAgoraLiveSubscriber.h"
 #include "../../agorasdk/include/IAgoraRtcChannel.h"
 #include "../include/common.h"
 

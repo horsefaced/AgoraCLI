@@ -1,31 +1,31 @@
 #include "stdafx.h"
 #include "AgoraClrVideoDeviceManager.h"
 #include "AgoraClrLibrary.h"
+using namespace AgoraClrLibrary;
 
-
-AgoraClrLibrary::ClrVideoDeviceCollection::ClrVideoDeviceCollection(IVideoDeviceCollection * rawCollection):
+ClrVideoDeviceCollection::ClrVideoDeviceCollection(IVideoDeviceCollection * rawCollection):
 	raw(rawCollection)
 {
 	
 }
 
-AgoraClrLibrary::ClrVideoDeviceCollection::~ClrVideoDeviceCollection()
+ClrVideoDeviceCollection::~ClrVideoDeviceCollection()
 {
 	this->release();
 	this->!ClrVideoDeviceCollection();
 }
 
-AgoraClrLibrary::ClrVideoDeviceCollection::!ClrVideoDeviceCollection()
+ClrVideoDeviceCollection::!ClrVideoDeviceCollection()
 {
 	
 }
 
-int AgoraClrLibrary::ClrVideoDeviceCollection::getCount()
+int ClrVideoDeviceCollection::getCount()
 {
 	return raw->getCount();
 }
 
-int AgoraClrLibrary::ClrVideoDeviceCollection::getDevice(int index, String ^% deviceName, String ^% deviceId)
+int ClrVideoDeviceCollection::getDevice(int index, String ^% deviceName, String ^% deviceId)
 {
 	char deviceNameBuffer[MAX_DEVICE_ID_LENGTH] = { 0 }; 
 	char deviceIdBuffer[MAX_DEVICE_ID_LENGTH] = { 0 };
@@ -36,46 +36,46 @@ int AgoraClrLibrary::ClrVideoDeviceCollection::getDevice(int index, String ^% de
 	// return raw->getDevice(index, const_cast<char*>(MarshalString(deviceName).c_str()), const_cast<char*>(MarshalString(deviceId).c_str()));
 }
 
-int AgoraClrLibrary::ClrVideoDeviceCollection::setDevice(String ^ deviceId)
+int ClrVideoDeviceCollection::setDevice(String ^ deviceId)
 {
 	return raw->setDevice(const_cast<char*>(MarshalString(deviceId).c_str()));
 }
 
-void AgoraClrLibrary::ClrVideoDeviceCollection::release()
+void ClrVideoDeviceCollection::release()
 {
 	raw->release();
 }
 
-AgoraClrLibrary::AgoraClrVideoDeviceManager::AgoraClrVideoDeviceManager(IRtcEngine* engine)
+AgoraClrVideoDeviceManager::AgoraClrVideoDeviceManager(IRtcEngine* engine)
 {
 	this->engine = engine;
 }
 
-AgoraClrLibrary::ClrVideoDeviceCollection ^ AgoraClrLibrary::AgoraClrVideoDeviceManager::enumerateVideoDevices()
+ClrVideoDeviceCollection ^ AgoraClrVideoDeviceManager::enumerateVideoDevices()
 {
 	AVideoDeviceManager manager(engine);
 	return gcnew ClrVideoDeviceCollection(manager->enumerateVideoDevices());
 }
 
-int AgoraClrLibrary::AgoraClrVideoDeviceManager::setDevice(String ^ deviceId)
+int AgoraClrVideoDeviceManager::setDevice(String ^ deviceId)
 {
 	AVideoDeviceManager manager(engine);
 	return manager->setDevice(MarshalString(deviceId).c_str());
 }
 
-int AgoraClrLibrary::AgoraClrVideoDeviceManager::getDevice(String ^ deviceId)
+int AgoraClrVideoDeviceManager::getDevice(String ^ deviceId)
 {
 	AVideoDeviceManager manager(engine);
 	return manager->getDevice(const_cast<char*>(MarshalString(deviceId).c_str()));
 }
 
-int AgoraClrLibrary::AgoraClrVideoDeviceManager::startDeviceTest(IntPtr hwnd)
+int AgoraClrVideoDeviceManager::startDeviceTest(IntPtr hwnd)
 {
 	AVideoDeviceManager manager(engine);
 	return manager->startDeviceTest(hwnd.ToPointer());
 }
 
-int AgoraClrLibrary::AgoraClrVideoDeviceManager::stopDeviceTest()
+int AgoraClrVideoDeviceManager::stopDeviceTest()
 {
 	AVideoDeviceManager manager(engine);
 	return manager->stopDeviceTest();
