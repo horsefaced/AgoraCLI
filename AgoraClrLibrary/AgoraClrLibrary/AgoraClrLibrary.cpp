@@ -44,7 +44,7 @@ AgoraClr::!AgoraClr()
 {
 }
 
-int AgoraClr::initialize(String^ vendorkey)
+int AgoraClr::initialize(String^ vendorkey, [Optional] Nullable<int> areaCode)
 {
 	if (rtcEngine)
 		return 0;
@@ -58,6 +58,7 @@ int AgoraClr::initialize(String^ vendorkey)
 	agora::rtc::RtcEngineContext context;
 	context.appId = strcopy(MarshalString(vendorkey));
 	context.eventHandler = agoraEventHandler;
+	context.areaCode = areaCode.HasValue ? areaCode.Value : 0xFFFFFFFF;
 	int result = rtcEngine->initialize(context);
 	if (result == 0)
 	{

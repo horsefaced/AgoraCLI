@@ -32,7 +32,7 @@ namespace AgoraClrLibrary
 		!AgoraClr();
 
 		//频道管理
-		int initialize(String^ vendorkey);
+		int initialize(String^ vendorkey, [Optional] Nullable<int> areaCode);
 		void release();
 		int setChannelProfile(ChannelProfile profile);
 		int setClientRole(ClientRoleType role);
