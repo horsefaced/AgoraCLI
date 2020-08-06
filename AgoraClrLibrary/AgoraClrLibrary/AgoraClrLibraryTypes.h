@@ -43,7 +43,7 @@ namespace AgoraClrLibrary {
 	ref class ClrAudioVolumeInfo
 	{
 	public:
-		int uid;
+		UINT uid;
 		unsigned int volume; // [0,255]
 		unsigned int vad;
 		String^ channelId;
@@ -172,7 +172,7 @@ namespace AgoraClrLibrary {
 	ref class ClrRemoteVideoStats
 	{
 	public:
-		int uid;
+		UINT uid;
 		int delay;
 		int width;
 		int height;
@@ -415,7 +415,7 @@ namespace AgoraClrLibrary {
 	private:
 		TranscodingUser* result=nullptr;
 	public:
-		int uid;
+		UINT uid;
 
 		int x;
 		int y;
@@ -751,7 +751,7 @@ namespace AgoraClrLibrary {
 	ref class ClrRemoteAudioStats
 	{
 	public:
-		int uid;
+		UINT uid;
 		int quality;
 		int networkTransportDelay;
 		int jitterBufferDelay;

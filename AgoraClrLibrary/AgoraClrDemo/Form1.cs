@@ -34,14 +34,14 @@ namespace AgoraClrDemo
             return true;
         }
 
-        private void onFirstRemoteVideoDecoded(int uid, int width, int height, int elapsed)
+        private void onFirstRemoteVideoDecoded(uint uid, int width, int height, int elapsed)
         {
             log("remote video decoded in " + uid, elapsed);
             setupRemoteVideo(uid);
         }
 
-        delegate void setupRemoteVideoDelegate(int uid);
-        private void setupRemoteVideo(int uid)
+        delegate void setupRemoteVideoDelegate(uint uid);
+        private void setupRemoteVideo(uint uid)
         {
             if (remoteVideo.InvokeRequired)
             {
@@ -58,7 +58,7 @@ namespace AgoraClrDemo
             log("Camera Ready Event", 0);
         }
 
-        private void onJoinChannelSuccess(String channel, int uid, int elapsed)
+        private void onJoinChannelSuccess(String channel, uint uid, int elapsed)
         {
             log("join channel success in " + channel + " by " + uid, elapsed);
         }

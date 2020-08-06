@@ -317,22 +317,22 @@ int AgoraClr::setVideoProfile(VideoProfile profile, bool swapWidthAndHeight)
 	return rtcEngine->setVideoProfile(static_cast<agora::rtc::VIDEO_PROFILE_TYPE>(profile), swapWidthAndHeight);
 }
 
-int AgoraClr::setupLocalVideo(IntPtr view, int renderMode, int uid)
+int AgoraClr::setupLocalVideo(IntPtr view, int renderMode, UINT uid)
 {
 	return rtcEngine->setupLocalVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid));
 }
 
-int AgoraClr::setupLocalVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt)
+int AgoraClr::setupLocalVideo(IntPtr view, int renderMode, UINT uid, EnumVideoMirrorModeType mt)
 {
 	return rtcEngine->setupLocalVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid, static_cast<VIDEO_MIRROR_MODE_TYPE>(mt)));
 }
 
-int AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, int uid)
+int AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, UINT uid)
 {
 	return rtcEngine->setupRemoteVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid));
 }
 
-int AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt)
+int AgoraClr::setupRemoteVideo(IntPtr view, int renderMode, UINT uid, EnumVideoMirrorModeType mt)
 {
 	return rtcEngine->setupRemoteVideo(agora::rtc::VideoCanvas(view.ToPointer(), renderMode, uid, static_cast<VIDEO_MIRROR_MODE_TYPE>(mt)));
 }
@@ -342,7 +342,7 @@ int AgoraClr::enableDualStreamMode(bool enabled)
 	return rtcEngine->enableDualStreamMode(enabled);
 }
 
-int AgoraClr::setRemoteVideoStreamType(int uid, EnumRemoteVideoStreamType type)
+int AgoraClr::setRemoteVideoStreamType(UINT uid, EnumRemoteVideoStreamType type)
 {
 	return rtcEngine->setRemoteVideoStreamType(uid, static_cast<REMOTE_VIDEO_STREAM_TYPE>(type));
 }
@@ -401,7 +401,7 @@ int AgoraClr::muteAllRemoteAudioStreams(bool mute)
 	return rtcEngine->muteAllRemoteAudioStreams(mute);
 }
 
-int AgoraClr::muteRemoteAudioStream(int uid, bool mute)
+int AgoraClr::muteRemoteAudioStream(UINT uid, bool mute)
 {
 	return rtcEngine->muteRemoteAudioStream(uid, mute);
 }
@@ -421,7 +421,7 @@ int AgoraClr::muteAllRemoteVideoStreams(bool mute)
 	return rtcEngine->muteAllRemoteVideoStreams(mute);
 }
 
-int AgoraClr::muteRemoteVideoStream(int uid, bool mute)
+int AgoraClr::muteRemoteVideoStream(UINT uid, bool mute)
 {
 	return rtcEngine->muteRemoteVideoStream(uid, mute);
 }
@@ -437,12 +437,12 @@ int AgoraClr::setLocalRenderMode(EnumRenderModeType mode, EnumVideoMirrorModeTyp
 		static_cast<VIDEO_MIRROR_MODE_TYPE>(mt));
 }
 
-int AgoraClr::setRemoteRenderMode(int uid, EnumRenderModeType mode)
+int AgoraClr::setRemoteRenderMode(UINT uid, EnumRenderModeType mode)
 {
 	return rtcEngine->setRemoteRenderMode(uid, static_cast<agora::rtc::RENDER_MODE_TYPE>(mode));
 }
 
-int AgoraClr::setRemoteRenderMode(int uid, EnumRenderModeType mode, EnumVideoMirrorModeType mt)
+int AgoraClr::setRemoteRenderMode(UINT uid, EnumRenderModeType mode, EnumVideoMirrorModeType mt)
 {
 	return rtcEngine->setRemoteRenderMode(
 		uid, static_cast<agora::rtc::RENDER_MODE_TYPE>(mode),
@@ -530,7 +530,7 @@ int AgoraClr::adjustRecordingSignalVolume(int volume)
 	return rtcEngine->adjustRecordingSignalVolume(volume);
 }
 
-int AgoraClr::adjustUserPlaybackSignalVolume(int uid, int volume)
+int AgoraClr::adjustUserPlaybackSignalVolume(UINT uid, int volume)
 {
 	return rtcEngine->adjustUserPlaybackSignalVolume(uid, volume);
 }

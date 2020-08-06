@@ -61,11 +61,11 @@ namespace AgoraClrLibrary
 		int disableAudio();
 		int setAudioProfile(AudioProfileType profile, AudioScenarioType scenario);
 		int adjustRecordingSignalVolume(int volume);
-		int adjustUserPlaybackSignalVolume(int uid, int volume);
+		int adjustUserPlaybackSignalVolume(UINT uid, int volume);
 		int adjustPlaybackSignalVolume(int volume);
 		int enableLocalAudio(bool enabled);
 		int muteLocalAudioStream(bool mute);
-		int muteRemoteAudioStream(int uid, bool mute);
+		int muteRemoteAudioStream(UINT uid, bool mute);
 		int muteAllRemoteAudioStreams(bool mute);
 		int setDefaultMuteAllRemoteAudioStreams(bool mute);
 
@@ -73,19 +73,19 @@ namespace AgoraClrLibrary
 		int enableVideo();
 		int disableVideo();
 		int setVideoEncoderConfiguration(ClrVideoEncoderConfiguration^ config);
-		int setupLocalVideo(IntPtr view, int renderMode, int uid);
-		int setupLocalVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt);
-		int setupRemoteVideo(IntPtr view, int renderMode, int uid);
-		int setupRemoteVideo(IntPtr view, int renderMode, int uid, EnumVideoMirrorModeType mt);
+		int setupLocalVideo(IntPtr view, int renderMode, UINT uid);
+		int setupLocalVideo(IntPtr view, int renderMode, UINT uid, EnumVideoMirrorModeType mt);
+		int setupRemoteVideo(IntPtr view, int renderMode, UINT uid);
+		int setupRemoteVideo(IntPtr view, int renderMode, UINT uid, EnumVideoMirrorModeType mt);
 		int setLocalRenderMode(EnumRenderModeType mode);
 		int setLocalRenderMode(EnumRenderModeType mode, EnumVideoMirrorModeType mt);
-		int setRemoteRenderMode(int uid, EnumRenderModeType mode);
-		int setRemoteRenderMode(int uid, EnumRenderModeType mode, EnumVideoMirrorModeType mt);
+		int setRemoteRenderMode(UINT uid, EnumRenderModeType mode);
+		int setRemoteRenderMode(UINT uid, EnumRenderModeType mode, EnumVideoMirrorModeType mt);
 		int startPreview();
 		int stopPreview();
 		int enableLocalVideo(bool enabled);
 		int muteLocalVideoStream(bool mute);
-		int muteRemoteVideoStream(int uid, bool mute);
+		int muteRemoteVideoStream(UINT uid, bool mute);
 		int muteAllRemoteVideoStreams(bool mute);
 		int setDefaultMuteAllRemoteVideoStreams(bool mute);
 
@@ -210,7 +210,7 @@ namespace AgoraClrLibrary
 
 		//视频双流模式
 		int enableDualStreamMode(bool enabled);
-		int setRemoteVideoStreamType(int uid, EnumRemoteVideoStreamType type);
+		int setRemoteVideoStreamType(UINT uid, EnumRemoteVideoStreamType type);
 		int setRemoteDefaultVideoStreamType(EnumRemoteVideoStreamType type);
 
 		//直播音视频回退

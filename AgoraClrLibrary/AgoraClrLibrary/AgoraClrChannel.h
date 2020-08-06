@@ -43,7 +43,7 @@ namespace AgoraClrLibrary {
 		int setEncryptionSecret(String^ secret);
 		int setEncryptionMode(String^ mode);
 		int setClientRole(EnumClientRoleType type);
-		int setRemoteVoicePosition(int uid, double pan, double gain);
+		int setRemoteVoicePosition(uid_t uid, double pan, double gain);
 		int setRemoteRenderMode(uid_t uid, EnumRenderModeType renderMode, EnumVideoMirrorModeType mirrorMode);
 		int setDefaultMuteAllRemoteAudioStreams(bool mute);
 		int setDefaultMuteAllRemoteVideoStreams(bool mute);

@@ -82,7 +82,7 @@ int AgoraClrChannel::setClientRole(EnumClientRoleType type)
 	return channel->setClientRole(static_cast<CLIENT_ROLE_TYPE>(type));
 }
 
-int AgoraClrChannel::setRemoteVoicePosition(int uid, double pan, double gain)
+int AgoraClrChannel::setRemoteVoicePosition(UINT uid, double pan, double gain)
 {
 	return channel->setRemoteVoicePosition(uid, pan, gain);
 }
