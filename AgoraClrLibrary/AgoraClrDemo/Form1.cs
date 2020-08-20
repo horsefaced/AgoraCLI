@@ -26,7 +26,20 @@ namespace AgoraClrDemo
             agora.onCameraReady += new AgoraClrLibrary.onCameraReady(onCameraReady);
             agora.onJoinChannelSuccess += new AgoraClrLibrary.onJoinChannelSuccess(onJoinChannelSuccess);
             agora.onFirstRemoteVideoDecoded += new AgoraClrLibrary.onFirstRemoteVideoDecoded(onFirstRemoteVideoDecoded);
+            agora.onFirstLocalVideoFrame += new AgoraClrLibrary.onFirstLocalVideoFrame(onFirstLocalVideoFrame);
             agora.onCaptureVideoFrame += new AgoraClrLibrary.onCaptureVideoFrame(onCaptureVideoFrame);
+            agora.onPreEncodeVideoFrame += new AgoraClrLibrary.onPreEncodeVideoFrame(onPreEncodeVideoFrame);
+        }
+
+        bool onPreEncodeVideoFrame(ClrVideoFrame frame)
+        {
+            //log("onPreEncodeVideoFrame", (int)frame.type);
+            return true;
+        }
+
+        private void onFirstLocalVideoFrame(int width, int height, int elapsed)
+        {
+            log("on first local video frame with " + width + "," + height + "," + elapsed, 0);
         }
 
         private bool onCaptureVideoFrame(AgoraClrLibrary.ClrVideoFrame frame)
@@ -101,14 +114,18 @@ namespace AgoraClrDemo
 
         private void btnStartPreview_Click(object sender, EventArgs e)
         {
-            log("setuplocalVideo", agora.setupLocalVideo(localVideo.Handle, (int)EnumRenderModeType.RENDER_MODE_ADAPTIVE, 0));
+            log("setChannelProfile", agora.setChannelProfile(ChannelProfile.CHANNEL_PROFILE_LIVE_BROADCASTING));
+            log("setClientRole", agora.setClientRole(ClientRoleType.CLIENT_ROLE_BROADCASTER));
             log("enableVideo", agora.enableVideo());
+            log("setuplocalVideo", agora.setupLocalVideo(localVideo.Handle, (int)EnumRenderModeType.RENDER_MODE_ADAPTIVE, 0));
             log("startPreview", agora.startPreview());
         }
 
         private void btnJoinChannel_Click(object sender, EventArgs e)
         {
-            log("join channel", agora.joinChannel("", txtChannelName.Text, null, 0));
+            log("join channel", agora.joinChannel(
+                "006c021e195268048418d8176e3d7a8e8bdIAA7cy2rSL8bDOtQpO7anqaZEEix4DR13LpxUFWUWOWwUNxEAZkAAAAAEAAnMDOc7zM+XwEAAQDuMz5f",
+                txtChannelName.Text, null, 0));
         }
 
         private void button1_Click_1(object sender, EventArgs e)
