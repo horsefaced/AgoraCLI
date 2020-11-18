@@ -245,6 +245,8 @@ namespace AgoraClrLibrary {
 		int64_t renderTimeMs;
 		int avsync_type;
 
+		ClrAudioFrame() {}
+
 		ClrAudioFrame(agora::media::IAudioFrameObserver::AudioFrame& raw) :
 			type(static_cast<EnumAudioFrameType>(raw.type)),
 			samples(raw.samples),

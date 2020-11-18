@@ -39,15 +39,18 @@
             this.btnStartPreview = new System.Windows.Forms.Button();
             this.remoteVideo = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtToken = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.localVideo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.remoteVideo)).BeginInit();
             this.SuspendLayout();
             // 
             // btnJoinChannel
             // 
-            this.btnJoinChannel.Location = new System.Drawing.Point(93, 434);
+            this.btnJoinChannel.Location = new System.Drawing.Point(186, 868);
+            this.btnJoinChannel.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.btnJoinChannel.Name = "btnJoinChannel";
-            this.btnJoinChannel.Size = new System.Drawing.Size(75, 23);
+            this.btnJoinChannel.Size = new System.Drawing.Size(150, 46);
             this.btnJoinChannel.TabIndex = 0;
             this.btnJoinChannel.Text = "加入频道";
             this.btnJoinChannel.UseVisualStyleBackColor = true;
@@ -55,71 +58,79 @@
             // 
             // txtVendorkey
             // 
-            this.txtVendorkey.Location = new System.Drawing.Point(106, 35);
+            this.txtVendorkey.Location = new System.Drawing.Point(212, 70);
+            this.txtVendorkey.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtVendorkey.Name = "txtVendorkey";
-            this.txtVendorkey.Size = new System.Drawing.Size(331, 21);
+            this.txtVendorkey.Size = new System.Drawing.Size(658, 35);
             this.txtVendorkey.TabIndex = 2;
             this.txtVendorkey.Text = "c021e195268048418d8176e3d7a8e8bd";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 38);
+            this.label2.Location = new System.Drawing.Point(20, 76);
+            this.label2.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(71, 12);
+            this.label2.Size = new System.Drawing.Size(142, 24);
             this.label2.TabIndex = 4;
             this.label2.Text = "Vendor Key:";
             // 
             // txtResult
             // 
-            this.txtResult.Location = new System.Drawing.Point(106, 96);
+            this.txtResult.Location = new System.Drawing.Point(212, 211);
+            this.txtResult.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtResult.Multiline = true;
             this.txtResult.Name = "txtResult";
-            this.txtResult.Size = new System.Drawing.Size(331, 93);
+            this.txtResult.Size = new System.Drawing.Size(658, 182);
             this.txtResult.TabIndex = 5;
             this.txtResult.TextChanged += new System.EventHandler(this.txtResult_TextChanged);
             // 
             // lblResult
             // 
             this.lblResult.AutoSize = true;
-            this.lblResult.Location = new System.Drawing.Point(10, 96);
+            this.lblResult.Location = new System.Drawing.Point(20, 211);
+            this.lblResult.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.lblResult.Name = "lblResult";
-            this.lblResult.Size = new System.Drawing.Size(53, 12);
+            this.lblResult.Size = new System.Drawing.Size(106, 24);
             this.lblResult.TabIndex = 6;
             this.lblResult.Text = "调用结果";
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 65);
+            this.label1.Location = new System.Drawing.Point(20, 170);
+            this.label1.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(89, 12);
+            this.label1.Size = new System.Drawing.Size(178, 24);
             this.label1.TabIndex = 8;
             this.label1.Text = "Channel Name :";
             this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // txtChannelName
             // 
-            this.txtChannelName.Location = new System.Drawing.Point(106, 62);
+            this.txtChannelName.Location = new System.Drawing.Point(212, 164);
+            this.txtChannelName.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.txtChannelName.Name = "txtChannelName";
-            this.txtChannelName.Size = new System.Drawing.Size(331, 21);
+            this.txtChannelName.Size = new System.Drawing.Size(658, 35);
             this.txtChannelName.TabIndex = 7;
             this.txtChannelName.Text = "666";
             this.txtChannelName.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // localVideo
             // 
-            this.localVideo.Location = new System.Drawing.Point(12, 230);
+            this.localVideo.Location = new System.Drawing.Point(24, 460);
+            this.localVideo.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.localVideo.Name = "localVideo";
-            this.localVideo.Size = new System.Drawing.Size(231, 168);
+            this.localVideo.Size = new System.Drawing.Size(462, 336);
             this.localVideo.TabIndex = 9;
             this.localVideo.TabStop = false;
             // 
             // btnStartPreview
             // 
-            this.btnStartPreview.Location = new System.Drawing.Point(12, 434);
+            this.btnStartPreview.Location = new System.Drawing.Point(24, 868);
+            this.btnStartPreview.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.btnStartPreview.Name = "btnStartPreview";
-            this.btnStartPreview.Size = new System.Drawing.Size(75, 23);
+            this.btnStartPreview.Size = new System.Drawing.Size(150, 46);
             this.btnStartPreview.TabIndex = 10;
             this.btnStartPreview.Text = "打开本地视频";
             this.btnStartPreview.UseVisualStyleBackColor = true;
@@ -127,27 +138,51 @@
             // 
             // remoteVideo
             // 
-            this.remoteVideo.Location = new System.Drawing.Point(258, 230);
+            this.remoteVideo.Location = new System.Drawing.Point(516, 460);
+            this.remoteVideo.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.remoteVideo.Name = "remoteVideo";
-            this.remoteVideo.Size = new System.Drawing.Size(231, 168);
+            this.remoteVideo.Size = new System.Drawing.Size(462, 336);
             this.remoteVideo.TabIndex = 11;
             this.remoteVideo.TabStop = false;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(174, 434);
+            this.button1.Location = new System.Drawing.Point(348, 868);
+            this.button1.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(150, 46);
             this.button1.TabIndex = 12;
             this.button1.Text = "测试";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(20, 123);
+            this.label3.Margin = new System.Windows.Forms.Padding(6, 0, 6, 0);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(142, 24);
+            this.label3.TabIndex = 14;
+            this.label3.Text = "Vendor Key:";
+            // 
+            // txtToken
+            // 
+            this.txtToken.Location = new System.Drawing.Point(212, 117);
+            this.txtToken.Margin = new System.Windows.Forms.Padding(6);
+            this.txtToken.Name = "txtToken";
+            this.txtToken.Size = new System.Drawing.Size(658, 35);
+            this.txtToken.TabIndex = 13;
+            this.txtToken.Text = "006c021e195268048418d8176e3d7a8e8bdIABVmixmEKmLFJbM94QWBdhMBmTT0SkfwA3kEcMFTb6EcN" +
+    "xEAZkAAAAAEAAnMDOcwGlAXwEAAQDAaUBf";
+            // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(520, 479);
+            this.ClientSize = new System.Drawing.Size(1040, 958);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.txtToken);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.remoteVideo);
             this.Controls.Add(this.btnStartPreview);
@@ -159,6 +194,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.txtVendorkey);
             this.Controls.Add(this.btnJoinChannel);
+            this.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.localVideo)).EndInit();
@@ -181,6 +217,8 @@
         private System.Windows.Forms.Button btnStartPreview;
         private System.Windows.Forms.PictureBox remoteVideo;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox txtToken;
     }
 }
 

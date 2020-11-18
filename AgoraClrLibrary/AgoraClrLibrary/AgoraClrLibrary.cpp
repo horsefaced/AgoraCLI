@@ -729,9 +729,15 @@ int AgoraClr::setExternalAudioSink(bool enabled, int sampleRate, int channels)
 	return rtcEngine->setExternalAudioSink(enabled, sampleRate, channels);
 }
 
-int AgoraClr::pullAudioFrame(ClrAudioFrame^ frame)
+int AgoraClr::pullAudioFrame([Out] ClrAudioFrame^% frame)
 {
-	return agoraMediaEngine ? agoraMediaEngine->pullAudioFrame(frame) : -1;
+	IAudioFrameObserver::AudioFrame *raw = new IAudioFrameObserver::AudioFrame();
+	auto result = agoraMediaEngine->pullAudioFrame(raw);
+	if (result == 0) {
+		frame = gcnew ClrAudioFrame(*raw);
+	}
+	return result;
+	//return agoraMediaEngine ? agoraMediaEngine->pullAudioFrame(frame) : -1;
 }
 
 int AgoraClr::setExternalVideoSource(bool enabled, bool useTexture)

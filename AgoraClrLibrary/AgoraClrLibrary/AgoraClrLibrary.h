@@ -242,7 +242,7 @@ namespace AgoraClrLibrary
 
 		//音视频自渲染
 		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
-		int pullAudioFrame(ClrAudioFrame^ frame);
+		int pullAudioFrame([Out] ClrAudioFrame^% frame);
 
 		//原始音频数据
 		int setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);

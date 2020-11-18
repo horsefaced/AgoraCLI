@@ -17,18 +17,30 @@ namespace AgoraClrDemo
         private AgoraClr agora = new AgoraClr();
         private AgoraClrRTM agoraRTM = new AgoraClrRTM();
         private AgoraClrLibrary.onCameraReady cameraReadyEvent;
+        private System.Timers.Timer m_timer;
+        private bool m_start;
+        private bool m_pulling;
 
         public Form1()
         {
             InitializeComponent();
             log("initialize", agora.initialize(txtVendorkey.Text));
-            log("initialize rtm", agoraRTM.initialize(txtVendorkey.Text));
-            agora.onCameraReady += new AgoraClrLibrary.onCameraReady(onCameraReady);
-            agora.onJoinChannelSuccess += new AgoraClrLibrary.onJoinChannelSuccess(onJoinChannelSuccess);
-            agora.onFirstRemoteVideoDecoded += new AgoraClrLibrary.onFirstRemoteVideoDecoded(onFirstRemoteVideoDecoded);
-            agora.onFirstLocalVideoFrame += new AgoraClrLibrary.onFirstLocalVideoFrame(onFirstLocalVideoFrame);
-            agora.onCaptureVideoFrame += new AgoraClrLibrary.onCaptureVideoFrame(onCaptureVideoFrame);
-            agora.onPreEncodeVideoFrame += new AgoraClrLibrary.onPreEncodeVideoFrame(onPreEncodeVideoFrame);
+            //log("initialize rtm", agoraRTM.initialize(txtVendorkey.Text));
+            agora.onCameraReady += onCameraReady;
+            agora.onJoinChannelSuccess += onJoinChannelSuccess;
+            agora.onFirstRemoteVideoDecoded += onFirstRemoteVideoDecoded;
+            agora.onFirstLocalVideoFrame += onFirstLocalVideoFrame;
+            agora.onCaptureVideoFrame += onCaptureVideoFrame;
+            agora.onPreEncodeVideoFrame += onPreEncodeVideoFrame;
+
+            /*AgoraClrRTMChannel channel = agoraRTM.createChannel("1234");
+            channel.onMemberJoined += onMemberJoined;*/
+
+        }
+
+        private void onMemberJoined(ClrChannelMember member)
+        {
+
         }
 
         bool onPreEncodeVideoFrame(ClrVideoFrame frame)
@@ -74,6 +86,7 @@ namespace AgoraClrDemo
         private void onJoinChannelSuccess(String channel, uint uid, int elapsed)
         {
             log("join channel success in " + channel + " by " + uid, elapsed);
+            m_start = true;
         }
 
         delegate void LogDelegate(String operation, int result);
@@ -94,7 +107,6 @@ namespace AgoraClrDemo
 
         private void button1_Click(object sender, EventArgs e)
         {
-           
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -118,14 +130,28 @@ namespace AgoraClrDemo
             log("setClientRole", agora.setClientRole(ClientRoleType.CLIENT_ROLE_BROADCASTER));
             log("enableVideo", agora.enableVideo());
             log("setuplocalVideo", agora.setupLocalVideo(localVideo.Handle, (int)EnumRenderModeType.RENDER_MODE_ADAPTIVE, 0));
+            log("setExternalAudioSink", agora.setExternalAudioSink(true, 44100, 1));
             log("startPreview", agora.startPreview());
+
+            m_timer = new System.Timers.Timer(10);
+            m_timer.Elapsed += pullAudioFrameTimer;
+            m_timer.Enabled = true;
+        }
+
+        private void pullAudioFrameTimer(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (!m_start) return;
+            if (m_pulling) return;
+
+            m_pulling = true;
+            ClrAudioFrame frame = null;
+            var result = agora.pullAudioFrame(out frame);
+            m_pulling = false;
         }
 
         private void btnJoinChannel_Click(object sender, EventArgs e)
         {
-            log("join channel", agora.joinChannel(
-                "006c021e195268048418d8176e3d7a8e8bdIAA7cy2rSL8bDOtQpO7anqaZEEix4DR13LpxUFWUWOWwUNxEAZkAAAAAEAAnMDOc7zM+XwEAAQDuMz5f",
-                txtChannelName.Text, null, 0));
+            log("join channel", agora.joinChannel(txtToken.Text, txtChannelName.Text, null, 0));
         }
 
         private void button1_Click_1(object sender, EventArgs e)
