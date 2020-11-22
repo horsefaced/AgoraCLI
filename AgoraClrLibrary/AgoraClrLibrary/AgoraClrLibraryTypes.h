@@ -617,9 +617,35 @@ namespace AgoraClrLibrary {
 		int frameRate;
 		int bitrate;
 		bool captureMouseCursor;
+		bool windowFocus;
+		List<IntPtr> excludeWindows;
 
-		ClrScreenCaptureParameters() : dimensions(), frameRate(5), bitrate(0), captureMouseCursor(false) {}
-		operator agora::rtc::ScreenCaptureParameters() { return agora::rtc::ScreenCaptureParameters(dimensions->width, dimensions->height, frameRate, bitrate, captureMouseCursor); }
+		ClrScreenCaptureParameters() : 
+			dimensions(), 
+			frameRate(5), 
+			bitrate(0), 
+			captureMouseCursor(false), 
+			windowFocus(false),
+			excludeWindows(gcnew List<IntPtr>())
+		{}
+		operator agora::rtc::ScreenCaptureParameters() { 
+			auto result = agora::rtc::ScreenCaptureParameters(
+				dimensions->width, 
+				dimensions->height, 
+				frameRate, 
+				bitrate, 
+				captureMouseCursor,
+				windowFocus); 
+			result.excludeWindowCount = this->excludeWindows.Count;
+			if (result.excludeWindowCount == 0) result.excludeWindowList = NULL;
+			else {
+				result.excludeWindowList = new view_t[result.excludeWindowCount];
+				for (int i = 0; i < result.excludeWindowCount; i++) {
+					result.excludeWindowList[i] = this->excludeWindows[i].ToPointer();
+				}
+			}
+			return result;
+		}
 	};
 
 
