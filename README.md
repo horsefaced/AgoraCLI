@@ -21,6 +21,9 @@ wulaoh genMY
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2020-11-23
+升级至3.1.2，添加3.1.0版本说明中的功能
+
 ## 2020-08-06 
 AgoraClrLibrary.initialize方法添加areaCode
 
