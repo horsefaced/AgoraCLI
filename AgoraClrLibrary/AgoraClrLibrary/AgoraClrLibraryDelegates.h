@@ -196,4 +196,11 @@ namespace AgoraClrLibrary {
 
 	public delegate void onChannelMediaRelayStateChanged(EnumChannelMediaRelayState, EnumChannelMediaRelayError);
 
+	public delegate void onAudioPublishStateChanged(String^, EnumStreamPublishState, EnumStreamPublishState, int);
+	public delegate void onVideoPublishStateChanged(String^, EnumStreamPublishState, EnumStreamPublishState, int);
+	public delegate void onAudioSubscribeStateChanged(String^, UINT, EnumStreamSubscribeState, EnumStreamSubscribeState, int);
+	public delegate void onVideoSubscribeStateChanged(String^, UINT, EnumStreamSubscribeState, EnumStreamSubscribeState, int);
+	public delegate void onFirstLocalAudioFramePublished(int);
+	public delegate void onFirstLocalVideoFramePublished(int);
+
 }

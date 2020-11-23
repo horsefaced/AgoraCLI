@@ -1,7 +1,6 @@
 // AgoraClrLibrary.h
 
 #pragma once
-#include "..\..\agorasdk\include\IAgoraRtcEngine.h"
 #include "AgoraClrAudioDeviceManager.h"
 #include "AgoraClrEventHandler.h"
 #include "AgoraClrLibraryDelegates.h"
@@ -14,6 +13,7 @@
 #include "AgoraClrChannel.h"
 
 #include <string>
+#include "AgoraClrVideoSource.h"
 
 using namespace System;
 using namespace Runtime::InteropServices;
@@ -94,6 +94,12 @@ namespace AgoraClrLibrary
 		onLocalVideoStateChanged^ onLocalVideoStateChanged;
 		onFirstLocalVideoFrame^ onFirstLocalVideoFrame;
 		onFirstLocalAudioFrame^ onFirstLocalAudioFrame;
+		onAudioPublishStateChanged^ onAudioPublishStateChanged;
+		onVideoPublishStateChanged^ onVideoPublishStateChanged;
+		onAudioSubscribeStateChanged^ onAudioSubscribeStateChanged;
+		onVideoSubscribeStateChanged^ onVideoSubscribeStateChanged;
+		onFirstLocalAudioFramePublished^ onFirstLocalAudioFramePublished;
+		onFirstLocalVideoFramePublished^ onFirstLocalVideoFramePublished;
 
 		//远端媒体事件
 		onRemoteAudioStateChanged^ onRemoteAudioStateChanged;
@@ -234,6 +240,9 @@ namespace AgoraClrLibrary
 		onLastmileQuality^ onLastmileQuality;
 		Action<ClrLastmileProbeResult^>^ onLastmileProbeResult;
 
+		//自定义视频模块
+		//bool setVideoSource(ClrVideoSource^ source);
+
 		//音视频自采集
 		int setExternalVideoSource(bool enabled, bool useTexture);
 		int pushVideoFrame(ClrExternalVideoFrame^ frame);
@@ -278,8 +287,8 @@ namespace AgoraClrLibrary
 		int clearVideoWatermarks();
 
 		//加密
-		int setEncryptionSecret(String^ key);
-		int setEncryptionMode(String^ mode);
+		int enableEncryption(bool enabled, ClrEncryptionConfig^ config);
+
 
 		//音频录制
 		int startAudioRecording(String^ path, int sampleRate, AudioRecordingQualityType quality);
@@ -344,6 +353,8 @@ namespace AgoraClrLibrary
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
 		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
+		int setEncryptionSecret(String^ key);
+		int setEncryptionMode(String^ mode);
 		//int setPlaybackDeviceVolume(int volume);
 
 		onAudioQuality^ onAudioQuality;
@@ -484,6 +495,13 @@ namespace AgoraClrLibrary
 		int NativeGetMaxMetadataSize();
 		bool NativeOnReadyToSendMetadata(IMetadataObserver::Metadata& metadata);
 		void NativeOnMetadataReceived(const IMetadataObserver::Metadata& metadata);
+
+		void NativeOnAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
+		void NativeOnVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState);
+		void NativeOnAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
+		void NativeOnVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
+		void NativeOnFirstLocalAudioFramePublished(int elapse);
+		void NativeOnFirstLocalVideoFramePublished(int elapse);
 
 		void initializeEventHandler();
 		void initializePacketObserver();

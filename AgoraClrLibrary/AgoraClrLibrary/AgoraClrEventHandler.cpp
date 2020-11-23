@@ -293,3 +293,33 @@ void AgoraClrEventHandler::onLastmileProbeResult(const LastmileProbeResult& resu
 {
 	if (onLastmileProbeResultEvent) onLastmileProbeResultEvent(result);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+{
+	if (onAudioPublishStateChangedEvent) onAudioPublishStateChangedEvent(channel, oldState, newState, elapseSinceLastState);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+{
+	if (onVideoPublishStateChangedEvent) onVideoPublishStateChangedEvent(channel, oldState, newState, elapseSinceLastState);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+{
+	if (onAudioSubscribeStateChangedEvent) onAudioSubscribeStateChangedEvent(channel, uid, oldState, newState, elapseSinceLastState);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+{
+	if (onVideoSubscribeStateChangedEvent) onVideoSubscribeStateChangedEvent(channel, uid, oldState, newState, elapseSinceLastState);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onFirstLocalAudioFramePublished(int elapsed)
+{
+	if (onFirstLocalAudioFrameEvent) onFirstLocalAudioFrameEvent(elapsed);
+}
+
+void AgoraClrLibrary::AgoraClrEventHandler::onFirstLocalVideoFramePublished(int elapsed)
+{
+	if (onFirstLocalVideoFramePublishedEvent) onFirstLocalVideoFramePublishedEvent(elapsed);
+}

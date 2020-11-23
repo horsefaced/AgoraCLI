@@ -265,7 +265,7 @@ namespace AgoraClrLibrary {
 	};
 
 	public
-		enum class EnumConnectionStateType 
+		enum class EnumConnectionStateType
 	{
 		CONNECTION_STATE_DISCONNECTED = 1,
 		CONNECTION_STATE_CONNECTING = 2,
@@ -355,7 +355,7 @@ namespace AgoraClrLibrary {
 	/** The video pixel format.
 		 */
 	public
-		enum class VideoPixelFormate
+		enum class EnumVideoPixelFormate
 	{
 		/** 0: The video pixel format is unknown.
 			 */
@@ -470,7 +470,9 @@ namespace AgoraClrLibrary {
 		/** The local video capture fails. Check whether the capturer is working properly. */
 		LOCAL_VIDEO_STREAM_ERROR_CAPTURE_FAILURE = 4,
 		/** The local video encoding fails. */
-		LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5
+		LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
+		/** 11: The shared window is minimized when you call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" to share a window.*/
+		LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
 	};
 
 	public enum class EnumRemoteAudioState
@@ -563,156 +565,156 @@ namespace AgoraClrLibrary {
 
 	public enum class VoiceChangerPreset {
 		/**
-     * The original voice (no local voice change).
-     */
-    VOICE_CHANGER_OFF = 0x00000000, //Turn off the voice changer
-    /**
-     * The voice of an old man.
-     */
-    VOICE_CHANGER_OLDMAN = 0x00000001,
-    /**
-     * The voice of a little boy.
-     */
-    VOICE_CHANGER_BABYBOY = 0x00000002,
-    /**
-     * The voice of a little girl.
-     */
-    VOICE_CHANGER_BABYGIRL = 0x00000003,
-    /**
-     * The voice of Zhu Bajie, a character in Journey to the West who has a voice like that of a growling bear.
-     */
-    VOICE_CHANGER_ZHUBAJIE = 0x00000004,
-    /**
-     * The ethereal voice.
-     */
-    VOICE_CHANGER_ETHEREAL = 0x00000005,
-    /**
-     * The voice of Hulk.
-     */
-    VOICE_CHANGER_HULK = 0x00000006,
-    /**
-     * A more vigorous voice.
-     */
-    VOICE_BEAUTY_VIGOROUS = 0x00100001,//7,
-    /**
-     * A deeper voice.
-     */
-    VOICE_BEAUTY_DEEP = 0x00100002,
-    /**
-     * A mellower voice.
-     */
-    VOICE_BEAUTY_MELLOW = 0x00100003,
-    /**
-     * Falsetto.
-     */
-    VOICE_BEAUTY_FALSETTO = 0x00100004,
-    /**
-     * A fuller voice.
-     */
-    VOICE_BEAUTY_FULL = 0x00100005,
-    /**
-     * A clearer voice.
-     */
-    VOICE_BEAUTY_CLEAR = 0x00100006,
-    /**
-     * A more resounding voice.
-     */
-    VOICE_BEAUTY_RESOUNDING = 0x00100007,
-    /**
-     * A more ringing voice.
-     */
-    VOICE_BEAUTY_RINGING = 0x00100008,
-    /**
-     * A more spatially resonant voice.
-     */
-    VOICE_BEAUTY_SPACIAL = 0x00100009,
-    /**
-     * (For male only) A more magnetic voice. Do not use it when the speaker is a female; otherwise, voice distortion occurs.
-     */
-    GENERAL_BEAUTY_VOICE_MALE_MAGNETIC = 0x00200001,
-    /**
-     * (For female only) A fresher voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
-     */
-    GENERAL_BEAUTY_VOICE_FEMALE_FRESH = 0x00200002,
-    /**
-     * 	(For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
-     */
-    GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
+	 * The original voice (no local voice change).
+	 */
+		VOICE_CHANGER_OFF = 0x00000000, //Turn off the voice changer
+		/**
+		 * The voice of an old man.
+		 */
+		 VOICE_CHANGER_OLDMAN = 0x00000001,
+		 /**
+		  * The voice of a little boy.
+		  */
+		  VOICE_CHANGER_BABYBOY = 0x00000002,
+		  /**
+		   * The voice of a little girl.
+		   */
+		   VOICE_CHANGER_BABYGIRL = 0x00000003,
+		   /**
+			* The voice of Zhu Bajie, a character in Journey to the West who has a voice like that of a growling bear.
+			*/
+			VOICE_CHANGER_ZHUBAJIE = 0x00000004,
+			/**
+			 * The ethereal voice.
+			 */
+			 VOICE_CHANGER_ETHEREAL = 0x00000005,
+			 /**
+			  * The voice of Hulk.
+			  */
+			  VOICE_CHANGER_HULK = 0x00000006,
+			  /**
+			   * A more vigorous voice.
+			   */
+			   VOICE_BEAUTY_VIGOROUS = 0x00100001,//7,
+			   /**
+				* A deeper voice.
+				*/
+				VOICE_BEAUTY_DEEP = 0x00100002,
+				/**
+				 * A mellower voice.
+				 */
+				 VOICE_BEAUTY_MELLOW = 0x00100003,
+				 /**
+				  * Falsetto.
+				  */
+				  VOICE_BEAUTY_FALSETTO = 0x00100004,
+				  /**
+				   * A fuller voice.
+				   */
+				   VOICE_BEAUTY_FULL = 0x00100005,
+				   /**
+					* A clearer voice.
+					*/
+					VOICE_BEAUTY_CLEAR = 0x00100006,
+					/**
+					 * A more resounding voice.
+					 */
+					 VOICE_BEAUTY_RESOUNDING = 0x00100007,
+					 /**
+					  * A more ringing voice.
+					  */
+					  VOICE_BEAUTY_RINGING = 0x00100008,
+					  /**
+					   * A more spatially resonant voice.
+					   */
+					   VOICE_BEAUTY_SPACIAL = 0x00100009,
+					   /**
+						* (For male only) A more magnetic voice. Do not use it when the speaker is a female; otherwise, voice distortion occurs.
+						*/
+						GENERAL_BEAUTY_VOICE_MALE_MAGNETIC = 0x00200001,
+						/**
+						 * (For female only) A fresher voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
+						 */
+						 GENERAL_BEAUTY_VOICE_FEMALE_FRESH = 0x00200002,
+						 /**
+						  * 	(For female only) A more vital voice. Do not use it when the speaker is a male; otherwise, voice distortion occurs.
+						  */
+						  GENERAL_BEAUTY_VOICE_FEMALE_VITALITY = 0x00200003
 
 	};
 
 	public enum class EnumAudioReverbPreset {
 		/**
-     * Turn off local voice reverberation, that is, to use the original voice.
-     */
-    AUDIO_REVERB_OFF = 0x00000000, // Turn off audio reverb
-    /**
-     * The reverberation style typical of a KTV venue (enhanced).
-     */
-    AUDIO_REVERB_FX_KTV = 0x00100001,
-    /**
-     * The reverberation style typical of a concert hall (enhanced).
-     */
-    AUDIO_REVERB_FX_VOCAL_CONCERT = 0x00100002,
-    /**
-     * The reverberation style typical of an uncle's voice.
-     */
-    AUDIO_REVERB_FX_UNCLE = 0x00100003,
-    /**
-     * The reverberation style typical of a little sister's voice.
-     */
-    AUDIO_REVERB_FX_SISTER = 0x00100004,
-    /**
-     * The reverberation style typical of a recording studio (enhanced).
-     */
-    AUDIO_REVERB_FX_STUDIO = 0x00100005,
-    /**
-     * The reverberation style typical of popular music (enhanced).
-     */
-    AUDIO_REVERB_FX_POPULAR = 0x00100006,
-    /**
-     * The reverberation style typical of R&B music (enhanced).
-     */
-    AUDIO_REVERB_FX_RNB = 0x00100007,
-    /**
-     * The reverberation style typical of the vintage phonograph.
-     */
-    AUDIO_REVERB_FX_PHONOGRAPH = 0x00100008,
-    /**
-     * The reverberation style typical of popular music.
-     */
-    AUDIO_REVERB_POPULAR = 0x00000001,
-    /**
-     * The reverberation style typical of R&B music.
-     */
-    AUDIO_REVERB_RNB = 0x00000002,
-    /**
-     * The reverberation style typical of rock music.
-     */
-    AUDIO_REVERB_ROCK = 0x00000003,
-    /**
-     * The reverberation style typical of hip-hop music.
-     */
-     AUDIO_REVERB_HIPHOP = 0x00000004,
-    /**
-     * The reverberation style typical of a concert hall.
-     */
-    AUDIO_REVERB_VOCAL_CONCERT = 0x00000005,
-    /**
-     * The reverberation style typical of a KTV venue.
-     */
-    AUDIO_REVERB_KTV = 0x00000006,
-    /**
-     * The reverberation style typical of a recording studio.
-     */
-    AUDIO_REVERB_STUDIO = 0x00000007,
-    /**
-     * The reverberation of the virtual stereo. The virtual stereo is an effect that renders the monophonic
-     * audio as the stereo audio, so that all users in the channel can hear the stereo voice effect.
-     * To achieve better virtual stereo reverberation, Agora recommends setting `profile` in `setAudioProfile`
-     * as `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`.
-     */
-    AUDIO_VIRTUAL_STEREO = 0x00200001
+	 * Turn off local voice reverberation, that is, to use the original voice.
+	 */
+		AUDIO_REVERB_OFF = 0x00000000, // Turn off audio reverb
+		/**
+		 * The reverberation style typical of a KTV venue (enhanced).
+		 */
+		 AUDIO_REVERB_FX_KTV = 0x00100001,
+		 /**
+		  * The reverberation style typical of a concert hall (enhanced).
+		  */
+		  AUDIO_REVERB_FX_VOCAL_CONCERT = 0x00100002,
+		  /**
+		   * The reverberation style typical of an uncle's voice.
+		   */
+		   AUDIO_REVERB_FX_UNCLE = 0x00100003,
+		   /**
+			* The reverberation style typical of a little sister's voice.
+			*/
+			AUDIO_REVERB_FX_SISTER = 0x00100004,
+			/**
+			 * The reverberation style typical of a recording studio (enhanced).
+			 */
+			 AUDIO_REVERB_FX_STUDIO = 0x00100005,
+			 /**
+			  * The reverberation style typical of popular music (enhanced).
+			  */
+			  AUDIO_REVERB_FX_POPULAR = 0x00100006,
+			  /**
+			   * The reverberation style typical of R&B music (enhanced).
+			   */
+			   AUDIO_REVERB_FX_RNB = 0x00100007,
+			   /**
+				* The reverberation style typical of the vintage phonograph.
+				*/
+				AUDIO_REVERB_FX_PHONOGRAPH = 0x00100008,
+				/**
+				 * The reverberation style typical of popular music.
+				 */
+				 AUDIO_REVERB_POPULAR = 0x00000001,
+				 /**
+				  * The reverberation style typical of R&B music.
+				  */
+				  AUDIO_REVERB_RNB = 0x00000002,
+				  /**
+				   * The reverberation style typical of rock music.
+				   */
+				   AUDIO_REVERB_ROCK = 0x00000003,
+				   /**
+					* The reverberation style typical of hip-hop music.
+					*/
+					AUDIO_REVERB_HIPHOP = 0x00000004,
+					/**
+					 * The reverberation style typical of a concert hall.
+					 */
+					 AUDIO_REVERB_VOCAL_CONCERT = 0x00000005,
+					 /**
+					  * The reverberation style typical of a KTV venue.
+					  */
+					  AUDIO_REVERB_KTV = 0x00000006,
+					  /**
+					   * The reverberation style typical of a recording studio.
+					   */
+					   AUDIO_REVERB_STUDIO = 0x00000007,
+					   /**
+						* The reverberation of the virtual stereo. The virtual stereo is an effect that renders the monophonic
+						* audio as the stereo audio, so that all users in the channel can hear the stereo voice effect.
+						* To achieve better virtual stereo reverberation, Agora recommends setting `profile` in `setAudioProfile`
+						* as `AUDIO_PROFILE_MUSIC_HIGH_QUALITY_STEREO(5)`.
+						*/
+						AUDIO_VIRTUAL_STEREO = 0x00200001
 
 	};
 
@@ -916,7 +918,7 @@ namespace AgoraClrLibrary {
 				VIDEO_MIRROR_MODE_DISABLED = 2,//disable mirror
 	};
 
-	public enum class EnumClientRoleType 
+	public enum class EnumClientRoleType
 	{
 		/** 1: Host */
 		CLIENT_ROLE_BROADCASTER = 1,
@@ -934,21 +936,94 @@ namespace AgoraClrLibrary {
 		USER_OFFLINE_BECOME_AUDIENCE = 2,
 	};
 
-	 /**
-   * The frame position of the video observer.
-   */
+	/**
+  * The frame position of the video observer.
+  */
 	public enum class EnumVideoObserverPositionType {
-    /**
-     * 1: The post-capturer position, which corresponds to the video data in the onCaptureVideoFrame callback.
-     */
-    POSITION_POST_CAPTURER = 1 << 0,
-    /**
-     * 2: The pre-renderer position, which corresponds to the video data in the onRenderVideoFrame callback.
-     */
-    POSITION_PRE_RENDERER = 1 << 1,
-    /**
-     * 4: The pre-encoder position, which corresponds to the video data in the onPreEncodeVideoFrame callback.
-     */
-    POSITION_PRE_ENCODER = 1 << 2,
-  };
+		/**
+		 * 1: The post-capturer position, which corresponds to the video data in the onCaptureVideoFrame callback.
+		 */
+		POSITION_POST_CAPTURER = 1 << 0,
+		/**
+		 * 2: The pre-renderer position, which corresponds to the video data in the onRenderVideoFrame callback.
+		 */
+		 POSITION_PRE_RENDERER = 1 << 1,
+		 /**
+		  * 4: The pre-encoder position, which corresponds to the video data in the onPreEncodeVideoFrame callback.
+		  */
+		  POSITION_PRE_ENCODER = 1 << 2,
+	};
+
+	public enum class EnumStreamPublishState {
+		/** 0: The initial publishing state after joining the channel.*/
+		PUB_STATE_IDLE = 0,
+		/** 1: Fails to publish the local stream. Possible reasons:
+		 * - The local user calls \ref IRtcEngine::muteLocalAudioStream "muteLocalAudioStream(true)" or \ref IRtcEngine::muteLocalVideoStream "muteLocalVideoStream(true)" to stop sending local streams.
+		 * - The local user calls \ref IRtcEngine::disableAudio "disableAudio" or \ref IRtcEngine::disableVideo "disableVideo" to disable the entire audio or video module.
+		 * - The local user calls \ref IRtcEngine::enableLocalAudio "enableLocalAudio(false)" or \ref IRtcEngine::enableLocalVideo "enableLocalVideo(false)" to disable the local audio sampling or video capturing.
+		 * - The role of the local user is `AUDIENCE`.
+		 */
+		 PUB_STATE_NO_PUBLISHED = 1,
+		 /** 2: Publishing.
+		  */
+		  PUB_STATE_PUBLISHING = 2,
+		  /** 3: Publishes successfully.
+		   */
+		   PUB_STATE_PUBLISHED = 3
+	};
+
+	public enum class EnumStreamSubscribeState {
+		/** 0: The initial subscribing state after joining the channel.
+		 */
+		SUB_STATE_IDLE = 0,
+		/** 1: Fails to subscribe to the remote stream. Possible reasons:
+		 * - The remote user:
+		 *  - Calls \ref IRtcEngine::muteLocalAudioStream "muteLocalAudioStream(true)" or \ref IRtcEngine::muteLocalVideoStream "muteLocalVideoStream(true)" to stop sending local streams.
+		 *  - Calls \ref IRtcEngine::disableAudio "disableAudio" or \ref IRtcEngine::disableVideo "disableVideo" to disable the entire audio or video modules.
+		 *  - Calls \ref IRtcEngine::enableLocalAudio "enableLocalAudio(false)" or \ref IRtcEngine::enableLocalVideo "enableLocalVideo(false)" to disable the local audio sampling or video capturing.
+		 *  - The role of the remote user is `AUDIENCE`.
+		 * - The local user calls the following methods to stop receiving remote streams:
+		 *  - Calls \ref IRtcEngine::muteRemoteAudioStream "muteRemoteAudioStream(true)", \ref IRtcEngine::muteAllRemoteAudioStreams "muteAllRemoteAudioStreams(true)", or \ref IRtcEngine::setDefaultMuteAllRemoteAudioStreams "setDefaultMuteAllRemoteAudioStreams(true)" to stop receiving remote audio streams.
+		 *  - Calls \ref IRtcEngine::muteRemoteVideoStream "muteRemoteVideoStream(true)", \ref IRtcEngine::muteAllRemoteVideoStreams "muteAllRemoteVideoStreams(true)", or \ref IRtcEngine::setDefaultMuteAllRemoteVideoStreams "setDefaultMuteAllRemoteVideoStreams(true)" to stop receiving remote video streams.
+		 */
+		 SUB_STATE_NO_SUBSCRIBED = 1,
+		 /** 2: Subscribing.
+		  */
+		  SUB_STATE_SUBSCRIBING = 2,
+		  /** 3: Subscribes to and receives the remote stream successfully.
+		   */
+		   SUB_STATE_SUBSCRIBED = 3
+	};
+
+	public enum class EnumEncryptionMode
+	{
+		/** 1: (Default) 128-bit AES encryption, XTS mode.
+		 */
+		AES_128_XTS = 1,
+		/** 2: 128-bit AES encryption, ECB mode.
+		 */
+		 AES_128_ECB = 2,
+		 /** 3: 256-bit AES encryption, XTS mode.
+		  */
+		  AES_256_XTS = 3,
+		  /** 4: 128-bit SM4 encryption, ECB mode.
+		   */
+		   SM4_128_ECB = 4,
+		   /** Enumerator boundary.
+			*/
+			MODE_END,
+	};
+
+	public enum class EnumVideoCaptureType {
+		/** Unknown type.
+		 */
+		VIDEO_CAPTURE_UNKNOWN,
+		/** (Default) Video captured by the camera.
+		 */
+		 VIDEO_CAPTURE_CAMERA,
+		 /** Video for screen sharing.
+		  */
+		  VIDEO_CAPTURE_SCREEN,
+	};
+
 }

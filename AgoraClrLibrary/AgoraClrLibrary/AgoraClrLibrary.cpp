@@ -24,7 +24,7 @@ AgoraClr::AgoraClr()
 	IsVideoMirrorApplied = false;
 	IsMultipleChannelVideoFrameWanted = false;
 	IsMultipleChannelAudioFrameWanted = false;
-	ObservedVideoFramePosition = static_cast<UINT>(EnumVideoObserverPositionType::POSITION_POST_CAPTURER) ;
+	ObservedVideoFramePosition = static_cast<UINT>(EnumVideoObserverPositionType::POSITION_POST_CAPTURER);
 
 	MaxMetadataSize = 1024;
 
@@ -37,7 +37,7 @@ AgoraClr::AgoraClr()
 AgoraClr::~AgoraClr()
 {
 	this->release();
-	for each(GCHandle handle in gchs) handle.Free();
+	for each (GCHandle handle in gchs) handle.Free();
 }
 
 AgoraClr::!AgoraClr()
@@ -54,7 +54,7 @@ int AgoraClr::initialize(String^ vendorkey, [Optional] Nullable<int> areaCode)
 		return -1;
 
 	//auto isOK = rtcEngine->setParameters("{\"che.audio.enable.agc\":false}");
-	
+
 	agora::rtc::RtcEngineContext context;
 	context.appId = strcopy(MarshalString(vendorkey));
 	context.eventHandler = agoraEventHandler;
@@ -261,6 +261,11 @@ int AgoraClr::setEncryptionMode(String^ mode)
 	return rtcEngine->setEncryptionMode(MarshalString(mode).c_str());
 }
 
+int AgoraClrLibrary::AgoraClr::enableEncryption(bool enabled, ClrEncryptionConfig^ config)
+{
+	return rtcEngine->enableEncryption(enabled, config);
+}
+
 int AgoraClr::getCallId(String^% id)
 {
 	agora::util::AString callid;
@@ -448,7 +453,7 @@ int AgoraClr::setRemoteRenderMode(UINT uid, EnumRenderModeType mode, EnumVideoMi
 	return rtcEngine->setRemoteRenderMode(
 		uid, static_cast<agora::rtc::RENDER_MODE_TYPE>(mode),
 		static_cast<VIDEO_MIRROR_MODE_TYPE>(mt)
-		);
+	);
 }
 
 int AgoraClr::enableAudioVolumeIndication(int interval, int smooth, bool report_vad)
@@ -731,7 +736,7 @@ int AgoraClr::setExternalAudioSink(bool enabled, int sampleRate, int channels)
 
 int AgoraClr::pullAudioFrame([Out] ClrAudioFrame^% frame)
 {
-	IAudioFrameObserver::AudioFrame *raw = new IAudioFrameObserver::AudioFrame();
+	IAudioFrameObserver::AudioFrame* raw = new IAudioFrameObserver::AudioFrame();
 	auto result = agoraMediaEngine->pullAudioFrame(raw);
 	if (result == 0) {
 		frame = gcnew ClrAudioFrame(*raw);
@@ -739,6 +744,11 @@ int AgoraClr::pullAudioFrame([Out] ClrAudioFrame^% frame)
 	return result;
 	//return agoraMediaEngine ? agoraMediaEngine->pullAudioFrame(frame) : -1;
 }
+
+//bool AgoraClrLibrary::AgoraClr::setVideoSource(ClrVideoSource^ source)
+//{
+//	return rtcEngine->setVideoSource(source);
+//}
 
 int AgoraClr::setExternalVideoSource(bool enabled, bool useTexture)
 {
@@ -858,6 +868,13 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onChannelMediaRelayStateChangedEvent = static_cast<PFOnChannelMediaRelayStateChanged>(regEvent(gcnew NativeOnChannelMediaRelayStateChangedDelegate(this, &AgoraClr::NativeOnChannelMediaRelayStateChanged)));
 	agoraEventHandler->onChannelMediaRelayEventEvnet = static_cast<PFOnChannelMediaRelayEvent>(regEvent(gcnew NativeOnChannelMediaRelayEventDelegate(this, &AgoraClr::NativeOnChannelMediaRelayEvent)));
 	agoraEventHandler->onLastmileProbeResultEvent = static_cast<PFOnLastmileProbeResult>(regEvent(gcnew NativeOnLastmileProbeResultDelegate(this, &AgoraClr::NativeOnLastmileProbeResult)));
+
+	agoraEventHandler->onAudioPublishStateChangedEvent = static_cast<OnAudioPublishStateChanged::Pointer>(regEvent(gcnew OnAudioPublishStateChanged::Type(this, &AgoraClr::NativeOnAudioPublishStateChanged)));
+	agoraEventHandler->onVideoPublishStateChangedEvent = static_cast<OnVideoPublishStateChanged::Pointer>(regEvent(gcnew OnVideoPublishStateChanged::Type(this, &AgoraClr::NativeOnVideoPublishStateChanged)));
+	agoraEventHandler->onAudioSubscribeStateChangedEvent = static_cast<OnAudioSubscribeStateChanged::Pointer>(regEvent(gcnew OnAudioSubscribeStateChanged::Type(this, &AgoraClr::NativeOnAudioSubscribeStateChanged)));
+	agoraEventHandler->onVideoSubscribeStateChangedEvent = static_cast<OnVideoSubscribeStateChanged::Pointer>(regEvent(gcnew OnVideoSubscribeStateChanged::Type(this, &AgoraClr::NativeOnVideoSubscribeStateChanged)));
+	agoraEventHandler->onFirstLocalAudioFramePublishedEvent = static_cast<OnFirstLocalAudioFramePublished::Pointer>(regEvent(gcnew OnFirstLocalAudioFramePublished::Type(this, &AgoraClr::NativeOnFirstLocalAudioFramePublished)));
+	agoraEventHandler->onFirstLocalVideoFramePublishedEvent = static_cast<OnFirstLocalVideoFramePublished::Pointer>(regEvent(gcnew OnFirstLocalVideoFramePublished::Type(this, &AgoraClr::NativeOnFirstLocalVideoFramePublished)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -874,7 +891,7 @@ void AgoraClr::initializeRawFrameObserver()
 	agoraAudioObserver->onPlaybackAudioFrameEvent = PFOnPlaybackAudioFrame(regEvent(gcnew NativeOnPlaybackAudioFrameDelegate(this, &AgoraClr::NativeOnPlaybackAudioFrame)));
 	agoraAudioObserver->onPlaybackAudioFrameBeforeMixingEvent = PFOnPlaybackAudioFrameBeforeMixing(regEvent(gcnew NativeOnPlaybackAudioFrameBeforeMixingDelegate(this, &AgoraClr::NativeOnPlaybackAudioFrameBeforeMixing)));
 	agoraAudioObserver->onMixedAudioFrameEvent = PFOnMixedAudioFrame(regEvent(gcnew NativeOnMixedAudioFrameDelegate(this, &AgoraClr::NativeOnMixedAudioFrame)));
-	agoraAudioObserver->isMultipleChannelFrameWantedEvent = static_cast<PFIsMultipleChannelFrameWanted>(regEvent(gcnew NativeIsMultipleChannelFrameWantedDelegate(this,&AgoraClr::NativeIsMultipleChannelAudioFrameWanted)));
+	agoraAudioObserver->isMultipleChannelFrameWantedEvent = static_cast<PFIsMultipleChannelFrameWanted>(regEvent(gcnew NativeIsMultipleChannelFrameWantedDelegate(this, &AgoraClr::NativeIsMultipleChannelAudioFrameWanted)));
 
 	agoraVideoObserver->onCaptureVideoFrameEvent = PFOnCaptureVideoFrame(regEvent(gcnew NativeOnCaptureVideoFrameDelegate(this, &AgoraClr::NativeOnCaptureVideoFrame)));
 	agoraVideoObserver->onPreEncodeVideoFrameEvent = PFOnPreEncodeVideoFrame(regEvent(gcnew NativeOnPreEncodeVideoFrameDelegate(this, &AgoraClr::NativeOnPreEncodeVideoFrame)));
@@ -883,7 +900,7 @@ void AgoraClr::initializeRawFrameObserver()
 	agoraVideoObserver->onGetVideoFormatPreferenceEvent = static_cast<PFOnGetVideoFormatPreference>(regEvent(gcnew NativeOnGetVideoFormatePreferenceDelegate(this, &AgoraClr::NativeOnGetVideoFormatPreference)));
 	agoraVideoObserver->onGetRotationAppliedEvent = static_cast<PFOnGetRotationApplied>(regEvent(gcnew NativeOnGetRotationAppliedDelegate(this, &AgoraClr::NativeOnGetRotationApplied)));
 	agoraVideoObserver->onGetMirrorAppliedEvent = static_cast<PFOnGetMirrorApplied>(regEvent(gcnew NativeOnGetMirrorAppliedDelegate(this, &AgoraClr::NativeOnGetMirrorApplied)));
-	agoraVideoObserver->isMultipleChannelFrameWantedEvent = static_cast<PFIsMultipleChannelFrameWanted>(regEvent(gcnew NativeIsMultipleChannelFrameWantedDelegate(this,&AgoraClr::NativeIsMultipleChannelVideoFrameWanted)));
+	agoraVideoObserver->isMultipleChannelFrameWantedEvent = static_cast<PFIsMultipleChannelFrameWanted>(regEvent(gcnew NativeIsMultipleChannelFrameWantedDelegate(this, &AgoraClr::NativeIsMultipleChannelVideoFrameWanted)));
 	agoraVideoObserver->getObservedFramePositionEvent = static_cast<PFGetObservedFramePosition>(regEvent(gcnew NativeGetObservedFramePositionDelegate(this, &AgoraClr::NativeObservedVideoFramePosition)));
 	agoraVideoObserver->onRenderVideoFrameExEvent = PFOnRenderVideoFrameEx(regEvent(gcnew NativeOnRenderVideoFrameExDelegate(this, &AgoraClr::NativeOnRenderVideoFrameEx)));
 }
@@ -1200,6 +1217,64 @@ void AgoraClr::NativeOnMetadataReceived(const IMetadataObserver::Metadata& metad
 		onMetadataReceived(gcnew ClrMetadata(metadata));
 }
 
+void AgoraClrLibrary::AgoraClr::NativeOnAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+{
+	if (onVideoPublishStateChanged)
+		onVideoPublishStateChanged(
+			gcnew String(channel),
+			(EnumStreamPublishState)oldState,
+			(EnumStreamPublishState)newState,
+			elapseSinceLastState
+		);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
+{
+	if (this->onVideoPublishStateChanged)
+		this->onVideoPublishStateChanged(
+			gcnew String(channel),
+			(EnumStreamPublishState)oldState,
+			(EnumStreamPublishState)newState,
+			elapseSinceLastState
+		);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+{
+	if (this->onAudioSubscribeStateChanged)
+		this->onAudioSubscribeStateChanged(
+			gcnew String(channel),
+			uid,
+			(EnumStreamSubscribeState)oldState,
+			(EnumStreamSubscribeState)newState,
+			elapseSinceLastState
+		);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState)
+{
+	if (this->onVideoSubscribeStateChanged)
+		this->onVideoSubscribeStateChanged(
+			gcnew String(channel),
+			uid,
+			(EnumStreamSubscribeState)oldState,
+			(EnumStreamSubscribeState)newState,
+			elapseSinceLastState
+		);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnFirstLocalAudioFramePublished(int elapse)
+{
+	if (this->onFirstLocalAudioFramePublished)
+		this->onFirstLocalAudioFramePublished(elapse);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnFirstLocalVideoFramePublished(int elapse)
+{
+	if (this->onFirstLocalVideoFramePublished)
+		this->onFirstLocalVideoFramePublished(elapse);
+}
+
 void AgoraClr::NativeOnUserMuteAudio(uid_t uid, bool muted)
 {
 	if (onUserMuteAudio)
@@ -1507,7 +1582,7 @@ bool AgoraClr::NativeOnRenderVideoFrame(uid_t uid, agora::media::IVideoFrameObse
 	}
 	return result;
 }
-bool AgoraClr::NativeOnRenderVideoFrameEx(const char* channelId,uid_t uid, agora::media::IVideoFrameObserver::VideoFrame& frame)
+bool AgoraClr::NativeOnRenderVideoFrameEx(const char* channelId, uid_t uid, agora::media::IVideoFrameObserver::VideoFrame& frame)
 {
 	bool result = true;
 	if (onRenderVideoFrameEx)

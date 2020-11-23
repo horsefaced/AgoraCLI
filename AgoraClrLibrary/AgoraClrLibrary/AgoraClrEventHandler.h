@@ -85,6 +85,13 @@ namespace AgoraClrLibrary {
 	using PFOnChannelMediaRelayEvent = stdTemplateCall<CHANNEL_MEDIA_RELAY_EVENT>;
 	using PFOnLastmileProbeResult = stdTemplateCall<const LastmileProbeResult&>;
 
+	using OnAudioPublishStateChanged = ET<const char*, STREAM_PUBLISH_STATE, STREAM_PUBLISH_STATE, int>;
+	using OnVideoPublishStateChanged = ET<const char*, STREAM_PUBLISH_STATE, STREAM_PUBLISH_STATE, int>;
+	using OnAudioSubscribeStateChanged = ET<const char*, uid_t, STREAM_SUBSCRIBE_STATE, STREAM_SUBSCRIBE_STATE, int>;
+	using OnVideoSubscribeStateChanged = ET<const char*, uid_t, STREAM_SUBSCRIBE_STATE, STREAM_SUBSCRIBE_STATE, int>;
+	using OnFirstLocalVideoFramePublished = ET<int>;
+	using OnFirstLocalAudioFramePublished = ET<int>;
+
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
 	delegate void NativeOnRejoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -242,6 +249,13 @@ namespace AgoraClrLibrary {
 		PFOnChannelMediaRelayEvent onChannelMediaRelayEventEvnet = nullptr;
 		PFOnLastmileProbeResult onLastmileProbeResultEvent = nullptr;
 
+		OnAudioPublishStateChanged::Pointer onAudioPublishStateChangedEvent = nullptr;
+		OnVideoPublishStateChanged::Pointer onVideoPublishStateChangedEvent = nullptr;
+		OnAudioSubscribeStateChanged::Pointer onAudioSubscribeStateChangedEvent = nullptr;
+		OnVideoSubscribeStateChanged::Pointer onVideoSubscribeStateChangedEvent = nullptr;
+		OnFirstLocalAudioFramePublished::Pointer onFirstLocalAudioFramePublishedEvent = nullptr;
+		OnFirstLocalVideoFramePublished::Pointer onFirstLocalVideoFramePublishedEvent = nullptr;
+
 		void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
 		void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
 		void onWarning(int warn, const char* msg) override;
@@ -314,6 +328,13 @@ namespace AgoraClrLibrary {
 		void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error) override;
 		void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event) override;
 		void onLastmileProbeResult(const LastmileProbeResult& result) override;
+
+		void onAudioPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+		void onVideoPublishStateChanged(const char* channel, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState) override;
+		void onAudioSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+		void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
+		void onFirstLocalAudioFramePublished(int elapsed) override;
+		void onFirstLocalVideoFramePublished(int elapsed) override;
 	};
 
 }

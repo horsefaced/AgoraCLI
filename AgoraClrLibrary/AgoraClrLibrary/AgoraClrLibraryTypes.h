@@ -151,6 +151,8 @@ namespace AgoraClrLibrary {
 		int encodedFrameHeight;
 		int encodedFrameCount;
 		VideoCodecType codecType;
+		UINT txPacketLossRate;
+		int captureFrameRate;
 
 		ClrLocalVideoStats(const LocalVideoStats& stats) :
 			sentBitrate(stats.sentBitrate),
@@ -164,7 +166,9 @@ namespace AgoraClrLibrary {
 			encodedFrameWidth(stats.encodedFrameWidth),
 			encodedFrameHeight(stats.encodedFrameHeight),
 			encodedFrameCount(stats.encodedFrameCount),
-			codecType(static_cast<VideoCodecType>(stats.codecType))
+			codecType(static_cast<VideoCodecType>(stats.codecType)),
+			txPacketLossRate(stats.txPacketLossRate),
+			captureFrameRate(stats.captureFrameRate)
 		{}
 	};
 
@@ -180,12 +184,11 @@ namespace AgoraClrLibrary {
 		int decoderOutputFrameRate;
 		int rendererOutputFrameRate;
 		int packedLossRate;
-
 		EnumRemoteVideoStreamType rxStreamType;
-
 		int totalFrozenTime;
 		int frozenRate;
 		int totalActiveTime;
+		int publishDuration;
 
 		ClrRemoteVideoStats(agora::rtc::RemoteVideoStats stats)
 		{
@@ -203,6 +206,8 @@ namespace AgoraClrLibrary {
 			totalFrozenTime = stats.totalFrozenTime;
 			frozenRate = stats.frozenRate;
 			totalActiveTime = stats.totalActiveTime;
+
+			publishDuration = stats.publishDuration;
 		}
 	};
 
@@ -732,7 +737,7 @@ namespace AgoraClrLibrary {
 		ExternalVideoFrame* result = nullptr;
 	public:
 		VideoBufferType type;
-		VideoPixelFormate format;
+		EnumVideoPixelFormate format;
 		array<Byte>^ buffer;
 		int stride;
 		int height;
@@ -790,6 +795,7 @@ namespace AgoraClrLibrary {
 		int totalFrozenTime;
 		int frozenRate;
 		int totalActiveTime;
+		int publishDuration;
 
 		ClrRemoteAudioStats() {}
 
@@ -804,8 +810,8 @@ namespace AgoraClrLibrary {
 			receivedBitrate(raw.receivedBitrate),
 			totalFrozenTime(raw.totalFrozenTime),
 			frozenRate(raw.frozenRate),
-			totalActiveTime(raw.totalActiveTime)
-		
+			totalActiveTime(raw.totalActiveTime),
+			publishDuration(raw.publishDuration)
 		{
 		}
 
@@ -822,6 +828,7 @@ namespace AgoraClrLibrary {
 			raw.totalFrozenTime = totalFrozenTime;
 			raw.frozenRate = frozenRate;
 			raw.totalActiveTime = totalActiveTime;
+			raw.publishDuration = publishDuration;
 		}
 	};
 
@@ -830,9 +837,15 @@ namespace AgoraClrLibrary {
 		int numChannels;
 		int sentSampleRate;
 		int sentBitrate;
+		UINT txPacketLossRate;
 
-		ClrLocalAudioStats() : numChannels(0), sentSampleRate(0), sentBitrate(0) {}
-		ClrLocalAudioStats(const LocalAudioStats& stats) : numChannels(stats.numChannels), sentSampleRate(stats.sentSampleRate), sentBitrate(stats.sentBitrate) {}
+		ClrLocalAudioStats() : numChannels(0), sentSampleRate(0), sentBitrate(0), txPacketLossRate(0) {}
+		ClrLocalAudioStats(const LocalAudioStats& stats) : 
+			numChannels(stats.numChannels), 
+			sentSampleRate(stats.sentSampleRate), 
+			sentBitrate(stats.sentBitrate),
+			txPacketLossRate(stats.txPacketLossRate)
+		{}
 	};
 
 	public ref class ClrChannelMediaInfo {
@@ -1038,5 +1051,20 @@ namespace AgoraClrLibrary {
 				);
 		}
 
+	};
+
+	public ref class ClrEncryptionConfig {
+	public:
+		String^ key;
+		EnumEncryptionMode mode;
+
+		ClrEncryptionConfig() : mode(EnumEncryptionMode::AES_128_XTS), key(nullptr) {}
+
+		operator EncryptionConfig() {
+			auto result = EncryptionConfig();
+			result.encryptionKey = key == nullptr ? NULL : MarshalString(key).c_str();
+			result.encryptionMode = (ENCRYPTION_MODE)mode;
+			return result;
+		}
 	};
 }
