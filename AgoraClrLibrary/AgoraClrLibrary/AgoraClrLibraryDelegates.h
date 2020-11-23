@@ -106,6 +106,8 @@ namespace AgoraClrLibrary {
 	public
 		delegate void onTranscodingUpdated();
 
+	public delegate void onRtmpStreamingEvent(String^, EnumRtmpStreamingEvent);
+
 	public
 		delegate void onConnectionStateChanged(EnumConnectionStateType state, EnumConnectionChangedReasonType reason);
 	public

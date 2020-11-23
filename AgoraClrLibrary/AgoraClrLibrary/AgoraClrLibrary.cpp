@@ -28,6 +28,8 @@ AgoraClr::AgoraClr()
 
 	MaxMetadataSize = 1024;
 
+	innerVideoSoruce = nullptr;
+
 	initializeEventHandler();
 	initializePacketObserver();
 	initializeRawFrameObserver();
@@ -745,10 +747,18 @@ int AgoraClr::pullAudioFrame([Out] ClrAudioFrame^% frame)
 	//return agoraMediaEngine ? agoraMediaEngine->pullAudioFrame(frame) : -1;
 }
 
-//bool AgoraClrLibrary::AgoraClr::setVideoSource(ClrVideoSource^ source)
-//{
-//	return rtcEngine->setVideoSource(source);
-//}
+bool AgoraClrLibrary::AgoraClr::setVideoSource(ClrVideoSource^ source)
+{
+	auto result = rtcEngine->setVideoSource(NULL);
+	if (innerVideoSoruce != nullptr) innerVideoSoruce->dispose();
+	
+	if (source != nullptr) {
+		innerVideoSoruce = gcnew InnerVideoSource(source);
+		result = rtcEngine->setVideoSource(innerVideoSoruce);
+	}
+
+	return result;
+}
 
 int AgoraClr::setExternalVideoSource(bool enabled, bool useTexture)
 {
@@ -875,6 +885,8 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onVideoSubscribeStateChangedEvent = static_cast<OnVideoSubscribeStateChanged::Pointer>(regEvent(gcnew OnVideoSubscribeStateChanged::Type(this, &AgoraClr::NativeOnVideoSubscribeStateChanged)));
 	agoraEventHandler->onFirstLocalAudioFramePublishedEvent = static_cast<OnFirstLocalAudioFramePublished::Pointer>(regEvent(gcnew OnFirstLocalAudioFramePublished::Type(this, &AgoraClr::NativeOnFirstLocalAudioFramePublished)));
 	agoraEventHandler->onFirstLocalVideoFramePublishedEvent = static_cast<OnFirstLocalVideoFramePublished::Pointer>(regEvent(gcnew OnFirstLocalVideoFramePublished::Type(this, &AgoraClr::NativeOnFirstLocalVideoFramePublished)));
+
+	agoraEventHandler->onRtmpStreamingEventEvent = static_cast<OnRtmpStreamingEvent::Pointer>(regEvent(gcnew OnRtmpStreamingEvent::Type(this, &AgoraClr::NativeOnRtmpStreamingEvent)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -1273,6 +1285,12 @@ void AgoraClrLibrary::AgoraClr::NativeOnFirstLocalVideoFramePublished(int elapse
 {
 	if (this->onFirstLocalVideoFramePublished)
 		this->onFirstLocalVideoFramePublished(elapse);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT code)
+{
+	if (this->onRtmpStreamingEvent)
+		this->onRtmpStreamingEvent(gcnew String(url), (EnumRtmpStreamingEvent)code);
 }
 
 void AgoraClr::NativeOnUserMuteAudio(uid_t uid, bool muted)

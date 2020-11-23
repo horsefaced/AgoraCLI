@@ -1026,4 +1026,11 @@ namespace AgoraClrLibrary {
 		  VIDEO_CAPTURE_SCREEN,
 	};
 
+	public enum class EnumRtmpStreamingEvent
+	{
+		/** An error occurs when you add a background image or a watermark image to the RTMP stream.
+		 */
+		RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
+	};
+
 }

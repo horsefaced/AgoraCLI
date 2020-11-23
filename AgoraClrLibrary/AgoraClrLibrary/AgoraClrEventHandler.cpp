@@ -323,3 +323,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onFirstLocalVideoFramePublished(int 
 {
 	if (onFirstLocalVideoFramePublishedEvent) onFirstLocalVideoFramePublishedEvent(elapsed);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode)
+{
+	if (onRtmpStreamingEventEvent) onRtmpStreamingEventEvent(url, eventCode);
+}

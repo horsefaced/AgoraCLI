@@ -91,6 +91,7 @@ namespace AgoraClrLibrary {
 	using OnVideoSubscribeStateChanged = ET<const char*, uid_t, STREAM_SUBSCRIBE_STATE, STREAM_SUBSCRIBE_STATE, int>;
 	using OnFirstLocalVideoFramePublished = ET<int>;
 	using OnFirstLocalAudioFramePublished = ET<int>;
+	using OnRtmpStreamingEvent = ET<const char*, RTMP_STREAMING_EVENT>;
 
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -256,6 +257,8 @@ namespace AgoraClrLibrary {
 		OnFirstLocalAudioFramePublished::Pointer onFirstLocalAudioFramePublishedEvent = nullptr;
 		OnFirstLocalVideoFramePublished::Pointer onFirstLocalVideoFramePublishedEvent = nullptr;
 
+		OnRtmpStreamingEvent::Pointer onRtmpStreamingEventEvent = nullptr;
+
 		void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
 		void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
 		void onWarning(int warn, const char* msg) override;
@@ -335,6 +338,8 @@ namespace AgoraClrLibrary {
 		void onVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState) override;
 		void onFirstLocalAudioFramePublished(int elapsed) override;
 		void onFirstLocalVideoFramePublished(int elapsed) override;
+
+		void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
 	};
 
 }

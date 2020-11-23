@@ -93,6 +93,7 @@ namespace AgoraClrLibrary
 		onLocalAudioStateChanged^ onLocalAudioStateChanged;
 		onLocalVideoStateChanged^ onLocalVideoStateChanged;
 		onFirstLocalVideoFrame^ onFirstLocalVideoFrame;
+		[ObsoleteAttribute()]
 		onFirstLocalAudioFrame^ onFirstLocalAudioFrame;
 		onAudioPublishStateChanged^ onAudioPublishStateChanged;
 		onVideoPublishStateChanged^ onVideoPublishStateChanged;
@@ -191,6 +192,7 @@ namespace AgoraClrLibrary
 		//CDN推流事件
 		onRtmpStreamingStateChanged^ onRtmpStreamingStateChanged;
 		onTranscodingUpdated^ onTranscodingUpdated;
+		onRtmpStreamingEvent^ onRtmpStreamingEvent;
 
 		//跨频道媒体流转发
 		int startChannelMediaRelay(ClrChannelMediaRelayConfiguration^ config);
@@ -241,7 +243,7 @@ namespace AgoraClrLibrary
 		Action<ClrLastmileProbeResult^>^ onLastmileProbeResult;
 
 		//自定义视频模块
-		//bool setVideoSource(ClrVideoSource^ source);
+		bool setVideoSource(ClrVideoSource^ source);
 
 		//音视频自采集
 		int setExternalVideoSource(bool enabled, bool useTexture);
@@ -353,7 +355,9 @@ namespace AgoraClrLibrary
 		int startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate);
 		int setVideoProfile(VideoProfile profile, bool swapWidthAndHeight);
 		int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
+		[ObsoleteAttribute()]
 		int setEncryptionSecret(String^ key);
+		[ObsoleteAttribute()]
 		int setEncryptionMode(String^ mode);
 		//int setPlaybackDeviceVolume(int volume);
 
@@ -389,6 +393,8 @@ namespace AgoraClrLibrary
 		agora::media::IMediaEngine* agoraMediaEngine;
 
 		List<GCHandle>^ gchs;
+
+		InnerVideoSource^ innerVideoSoruce;
 
 		//Native Agora Event Handler
 		void NativeOnJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);
@@ -502,6 +508,8 @@ namespace AgoraClrLibrary
 		void NativeOnVideoSubscribeStateChanged(const char* channel, uid_t uid, STREAM_SUBSCRIBE_STATE oldState, STREAM_SUBSCRIBE_STATE newState, int elapseSinceLastState);
 		void NativeOnFirstLocalAudioFramePublished(int elapse);
 		void NativeOnFirstLocalVideoFramePublished(int elapse);
+
+		void NativeOnRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT code);
 
 		void initializeEventHandler();
 		void initializePacketObserver();
