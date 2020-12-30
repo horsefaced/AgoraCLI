@@ -94,6 +94,12 @@ namespace AgoraClrLibrary {
 		CLIENT_ROLE_AUDIENCE = 2,
 	};
 
+	public enum class EnumAudienceLatencyLevelType
+	{
+		AUDIENCE_LATENCY_LEVEL_LOW_LATENCY = 1,
+		AUDIENCE_LATENCY_LEVEL_ULTRA_LOW_LATENCY = 2,
+	};
+
 	public
 		enum class EnumRenderModeType
 	{

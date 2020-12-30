@@ -149,6 +149,7 @@
     <ClInclude Include="AgoraClrRawFrameObserver.h" />
     <ClInclude Include="AgoraClrVideoDeviceManager.h" />
     <ClInclude Include="AgoraClrVideoSource.h" />
+    <ClInclude Include="AgoraClrClientRoleOptions.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>

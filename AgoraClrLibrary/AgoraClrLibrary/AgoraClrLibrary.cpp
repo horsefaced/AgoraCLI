@@ -370,6 +370,11 @@ int AgoraClr::setClientRole(ClientRoleType role)
 	return rtcEngine->setClientRole(static_cast<CLIENT_ROLE_TYPE>(role));
 }
 
+int AgoraClrLibrary::AgoraClr::setClientRole(ClientRoleType role, AgoraClrClientRoleOptions options)
+{
+	return rtcEngine->setClientRole(static_cast<CLIENT_ROLE_TYPE>(role), options);
+}
+
 int AgoraClr::createDataStream(int% id, bool reliable, bool ordered)
 {
 	int streamId;

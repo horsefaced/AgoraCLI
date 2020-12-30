@@ -11,6 +11,7 @@
 #include "AgoraClrRawFrameObserver.h"
 #include "AgoraClrVideoDeviceManager.h"
 #include "AgoraClrChannel.h"
+#include "AgoraClrClientRoleOptions.h"
 
 #include <string>
 #include "AgoraClrVideoSource.h"
@@ -36,6 +37,7 @@ namespace AgoraClrLibrary
 		void release();
 		int setChannelProfile(ChannelProfile profile);
 		int setClientRole(ClientRoleType role);
+		int setClientRole(ClientRoleType role, AgoraClrClientRoleOptions options);
 		int joinChannel(String^ token, String^ channelName, String^ channelInfo, UINT uid);
 		int switchChannel(String^ token, String^ channelId);
 		int leaveChannel();
