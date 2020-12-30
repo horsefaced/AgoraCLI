@@ -21,6 +21,15 @@ wulaoh genMY
 
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
+## 2020-12-30
+升级至3.2.1, 添加
+- setAudioEffectPreset
+- setVoiceBeautifierPreset
+- setAudioEffectParameters
+- AUDIO_SCENARIO_TYPE enum 中新增 AUDIO_SCENARIO_MEETING(8)
+- LOCAL_VIDEO_STREAM_ERROR enum 新增 LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED(12)
+- setClientRole
+
 ## 2020-11-23
 升级至3.1.2，添加3.1.0版本说明中的功能
 

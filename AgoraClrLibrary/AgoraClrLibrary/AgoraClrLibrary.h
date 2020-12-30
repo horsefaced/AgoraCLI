@@ -176,7 +176,9 @@ namespace AgoraClrLibrary
 		onAudioEffectFinished^ onAudioEffectFinished;
 
 		//变声与混响
+		[[DEPRECATED]]
 		int setLocalVoiceChanger(VoiceChangerPreset changer);
+		[[DEPRECATED]]
 		int setLocalVoiceReverbPreset(EnumAudioReverbPreset preset);
 		int setLocalVoicePitch(double pitch);
 		int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);

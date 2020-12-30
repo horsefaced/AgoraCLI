@@ -242,7 +242,8 @@ namespace AgoraClrLibrary {
 		AUDIO_SCENARIO_SHOWROOM = 4,
 		AUDIO_SCENARIO_CHATROOM_GAMING = 5,
 		AUDIO_SCENARIO_IOT = 6,
-		AUDIO_SCENARIO_NUM = 7,
+		AUDIO_SCENARIO_MEETING = 8,
+		AUDIO_SCENARIO_NUM = 9,
 	};
 
 	public
@@ -479,6 +480,7 @@ namespace AgoraClrLibrary {
 		LOCAL_VIDEO_STREAM_ERROR_ENCODE_FAILURE = 5,
 		/** 11: The shared window is minimized when you call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" to share a window.*/
 		LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
+		LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
 	};
 
 	public enum class EnumRemoteAudioState
