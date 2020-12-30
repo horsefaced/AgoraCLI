@@ -181,6 +181,9 @@ namespace AgoraClrLibrary
 		int setLocalVoicePitch(double pitch);
 		int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
 		int setLocalVoiceReverb(AudioReverbType type, int value);
+		int setVoiceBeautifierPreset(EnumVoiceBeautifierPreset preset);
+		int setAudioEffectPreset(EnumAudioEffectPreset preset);
+		int setAudioEffectParameters(EnumAudioEffectPreset preset, int param1, int param2);
 
 		//听声辩位
 		int enableSoundPositionIndication(bool enabled);

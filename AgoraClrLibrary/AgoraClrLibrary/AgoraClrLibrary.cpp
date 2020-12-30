@@ -583,6 +583,21 @@ int AgoraClr::setLocalVoiceReverb(AudioReverbType type, int value)
 	return rtcEngine->setLocalVoiceReverb(static_cast<AUDIO_REVERB_TYPE>(type), value);
 }
 
+int AgoraClrLibrary::AgoraClr::setVoiceBeautifierPreset(EnumVoiceBeautifierPreset preset)
+{
+	return rtcEngine->setVoiceBeautifierPreset(static_cast<VOICE_BEAUTIFIER_PRESET>(preset));
+}
+
+int AgoraClrLibrary::AgoraClr::setAudioEffectPreset(EnumAudioEffectPreset preset)
+{
+	return rtcEngine->setAudioEffectPreset(static_cast<AUDIO_EFFECT_PRESET>(preset));
+}
+
+int AgoraClrLibrary::AgoraClr::setAudioEffectParameters(EnumAudioEffectPreset preset, int param1, int param2)
+{
+	return rtcEngine->setAudioEffectParameters(static_cast<AUDIO_EFFECT_PRESET>(preset), param1, param2);
+}
+
 int AgoraClr::setLocalVideoMirrorMode(EnumVideoMirrorModeType mode)
 {
 	return rtcEngine->setLocalVideoMirrorMode(static_cast<VIDEO_MIRROR_MODE_TYPE>(mode));
