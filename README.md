@@ -22,6 +22,9 @@ wulaoh genMY
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
 ## 2020-12-30
+本分支修改已合并至主分支，本分支不再更新直到4.0版本升级。
+
+## 2020-12-30
 升级至3.2.1, 添加
 - setAudioEffectPreset
 - setVoiceBeautifierPreset
