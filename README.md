@@ -22,6 +22,9 @@ wulaoh genMY
 如果使用过程中有发现BUG，请提交issue。本人会尽快处理，如果各位能自行处理后把结果pull上来就更好了。
 
 ## 2020-12-30
+合并3.2.1版本入主分支。从这个版本开始主分支将是最新的版本修改，各个分支在声网升级到主要大版本后作为legcy分支使用。
+
+## 2020-12-30
 升级至3.2.1, 添加
 - setAudioEffectPreset
 - setVoiceBeautifierPreset
