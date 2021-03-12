@@ -1006,20 +1006,22 @@ namespace AgoraClrLibrary {
 	public enum class EnumEncryptionMode
 	{
 		/** 1: (Default) 128-bit AES encryption, XTS mode.
-		 */
+		*/
 		AES_128_XTS = 1,
 		/** 2: 128-bit AES encryption, ECB mode.
-		 */
-		 AES_128_ECB = 2,
-		 /** 3: 256-bit AES encryption, XTS mode.
-		  */
-		  AES_256_XTS = 3,
-		  /** 4: 128-bit SM4 encryption, ECB mode.
-		   */
-		   SM4_128_ECB = 4,
-		   /** Enumerator boundary.
-			*/
-			MODE_END,
+		*/
+		AES_128_ECB = 2,
+		/** 3: 256-bit AES encryption, XTS mode.
+		*/
+		AES_256_XTS = 3,
+		/** 4: 128-bit SM4 encryption, ECB mode.
+		*/
+		SM4_128_ECB = 4,
+		AES_128_GCM = 5, //128 位 AES 加密，GCM 模式。
+		AES_256_GCM = 6, //256 位 AES 加密，GCM 模式。
+		/** Enumerator boundary.
+		*/
+		MODE_END,
 	};
 
 	public enum class EnumVideoCaptureType {
@@ -1044,7 +1046,7 @@ namespace AgoraClrLibrary {
 	public enum class EnumVoiceBeautifierPreset
 	{
 		/** Turn off voice beautifier effects and use the original voice.
- */
+		 */
 		VOICE_BEAUTIFIER_OFF = 0x00000000,
 		/** A more magnetic voice.
 		 *
@@ -1061,30 +1063,41 @@ namespace AgoraClrLibrary {
 		   * @note Agora recommends using this enumerator to process a female-sounding voice; otherwise, you may experience vocal distortion.
 		   */
 		   CHAT_BEAUTIFIER_VITALITY = 0x01010300,
-		   /** A more vigorous voice.
+		   /**
+			* @since v3.3.0
+			*
+			* Singing beautifier effect.
+			* - If you call \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset" (SINGING_BEAUTIFIER), you can beautify a male-sounding voice and add a reverberation
+			* effect that sounds like singing in a small room. Agora recommends not using \ref IRtcEngine::setVoiceBeautifierPreset "setVoiceBeautifierPreset" (SINGING_BEAUTIFIER)
+			* to process a female-sounding voice; otherwise, you may experience vocal distortion.
+			* - If you call \ref IRtcEngine::setVoiceBeautifierParameters "setVoiceBeautifierParameters"(SINGING_BEAUTIFIER, param1, param2), you can beautify a male- or
+			* female-sounding voice and add a reverberation effect.
 			*/
-			TIMBRE_TRANSFORMATION_VIGOROUS = 0x01030100,
-			/** A deeper voice.
+			SINGING_BEAUTIFIER = 0x01020100,
+			/** A more vigorous voice.
 			 */
-			 TIMBRE_TRANSFORMATION_DEEP = 0x01030200,
-			 /** A mellower voice.
+			 TIMBRE_TRANSFORMATION_VIGOROUS = 0x01030100,
+			 /** A deeper voice.
 			  */
-			  TIMBRE_TRANSFORMATION_MELLOW = 0x01030300,
-			  /** A falsetto voice.
+			  TIMBRE_TRANSFORMATION_DEEP = 0x01030200,
+			  /** A mellower voice.
 			   */
-			   TIMBRE_TRANSFORMATION_FALSETTO = 0x01030400,
+			   TIMBRE_TRANSFORMATION_MELLOW = 0x01030300,
 			   /** A falsetto voice.
 				*/
-				TIMBRE_TRANSFORMATION_FULL = 0x01030500,
-				/** A clearer voice.
+				TIMBRE_TRANSFORMATION_FALSETTO = 0x01030400,
+				/** A fuller voice.
 				 */
-				 TIMBRE_TRANSFORMATION_CLEAR = 0x01030600,
-				 /** A more resounding voice.
+				 TIMBRE_TRANSFORMATION_FULL = 0x01030500,
+				 /** A clearer voice.
 				  */
-				  TIMBRE_TRANSFORMATION_RESOUNDING = 0x01030700,
-				  /** A more ringing voice.
+				  TIMBRE_TRANSFORMATION_CLEAR = 0x01030600,
+				  /** A more resounding voice.
 				   */
-				   TIMBRE_TRANSFORMATION_RINGING = 0x01030800
+				   TIMBRE_TRANSFORMATION_RESOUNDING = 0x01030700,
+				   /** A more ringing voice.
+					*/
+					TIMBRE_TRANSFORMATION_RINGING = 0x01030800
 	};
 
 	public enum class EnumAudioEffectPreset
@@ -1232,4 +1245,64 @@ namespace AgoraClrLibrary {
 						  PITCH_CORRECTION = 0x02040100
 	};
 
+	public enum class EnumCloudProxyType {
+		/** 0: Do not use the cloud proxy.
+		 */
+		NONE_PROXY = 0,
+		/** 1: The cloud proxy for the UDP protocol.
+		 */
+		 UDP_PROXY = 1,
+		 /// @cond
+		 /** 2: The cloud proxy for the TCP (encrypted) protocol.
+		  */
+		  TCP_PROXY = 2,
+		  /// @endcond
+	};
+
+	public enum class EnumLogLevel {
+		LOG_LEVEL_NONE = 0, //不输出任何日志。
+		LOG_LEVEL_INFO = 0x0001, // (默认)输出 FATAL、ERROR、WARN、INFO 级别的日志。我们推荐你将日志级别设为该等级。
+		LOG_LEVEL_WARN = 0x0002, //仅输出 FATAL、ERROR、WARN 级别的日志。
+		LOG_LEVEL_ERROR = 0x0004, //仅输出 FATAL、ERROR 级别的日志。
+		LOG_LEVEL_FATAL = 0x0008, //仅输出 FATAL 级别的日志。
+	};
+
+	public enum class EnumAreaCode {
+		/**
+		 * Mainland China.
+		 */
+		AREA_CODE_CN = 0x00000001,
+		/**
+		 * North America.
+		 */
+		 AREA_CODE_NA = 0x00000002,
+		 /**
+		  * Europe.
+		  */
+		  AREA_CODE_EU = 0x00000004,
+		  /**
+		   * Asia, excluding Mainland China.
+		   */
+		   AREA_CODE_AS = 0x00000008,
+		   /**
+			* Japan.
+			*/
+			AREA_CODE_JP = 0x00000010,
+			/**
+			 * India.
+			 */
+			 AREA_CODE_IN = 0x00000020,
+			 /**
+			  * (Default) Global.
+			  */
+			  AREA_CODE_GLOB = 0xFFFFFFFF
+	};
+	public enum class EnumVoiceConversionPreset
+	{
+		VOICE_CONVERSION_OFF = 0x00000000,
+		VOICE_CHANGER_NEUTRAL = 0x03010100,
+		VOICE_CHANGER_SWEET = 0x03010200,
+		VOICE_CHANGER_SOLID = 0x03010300,
+		VOICE_CHANGER_BASS = 0x03010400
+	};
 }

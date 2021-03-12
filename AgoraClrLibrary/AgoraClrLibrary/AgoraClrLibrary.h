@@ -34,12 +34,15 @@ namespace AgoraClrLibrary
 
 		//频道管理
 		int initialize(String^ vendorkey, [Optional] Nullable<int> areaCode);
+		int initialize(ClrRtcEngineContext^ context);
 		void release();
 		int setChannelProfile(ChannelProfile profile);
 		int setClientRole(ClientRoleType role);
 		int setClientRole(ClientRoleType role, AgoraClrClientRoleOptions options);
 		int joinChannel(String^ token, String^ channelName, String^ channelInfo, UINT uid);
+		int joinChannel(String^ token, String^ channelName, String^ channelInfo, UINT uid, ClrChannelMediaOptions^ options);
 		int switchChannel(String^ token, String^ channelId);
+		int switchChannel(String^ token, String^ channelId, ClrChannelMediaOptions^ options);
 		int leaveChannel();
 		int renewToken(String^ token);
 		int enableWebSdkInteroperability(bool enabled);
@@ -69,6 +72,7 @@ namespace AgoraClrLibrary
 		int muteLocalAudioStream(bool mute);
 		int muteRemoteAudioStream(UINT uid, bool mute);
 		int muteAllRemoteAudioStreams(bool mute);
+		[[deprecated]]
 		int setDefaultMuteAllRemoteAudioStreams(bool mute);
 
 		//视频管理方法
@@ -176,16 +180,18 @@ namespace AgoraClrLibrary
 		onAudioEffectFinished^ onAudioEffectFinished;
 
 		//变声与混响
-		[[DEPRECATED]]
+		[[deprecated]]
 		int setLocalVoiceChanger(VoiceChangerPreset changer);
-		[[DEPRECATED]]
+		[[deprecated]]
 		int setLocalVoiceReverbPreset(EnumAudioReverbPreset preset);
 		int setLocalVoicePitch(double pitch);
 		int setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain);
 		int setLocalVoiceReverb(AudioReverbType type, int value);
 		int setVoiceBeautifierPreset(EnumVoiceBeautifierPreset preset);
+		int setVoiceBeautifierParameters(EnumVoiceBeautifierPreset preset, int param1, int param2);
 		int setAudioEffectPreset(EnumAudioEffectPreset preset);
 		int setAudioEffectParameters(EnumAudioEffectPreset preset, int param1, int param2);
+		int setVoiceConversionPreset(EnumVoiceConversionPreset preset);
 
 		//听声辩位
 		int enableSoundPositionIndication(bool enabled);
@@ -319,7 +325,9 @@ namespace AgoraClrLibrary
 		onAudioDeviceVolumeChanged^ onAudioDeviceVolumeChanged;
 
 		//流消息
+		[[deprecated]]
 		int createDataStream(int% id, bool reliable, bool ordered);
+		int createDataStream(int% id, ClrDataStreamConfig config);
 		int sendStreamMessage(int id, String^ data);
 		onStreamMessage^ onStreamMessage;
 		onStreamMessageError^ onStreamMessageError;
@@ -334,12 +342,18 @@ namespace AgoraClrLibrary
 		int setCameraCapturerConfiguration(ClrCameraCaptureConfiguration^ config);
 
 		//其他方法
+		int setCloudProxy(EnumCloudProxyType type);
+		int enableDeepLearningDenoise(bool enable);
+		int sendCustomReportMessage(String^ id, String^ category, String^ event, String^ label, int value);
 		int getCallId(String^% callid);
 		int rate(String^ callid, int rating, String^ desc);
 		int complain(String^ callid, String^ desc);
 		String^ getVersion(int% build);
+		[[deprecated]]
 		int setLogFile(String^ path);
+		[[deprecated]]
 		int setLogFilter(unsigned int filter);
+		[[deprecated]]
 		int setLogFileSize(unsigned int size);
 		String^ getErrorDescription(int code);
 

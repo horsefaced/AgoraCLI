@@ -796,6 +796,9 @@ namespace AgoraClrLibrary {
 		int frozenRate;
 		int totalActiveTime;
 		int publishDuration;
+		int qoeQuality;
+		int qualityChangedReason;
+		int mosValue;
 
 		ClrRemoteAudioStats() {}
 
@@ -811,7 +814,10 @@ namespace AgoraClrLibrary {
 			totalFrozenTime(raw.totalFrozenTime),
 			frozenRate(raw.frozenRate),
 			totalActiveTime(raw.totalActiveTime),
-			publishDuration(raw.publishDuration)
+			publishDuration(raw.publishDuration),
+			qoeQuality(raw.qoeQuality),
+			qualityChangedReason(raw.qualityChangedReason),
+			mosValue(raw.mosValue)
 		{
 		}
 
@@ -829,6 +835,9 @@ namespace AgoraClrLibrary {
 			raw.frozenRate = frozenRate;
 			raw.totalActiveTime = totalActiveTime;
 			raw.publishDuration = publishDuration;
+			raw.qoeQuality = qoeQuality;
+			raw.qualityChangedReason = qualityChangedReason;
+			raw.mosValue = mosValue;
 		}
 	};
 
@@ -1064,6 +1073,41 @@ namespace AgoraClrLibrary {
 			auto result = EncryptionConfig();
 			result.encryptionKey = key == nullptr ? NULL : MarshalString(key).c_str();
 			result.encryptionMode = (ENCRYPTION_MODE)mode;
+			return result;
+		}
+	};
+
+	public ref class ClrLogConfig {
+	public:
+		String^ filePath = nullptr;
+		int fileSize = -1;
+		EnumLogLevel level = EnumLogLevel::LOG_LEVEL_INFO;
+
+		LogConfig to() {
+			auto result = LogConfig();
+			result.filePath = filePath == nullptr ? NULL : MarshalString(filePath).c_str();
+			result.fileSize = fileSize;
+			result.level = (agora::LOG_LEVEL)level;
+			return result;
+		}
+	};
+
+	public ref class ClrRtcEngineContext {
+	public:
+		String^ vendorKey = nullptr;
+		EnumAreaCode areaCode = EnumAreaCode::AREA_CODE_GLOB;
+		ClrLogConfig^ logConfig = gcnew ClrLogConfig();
+	};
+
+	public ref class ClrDataStreamConfig {
+	public:
+		bool syncWithAudio;
+		bool ordered;
+
+		operator DataStreamConfig() {
+			auto result = DataStreamConfig();
+			result.ordered = ordered;
+			result.syncWithAudio = syncWithAudio;
 			return result;
 		}
 	};

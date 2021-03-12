@@ -48,6 +48,14 @@ AgoraClr::!AgoraClr()
 
 int AgoraClr::initialize(String^ vendorkey, [Optional] Nullable<int> areaCode)
 {
+	auto context = gcnew ClrRtcEngineContext();
+	context->vendorKey = vendorkey;
+	context->areaCode = areaCode.HasValue ? (EnumAreaCode)areaCode.Value : EnumAreaCode::AREA_CODE_GLOB;
+	return this->initialize(context);
+}
+
+int AgoraClrLibrary::AgoraClr::initialize(ClrRtcEngineContext^ context)
+{
 	if (rtcEngine)
 		return 0;
 
@@ -57,11 +65,12 @@ int AgoraClr::initialize(String^ vendorkey, [Optional] Nullable<int> areaCode)
 
 	//auto isOK = rtcEngine->setParameters("{\"che.audio.enable.agc\":false}");
 
-	agora::rtc::RtcEngineContext context;
-	context.appId = strcopy(MarshalString(vendorkey));
-	context.eventHandler = agoraEventHandler;
-	context.areaCode = areaCode.HasValue ? areaCode.Value : 0xFFFFFFFF;
-	int result = rtcEngine->initialize(context);
+	agora::rtc::RtcEngineContext rtcContext;
+	rtcContext.appId = strcopy(MarshalString(context->vendorKey));
+	rtcContext.eventHandler = agoraEventHandler;
+	rtcContext.areaCode = (int)context->areaCode;
+	rtcContext.logConfig = context->logConfig->to();
+	int result = rtcEngine->initialize(rtcContext);
 	if (result == 0)
 	{
 		// agora设计中一旦注册了packetObserver就会开启加密,
@@ -78,6 +87,7 @@ int AgoraClr::initialize(String^ vendorkey, [Optional] Nullable<int> areaCode)
 	}
 	return result;
 }
+
 
 void AgoraClr::release()
 {
@@ -217,9 +227,19 @@ int AgoraClr::joinChannel(String^ token, String^ channelName, String^ channelInf
 	return rtcEngine->joinChannel(MarshalString(token).c_str(), MarshalString(channelName).c_str(), MarshalString(channelInfo).c_str(), uid);
 }
 
+int AgoraClrLibrary::AgoraClr::joinChannel(String^ token, String^ channelName, String^ channelInfo, UINT uid, ClrChannelMediaOptions^ options)
+{
+	return rtcEngine->joinChannel(MarshalString(token).c_str(), MarshalString(channelName).c_str(), MarshalString(channelInfo).c_str(), uid, options);
+}
+
 int AgoraClr::switchChannel(String^ token, String^ channelId)
 {
 	return rtcEngine->switchChannel(MarshalString(token).c_str(), MarshalString(channelId).c_str());
+}
+
+int AgoraClrLibrary::AgoraClr::switchChannel(String^ token, String^ channelId, ClrChannelMediaOptions^ options)
+{
+	return rtcEngine->switchChannel(MarshalString(token).c_str(), MarshalString(channelId).c_str(), options);
 }
 
 int AgoraClr::leaveChannel()
@@ -266,6 +286,21 @@ int AgoraClr::setEncryptionMode(String^ mode)
 int AgoraClrLibrary::AgoraClr::enableEncryption(bool enabled, ClrEncryptionConfig^ config)
 {
 	return rtcEngine->enableEncryption(enabled, config);
+}
+
+int AgoraClrLibrary::AgoraClr::setCloudProxy(EnumCloudProxyType type)
+{
+	return rtcEngine->setCloudProxy((agora::rtc::CLOUD_PROXY_TYPE)type);
+}
+
+int AgoraClrLibrary::AgoraClr::enableDeepLearningDenoise(bool enable)
+{
+	return rtcEngine->enableDeepLearningDenoise(enable);
+}
+
+int AgoraClrLibrary::AgoraClr::sendCustomReportMessage(String^ id, String^ category, String^ event, String^ label, int value)
+{
+	return rtcEngine->sendCustomReportMessage(MarshalString(id).c_str(), MarshalString(category).c_str(), MarshalString(event).c_str(), MarshalString(label).c_str(), value);
 }
 
 int AgoraClr::getCallId(String^% id)
@@ -372,13 +407,23 @@ int AgoraClr::setClientRole(ClientRoleType role)
 
 int AgoraClrLibrary::AgoraClr::setClientRole(ClientRoleType role, AgoraClrClientRoleOptions options)
 {
-	return rtcEngine->setClientRole(static_cast<CLIENT_ROLE_TYPE>(role), options);
+	ClientRoleOptions rawOptions = options;
+	return rtcEngine->setClientRole(static_cast<CLIENT_ROLE_TYPE>(role), rawOptions);
 }
 
 int AgoraClr::createDataStream(int% id, bool reliable, bool ordered)
 {
 	int streamId;
 	int result = rtcEngine->createDataStream(&streamId, reliable, ordered);
+	id = streamId;
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClr::createDataStream(int% id, ClrDataStreamConfig config)
+{
+	int streamId;
+	DataStreamConfig rawConfig = config;
+	int result = rtcEngine->createDataStream(&streamId, rawConfig);
 	id = streamId;
 	return result;
 }
@@ -588,6 +633,11 @@ int AgoraClrLibrary::AgoraClr::setVoiceBeautifierPreset(EnumVoiceBeautifierPrese
 	return rtcEngine->setVoiceBeautifierPreset(static_cast<VOICE_BEAUTIFIER_PRESET>(preset));
 }
 
+int AgoraClrLibrary::AgoraClr::setVoiceBeautifierParameters(EnumVoiceBeautifierPreset preset, int param1, int param2)
+{
+	return rtcEngine->setVoiceBeautifierParameters(static_cast<VOICE_BEAUTIFIER_PRESET>(preset), param1, param2);
+}
+
 int AgoraClrLibrary::AgoraClr::setAudioEffectPreset(EnumAudioEffectPreset preset)
 {
 	return rtcEngine->setAudioEffectPreset(static_cast<AUDIO_EFFECT_PRESET>(preset));
@@ -596,6 +646,11 @@ int AgoraClrLibrary::AgoraClr::setAudioEffectPreset(EnumAudioEffectPreset preset
 int AgoraClrLibrary::AgoraClr::setAudioEffectParameters(EnumAudioEffectPreset preset, int param1, int param2)
 {
 	return rtcEngine->setAudioEffectParameters(static_cast<AUDIO_EFFECT_PRESET>(preset), param1, param2);
+}
+
+int AgoraClrLibrary::AgoraClr::setVoiceConversionPreset(EnumVoiceConversionPreset preset)
+{
+	return rtcEngine->setVoiceConversionPreset(static_cast<VOICE_CONVERSION_PRESET>(preset));
 }
 
 int AgoraClr::setLocalVideoMirrorMode(EnumVideoMirrorModeType mode)
