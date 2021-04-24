@@ -588,6 +588,11 @@ int AgoraClr::adjustRecordingSignalVolume(int volume)
 	return rtcEngine->adjustRecordingSignalVolume(volume);
 }
 
+int AgoraClrLibrary::AgoraClr::adjustLoopbackRecordingSignalVolume(int volume)
+{
+	return rtcEngine->adjustLoopbackRecordingSignalVolume(volume);
+}
+
 int AgoraClr::adjustUserPlaybackSignalVolume(UINT uid, int volume)
 {
 	return rtcEngine->adjustUserPlaybackSignalVolume(uid, volume);
@@ -716,9 +721,9 @@ int AgoraClr::setVolumeOfEffect(int soundId, int volume)
 	return rtcEngine->setVolumeOfEffect(soundId, volume);
 }
 
-int AgoraClr::playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish)
+int AgoraClrLibrary::AgoraClr::playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish, int startPos)
 {
-	return rtcEngine->playEffect(soundId, MarshalString(file).c_str(), loopCount, pitch, pan, gain, publish);
+	return rtcEngine->playEffect(soundId, MarshalString(file).c_str(), loopCount, pitch, pan, gain, publish, startPos);
 }
 
 int AgoraClr::stopEffect(int soundId)
@@ -759,6 +764,21 @@ int AgoraClr::resumeEffect(int soundId)
 int AgoraClr::resumeAllEffects()
 {
 	return rtcEngine->resumeAllEffects();
+}
+
+int AgoraClrLibrary::AgoraClr::getEffectDuration(String^ file)
+{
+	return rtcEngine->getEffectDuration(MarshalString(file).c_str());
+}
+
+int AgoraClrLibrary::AgoraClr::setEffectPosition(int soundId, int pos)
+{
+	return rtcEngine->setEffectPosition(soundId, pos);
+}
+
+int AgoraClrLibrary::AgoraClr::getEffectCurrentPosition(int soundId)
+{
+	return rtcEngine->getEffectCurrentPosition(soundId);
 }
 
 int AgoraClr::setAudioMixingPitch(int pitch)

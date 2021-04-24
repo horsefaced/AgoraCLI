@@ -66,6 +66,7 @@ namespace AgoraClrLibrary
 		int disableAudio();
 		int setAudioProfile(AudioProfileType profile, AudioScenarioType scenario);
 		int adjustRecordingSignalVolume(int volume);
+		int adjustLoopbackRecordingSignalVolume(int volume);
 		int adjustUserPlaybackSignalVolume(UINT uid, int volume);
 		int adjustPlaybackSignalVolume(int volume);
 		int enableLocalAudio(bool enabled);
@@ -165,7 +166,7 @@ namespace AgoraClrLibrary
 		int getEffectsVolume();
 		int setEffectsVolume(int volume);
 		int setVolumeOfEffect(int soundId, int volume);
-		int playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish);
+		int playEffect(int soundId, String^ file, int loopCount, double pitch, double pan, int gain, bool publish, int startPos);
 		int stopEffect(int soundId);
 		int stopAllEffects();
 		int preloadEffect(int soundId, String^ file);
@@ -174,6 +175,9 @@ namespace AgoraClrLibrary
 		int pauseAllEffects();
 		int resumeEffect(int soundId);
 		int resumeAllEffects();
+		int getEffectDuration(String^ file);
+		int setEffectPosition(int soundId, int pos);
+		int getEffectCurrentPosition(int soundId);
 		int setAudioMixingPitch(int pitch);
 
 		//音效文件播放管理事件
