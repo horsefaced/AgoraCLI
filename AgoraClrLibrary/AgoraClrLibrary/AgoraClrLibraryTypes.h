@@ -1111,4 +1111,21 @@ namespace AgoraClrLibrary {
 			return result;
 		}
 	};
+	
+	public ref class ClrAudioRecordingConfiguration {
+	public:
+		String^ filePath;
+		AudioRecordingQualityType recordingQuality;
+		EnumAudioRecordingPosition recordingPosition;
+		int recordingSampleRate;
+
+		AudioRecordingConfiguration to() {
+			auto result = AudioRecordingConfiguration();
+			result.filePath = filePath == nullptr ? NULL : MarshalString(filePath).c_str();
+			result.recordingQuality = (agora::rtc::AUDIO_RECORDING_QUALITY_TYPE)recordingQuality;
+			result.recordingPosition = (agora::rtc::AUDIO_RECORDING_POSITION)recordingPosition;
+			result.recordingSampleRate = recordingSampleRate;
+			return result;
+		}
+	}; 
 }

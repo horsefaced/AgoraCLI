@@ -144,7 +144,7 @@ namespace AgoraClrLibrary
 		int stopScreenCapture();
 
 		//音乐文件播放及混音
-		int startAudioMixing(String^ path, bool loop, bool replace, int cycle);
+		int startAudioMixing(String^ path, bool loop, bool replace, int cycle, int startPos);
 		int stopAudioMixing();
 		int pauseAudioMixing();
 		int resumeAudioMixing();
@@ -153,7 +153,9 @@ namespace AgoraClrLibrary
 		int adjustAudioMixingPublishVolume(int volume);
 		int getAudioMixingPlayoutVolume();
 		int getAudioMixingPublishVolume();
+		[[DEPRECATED]]
 		int getAudioMixingDuration();
+		int getAudioMixingDuration(String^ filePath);
 		int getAudioMixingCurrentPosition();
 		int setAudioMixingPosition(int pos);
 
@@ -310,7 +312,9 @@ namespace AgoraClrLibrary
 
 
 		//音频录制
+		[[DEPRECATED]]
 		int startAudioRecording(String^ path, int sampleRate, AudioRecordingQualityType quality);
+		int startAudioRecording(ClrAudioRecordingConfiguration config);
 		int stopAudioRecording();
 
 		//直播导入在线媒体流

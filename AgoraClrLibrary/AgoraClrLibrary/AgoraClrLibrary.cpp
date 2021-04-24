@@ -518,6 +518,11 @@ int AgoraClr::startAudioRecording(String^ path, int sampleRate, AudioRecordingQu
 	return rtcEngine->startAudioRecording(MarshalString(path).c_str(), sampleRate, static_cast<AUDIO_RECORDING_QUALITY_TYPE>(quality));
 }
 
+int AgoraClrLibrary::AgoraClr::startAudioRecording(ClrAudioRecordingConfiguration config)
+{
+	return rtcEngine->startAudioRecording(config.to());
+}
+
 int AgoraClr::stopAudioRecording()
 {
 	return rtcEngine->stopAudioRecording();
@@ -543,6 +548,11 @@ int AgoraClr::getAudioMixingDuration()
 	return rtcEngine->getAudioMixingDuration();
 }
 
+int AgoraClrLibrary::AgoraClr::getAudioMixingDuration(String^ filePath)
+{
+	return rtcEngine->getAudioMixingDuration(MarshalString(filePath).c_str());
+}
+
 int AgoraClr::getAudioMixingCurrentPosition()
 {
 	return rtcEngine->getAudioMixingCurrentPosition();
@@ -553,9 +563,9 @@ int AgoraClr::setAudioMixingPosition(int pos)
 	return rtcEngine->setAudioMixingPosition(pos);
 }
 
-int AgoraClr::startAudioMixing(String^ path, bool loop, bool replace, int cycle)
+int AgoraClrLibrary::AgoraClr::startAudioMixing(String^ path, bool loop, bool replace, int cycle, int startPos)
 {
-	return rtcEngine->startAudioMixing(MarshalString(path).c_str(), loop, replace, cycle);
+	return rtcEngine->startAudioMixing(MarshalString(path).c_str(), loop, replace, cycle, startPos);
 }
 
 int AgoraClr::stopAudioMixing()
