@@ -77,7 +77,7 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall* PFOnRemoteAudioStateChanged)(uid_t, REMOTE_AUDIO_STATE, REMOTE_AUDIO_STATE_REASON, int);
 	typedef void(__stdcall* PFOnFirstRemoteAudioDecoded)(uid_t, int);
 	typedef void(__stdcall* PFOnLocalAudioStats)(const LocalAudioStats&);
-	typedef void(__stdcall* PFOnAudioMixingStateChanged)(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_ERROR_TYPE);
+	typedef void(__stdcall* PFOnAudioMixingStateChanged)(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_REASON_TYPE);
 	typedef void(__stdcall* PFOnRemoteAudioMixingBegin)();
 	typedef void(__stdcall* PFOnRtmpStreamingStateChanged)(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR);
 	typedef void(__stdcall* PFOnChannelMediaRelayStateChanged)(CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR);
@@ -162,7 +162,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnRemoteAudioStateChangedDelegate(uid_t, REMOTE_AUDIO_STATE, REMOTE_AUDIO_STATE_REASON, int);
 	delegate void NativeOnFirstRemoteAudioDecodedDelegate(uid_t, int);
 	delegate void NativeOnLocalAudioStatsDelegate(const LocalAudioStats&);
-	delegate void NativeOnAudioMixingStateChangedDelegate(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_ERROR_TYPE);
+	delegate void NativeOnAudioMixingStateChangedDelegate(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_REASON_TYPE);
 	delegate void NativeOnRtmpStreamingStateChangedDelegate(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR);
 	delegate void NativeOnChannelMediaRelayStateChangedDelegate(CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR);
 	delegate void NativeOnChannelMediaRelayEventDelegate(CHANNEL_MEDIA_RELAY_EVENT);
@@ -324,7 +324,7 @@ namespace AgoraClrLibrary {
 		void onRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed) override;
 		void onFirstRemoteAudioDecoded(uid_t uid, int elapsed) override;
 		void onLocalAudioStats(const LocalAudioStats& stats) override;
-		void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error) override;
+		void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE reason) override;
 		void onRemoteAudioMixingBegin() override;
 		void onRemoteAudioMixingEnd() override;
 		void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error) override;

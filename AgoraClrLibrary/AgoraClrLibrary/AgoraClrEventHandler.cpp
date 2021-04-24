@@ -259,9 +259,9 @@ void AgoraClrEventHandler::onLocalAudioStats(const LocalAudioStats& stats)
 	if (onLocalAudioStatsEvent) onLocalAudioStatsEvent(stats);
 }
 
-void AgoraClrEventHandler::onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error)
+void AgoraClrLibrary::AgoraClrEventHandler::onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE reason)
 {
-	if (onAudioMixingStateChangedEvent) onAudioMixingStateChangedEvent(state, error);
+	if (onAudioMixingStateChangedEvent) onAudioMixingStateChangedEvent(state, reason);
 }
 
 void AgoraClrEventHandler::onRemoteAudioMixingBegin()

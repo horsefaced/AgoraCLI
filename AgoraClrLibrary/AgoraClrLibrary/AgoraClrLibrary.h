@@ -511,7 +511,7 @@ namespace AgoraClrLibrary
 		void NativeOnRemoteAudioStateChanged(uid_t uid, REMOTE_AUDIO_STATE state, REMOTE_AUDIO_STATE_REASON reason, int elapsed);
 		void NativeOnFirstRemoteAudioDecoded(uid_t uid, int elapsed);
 		void NativeOnLocalAudioStats(const LocalAudioStats& stats);
-		void NativeOnAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error);
+		void NativeOnAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE reason);
 		void NativeOnRemoteAudioMixingBegin();
 		void NativeOnRemoteAudioMixingEnd();
 		void NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error);

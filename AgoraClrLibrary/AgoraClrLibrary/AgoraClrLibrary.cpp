@@ -1246,10 +1246,10 @@ void AgoraClr::NativeOnLocalAudioStats(const LocalAudioStats& stats)
 		onLocalAudioStats(gcnew ClrLocalAudioStats(stats));
 }
 
-void AgoraClr::NativeOnAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_ERROR_TYPE error)
+void AgoraClrLibrary::AgoraClr::NativeOnAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE reason)
 {
 	if (onAudioMixingStateChanged)
-		onAudioMixingStateChanged(static_cast<AudioMixingStateType>(state), static_cast<AudioMixingErrorType>(error));
+		onAudioMixingStateChanged(static_cast<AudioMixingStateType>(state), static_cast<AudioMixingReasonType>(reason));
 }
 
 void AgoraClr::NativeOnRemoteAudioMixingBegin()
