@@ -889,16 +889,22 @@ namespace AgoraClrLibrary {
 	public:
 		bool autoSubscribeAudio;
 		bool autoSubscribeVideo;
+		bool publishLocalAudio;
+		bool publishLocalVideo;
 
 		ClrChannelMediaOptions() :
 			autoSubscribeAudio(true),
-			autoSubscribeVideo(true)
+			autoSubscribeVideo(true),
+			publishLocalAudio(true),
+			publishLocalVideo(true)
 		{}
 
 		operator ChannelMediaOptions () {
 			ChannelMediaOptions result;
 			result.autoSubscribeAudio = autoSubscribeAudio;
 			result.autoSubscribeVideo = autoSubscribeVideo;
+			result.publishLocalAudio = publishLocalAudio;
+			result.publishLocalVideo = publishLocalVideo;
 			return result;
 		}
 	};
@@ -1066,13 +1072,15 @@ namespace AgoraClrLibrary {
 	public:
 		String^ key;
 		EnumEncryptionMode mode;
+		array<UINT8>^ salt;
 
-		ClrEncryptionConfig() : mode(EnumEncryptionMode::AES_128_XTS), key(nullptr) {}
+		ClrEncryptionConfig() : mode(EnumEncryptionMode::AES_128_XTS), key(nullptr), salt(gcnew array<UINT8>(32)) {}
 
 		operator EncryptionConfig() {
 			auto result = EncryptionConfig();
 			result.encryptionKey = key == nullptr ? NULL : MarshalString(key).c_str();
 			result.encryptionMode = (ENCRYPTION_MODE)mode;
+			Marshal::Copy(salt, 0, IntPtr(result.encryptionKdfSalt), sizeof(result.encryptionKdfSalt));
 			return result;
 		}
 	};

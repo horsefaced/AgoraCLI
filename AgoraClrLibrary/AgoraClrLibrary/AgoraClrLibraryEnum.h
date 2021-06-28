@@ -161,6 +161,28 @@ namespace AgoraClrLibrary {
 		REMOTE_VIDEO_STREAM_LOW = 1,
 	};
 
+	public enum class EnumMediaDeviceStateType
+	{
+		/** 0: The device is idle.
+		*/
+		MEDIA_DEVICE_STATE_IDLE = 0,
+		/** 1: The device is active.
+		*/
+		MEDIA_DEVICE_STATE_ACTIVE = 1,
+		/** 2: The device is disabled.
+		*/
+		MEDIA_DEVICE_STATE_DISABLED = 2,
+		/** 4: The device is not present.
+		*/
+		MEDIA_DEVICE_STATE_NOT_PRESENT = 4,
+		/** 8: The device is unplugged.
+		*/
+		MEDIA_DEVICE_STATE_UNPLUGGED = 8,
+		/** 16: The device is not recommended.
+		*/
+		MEDIA_DEVICE_STATE_UNRECOMMENDED = 16,
+	};
+
 	public
 		enum class MediaDeviceType
 	{
@@ -792,6 +814,7 @@ namespace AgoraClrLibrary {
 		RTMP_STREAM_PUBLISH_ERROR_STREAM_NOT_FOUND = 9,
 		/** The format of the RTMP streaming URL is not supported. Check whether the URL format is correct. */
 		RTMP_STREAM_PUBLISH_ERROR_FORMAT_NOT_SUPPORTED = 10,
+		RTMP_STREAM_UNPUBLISH_ERROR_OK = 100,
 	};
 
 	public enum class EnumChannelMediaRelayState {
@@ -1054,6 +1077,8 @@ namespace AgoraClrLibrary {
 		SM4_128_ECB = 4,
 		AES_128_GCM = 5, //128 位 AES 加密，GCM 模式。
 		AES_256_GCM = 6, //256 位 AES 加密，GCM 模式。
+		AES_128_GCM2 = 7,
+		AES_256_GCM2 = 8,
 		/** Enumerator boundary.
 		*/
 		MODE_END,
@@ -1076,6 +1101,7 @@ namespace AgoraClrLibrary {
 		/** An error occurs when you add a background image or a watermark image to the RTMP stream.
 		 */
 		RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
+		RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2,
 	};
 
 	public enum class EnumVoiceBeautifierPreset

@@ -35,7 +35,9 @@ namespace AgoraClrLibrary {
 		int joinChannel(String^ token, String^ info, uid_t uid, ClrChannelMediaOptions^ options);
 		int joinChannelWithUserAccount(String^ token, String^ account, ClrChannelMediaOptions^ options);
 		int leaveChannel();
+		[[DEPRECATED]]
 		int publish();
+		[[DEPRECATED]]
 		int unpublish();
 		String^ channelId();
 		int getCallId(String^% callid);
@@ -47,6 +49,8 @@ namespace AgoraClrLibrary {
 		int setRemoteRenderMode(uid_t uid, EnumRenderModeType renderMode, EnumVideoMirrorModeType mirrorMode);
 		int setDefaultMuteAllRemoteAudioStreams(bool mute);
 		int setDefaultMuteAllRemoteVideoStreams(bool mute);
+		int muteLocalVideoStream(bool mute);
+		int muteLocalAudioStream(bool mute);
 		int muteAllRemoteAudioStreams(bool mute);
 		int adjustUserPlaybackSignalVolume(uid_t uid, int volume);
 		int muteRemoteAudioStream(uid_t uid, bool mute);

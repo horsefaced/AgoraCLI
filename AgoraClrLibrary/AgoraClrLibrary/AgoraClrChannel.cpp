@@ -82,7 +82,7 @@ int AgoraClrChannel::setClientRole(EnumClientRoleType type)
 	return channel->setClientRole(static_cast<CLIENT_ROLE_TYPE>(type));
 }
 
-int AgoraClrChannel::setRemoteVoicePosition(UINT uid, double pan, double gain)
+int AgoraClrChannel::setRemoteVoicePosition(uid_t uid, double pan, double gain)
 {
 	return channel->setRemoteVoicePosition(uid, pan, gain);
 }
@@ -102,6 +102,16 @@ int AgoraClrChannel::setDefaultMuteAllRemoteAudioStreams(bool mute)
 int AgoraClrChannel::setDefaultMuteAllRemoteVideoStreams(bool mute)
 {
 	return channel->setDefaultMuteAllRemoteVideoStreams(mute);
+}
+
+int AgoraClrLibrary::AgoraClrChannel::muteLocalVideoStream(bool mute)
+{
+	return channel->muteLocalVideoStream(mute);
+}
+
+int AgoraClrLibrary::AgoraClrChannel::muteLocalAudioStream(bool mute)
+{
+	return channel->muteLocalAudioStream(mute);
 }
 
 int AgoraClrChannel::muteAllRemoteAudioStreams(bool mute)
