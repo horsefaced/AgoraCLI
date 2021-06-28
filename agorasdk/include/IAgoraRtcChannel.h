@@ -69,7 +69,7 @@ class IChannelEventHandler {
 
    This callback notifies the application that a user leaves the channel when the application calls the \ref agora::rtc::IChannel::leaveChannel "leaveChannel" method.
 
-   The application retrieves information, such as the call duration and statistics.
+   The application gets information, such as the call duration and statistics.
 
    @param rtcChannel IChannel
    @param stats The call statistics: RtcStats.
@@ -681,8 +681,8 @@ class IChannel {
 
    You must keep the following restrictions in mind when calling this method. Otherwise, the SDK returns the #ERR_REFUSED (5):
    - This method publishes one stream only to the channel corresponding to the current `IChannel` object.
-   - In the interactive live streaming channel, only a host can call this method. To switch the client role, call \ref agora::rtc::IChannel::setClientRole "setClientRole" of the current `IChannel` object.
    - You can publish a stream to only one channel at a time. For details on joining multiple channels, see the advanced guide *Join Multiple Channels*.
+   - This method is equal to muteLocalAudioStream(false) and muteLocalVideoStream(false).
 
    @return
    - 0: Success.
@@ -694,6 +694,7 @@ class IChannel {
   /** Stops publishing a stream to the channel.
 
    If you call this method in a channel where you are not publishing streams, the SDK returns #ERR_REFUSED (5).
+   - This method is equal to muteLocalAudioStream(true) and muteLocalVideoStream(true).
 
    @return
    - 0: Success.
@@ -709,7 +710,7 @@ class IChannel {
    - The empty string "", if the method call fails.
    */
   virtual const char* channelId() = 0;
-  /** Retrieves the current call ID.
+  /** Gets the current call ID.
 
    When a user joins a channel on a client, a `callId` is generated to identify the call from the client.
    Feedback methods, such as \ref IRtcEngine::rate "rate" and \ref IRtcEngine::complain "complain", must be called after the call ends to submit feedback to the SDK.
@@ -816,7 +817,7 @@ class IChannel {
    @note
    - The size of the packet sent to the network after processing should not exceed 1200 bytes, otherwise, the packet may fail to be sent.
    - Ensure that both receivers and senders call this method, otherwise, you may meet undefined behaviors such as no voice and black screen.
-   - When you use CDN live streaming, recording or storage functions, Agora doesn't recommend calling this method.
+   - When you use CDN live streaming and recording functions, Agora doesn't recommend calling this method.
    - Call this method before joining a channel.
    @param observer The registered packet observer. See IPacketObserver.
 
@@ -995,6 +996,45 @@ class IChannel {
    * - < 0: Failure.
    */
   virtual int setDefaultMuteAllRemoteVideoStreams(bool mute) = 0;
+  /**
+   * Stops or resumes publishing the local audio stream.
+   *
+   * @note
+   * - When @p mute is set as @p true, this method does not affect any ongoing audio recording, because it does not disable the microphone.
+   * - You can call this method either before or after joining a channel. If you call \ref agora::rtc::IRtcEngine::setChannelProfile "setChannelProfile"
+   * after this method, the SDK resets whether or not to stop publishing the local audio according to the channel profile and user role.
+   * Therefore, we recommend calling this method after the `setChannelProfile` method.
+   * - At most one channel can be in unmute state at the same time. We don't support audio and video unmuted in different channels now.
+   *
+   * @param mute Sets whether to stop publishing the local audio stream.
+   * - true: Stop publishing the local audio stream.
+   * - false: (Default) Resumes publishing the local audio stream.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int muteLocalAudioStream(bool mute) = 0;
+  /** Stops or resumes publishing the local video stream.
+   *
+   * @note
+   * - This method executes faster than the \ref IRtcEngine::enableLocalVideo "enableLocalVideo" method,
+   * which controls the sending of the local video stream.
+   * - When `mute` is set as `true`, this method does not affect any ongoing video recording, because it does not disable the camera.
+   * - You can call this method either before or after joining a channel. If you call \ref IRtcEngine::setChannelProfile "setChannelProfile"
+   * after this method, the SDK resets whether or not to stop publishing the local video according to the channel profile and user role.
+   * Therefore, Agora recommends calling this method after the `setChannelProfile` method.
+   * - At most one channel can be in unmute state at the same time. We don't support audio and video unmuted in different channels now.
+   *
+   * @param mute Sets whether to stop publishing the local video stream.
+   * - true: Stop publishing the local video stream.
+   * - false: (Default) Resumes publishing the local video stream.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int muteLocalVideoStream(bool mute) = 0;
   /**
    * Stops or resumes subscribing to the audio streams of all remote users.
    *

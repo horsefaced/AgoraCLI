@@ -13,7 +13,9 @@
 #include <stdlib.h>
 
 #if defined(_WIN32)
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #define AGORA_CALL __cdecl
 #if defined(AGORARTC_EXPORT)
@@ -445,7 +447,12 @@ enum ERROR_CODE_TYPE {
   ERR_MODULE_SUPER_RESOLUTION_NOT_FOUND = 158,
   /// @endcond
 
-  /** 160: The recording operation has been performed.
+  /** 160: The client is already recording audio. To start a new recording,
+   * call \ref agora::rtc::IRtcEngine::stopAudioRecording "stopAudioRecording" to stop
+   * the current recording first, and then
+   * call \ref agora::rtc::IRtcEngine::startAudioRecording(const AudioRecordingConfiguration&) "startAudioRecording".
+   *
+   * @since v3.4.0
    */
   ERR_ALREADY_IN_RECORDING = 160,
 
@@ -708,10 +715,11 @@ enum ERROR_CODE_TYPE {
   ERR_ADM_NO_PLAYOUT_DEVICE = 1360,
 
   // VDM error code starts from 1500
-
+  /// @cond
   /** 1500: Video Device Module: There is no camera device.
    */
   ERR_VDM_CAMERA_NO_DEVICE = 1500,
+  /// @endcond
 
   /** 1501: Video Device Module: The camera is unauthorized.
    */
@@ -764,7 +772,7 @@ enum LOG_FILTER_TYPE {
  * @since v3.3.0
  */
 enum class LOG_LEVEL {
-  /** 0: Do not output any log. */
+  /** 0x0000: Do not output any log. */
   LOG_LEVEL_NONE = 0x0000,
   /** 0x0001: (Default) Output logs of the FATAL, ERROR, WARN and INFO level. We recommend setting your log filter as this level.
    */
