@@ -379,25 +379,31 @@ namespace AgoraClrLibrary {
 		/** 1: The video buffer in the format of raw data.
 			 */
 		VIDEO_BUFFER_RAW_DATA = 1,
+		VIDEO_BUFFER_PIXEL_BUFFER = 2,
 	};
 
 	/** The video pixel format.
 		 */
 	public
-		enum class EnumVideoPixelFormate
+		enum class EnumVideoPixelFormat
 	{
 		/** 0: The video pixel format is unknown.
-			 */
+		*/
 		VIDEO_PIXEL_UNKNOWN = 0,
 		/** 1: The video pixel format is I420.
-			 */
-			 VIDEO_PIXEL_I420 = 1,
-			 /** 2: The video pixel format is BGRA.
-				  */
-				  VIDEO_PIXEL_BGRA = 2,
-				  /** 8: The video pixel format is NV12.
-					   */
-					   VIDEO_PIXEL_NV12 = 8,
+		*/
+		VIDEO_PIXEL_I420 = 1,
+		/** 2: The video pixel format is BGRA.
+		*/
+		VIDEO_PIXEL_BGRA = 2,
+		VIDEO_PIXEL_NV21 = 3,
+		VIDEO_PIXEL_RGBA = 4,
+		VIDEO_PIXEL_IMC2 = 5,
+		VIDEO_PIXEL_ARGB = 7,
+		/** 8: The video pixel format is NV12.
+		*/
+		VIDEO_PIXEL_NV12 = 8,
+		VIDEO_PIXEL_I422 = 16,
 	};
 
 	public
@@ -1375,4 +1381,5 @@ namespace AgoraClrLibrary {
 		/** The SDK will record the voices of remote users. */
 		AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
 	};
+
 }

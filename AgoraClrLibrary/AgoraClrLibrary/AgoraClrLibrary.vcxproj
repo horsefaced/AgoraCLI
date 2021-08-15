@@ -93,6 +93,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -148,6 +149,7 @@
     <ClInclude Include="AgoraClrPacketObserver.h" />
     <ClInclude Include="AgoraClrRawFrameObserver.h" />
     <ClInclude Include="AgoraClrVideoDeviceManager.h" />
+    <ClInclude Include="AgoraClrVideoSink.h" />
     <ClInclude Include="AgoraClrVideoSource.h" />
     <ClInclude Include="AgoraClrClientRoleOptions.h" />
     <ClInclude Include="resource.h" />
@@ -171,6 +173,7 @@
     <ClCompile Include="AgoraClrVideoDeviceManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="AgoraClrVideoSink.cpp" />
     <ClCompile Include="AssemblyInfo.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>

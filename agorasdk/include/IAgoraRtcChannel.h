@@ -181,13 +181,17 @@ class IChannelEventHandler {
     (void)stats;
   }
   /** Reports the last mile network quality of each user in the channel once every two seconds.
-
-   Last mile refers to the connection between the local device and Agora's edge server. This callback reports once every two seconds the last mile network conditions of each user in the channel. If a channel includes multiple users, the SDK triggers this callback as many times.
-
-   @param rtcChannel IChannel
-   @param uid User ID. The network quality of the user with this @p uid is reported. If @p uid is 0, the local network quality is reported.
-   @param txQuality Uplink transmission quality rating of the user in terms of the transmission bitrate, packet loss rate, average RTT (Round-Trip Time), and jitter of the uplink network. @p txQuality is a quality rating helping you understand how well the current uplink network conditions can support the selected VideoEncoderConfiguration. For example, a 1000 Kbps uplink network may be adequate for video frames with a resolution of 640 * 480 and a frame rate of 15 fps in the `LIVE_BROADCASTING` profile, but may be inadequate for resolutions higher than 1280 * 720. See #QUALITY_TYPE.
-   @param rxQuality Downlink network quality rating of the user in terms of the packet loss rate, average RTT, and jitter of the downlink network. See #QUALITY_TYPE.
+   *
+   * Last mile refers to the connection between the local device and Agora's edge server. This callback reports once every
+   * two seconds the last mile network conditions of each user in the channel. If a channel includes multiple users, the
+   * SDK triggers this callback as many times.
+   *
+   * @note `txQuality` is `UNKNOWN` when the user is not sending a stream; `rxQuality` is `UNKNOWN` when the user is not receiving a stream.
+   *
+   * @param rtcChannel IChannel
+   * @param uid User ID. The network quality of the user with this @p uid is reported. If @p uid is 0, the local network quality is reported.
+   * @param txQuality Uplink transmission quality rating of the user in terms of the transmission bitrate, packet loss rate, average RTT (Round-Trip Time), and jitter of the uplink network. @p txQuality is a quality rating helping you understand how well the current uplink network conditions can support the selected VideoEncoderConfiguration. For example, a 1000 Kbps uplink network may be adequate for video frames with a resolution of 640 * 480 and a frame rate of 15 fps in the `LIVE_BROADCASTING` profile, but may be inadequate for resolutions higher than 1280 * 720. See #QUALITY_TYPE.
+   * @param rxQuality Downlink network quality rating of the user in terms of the packet loss rate, average RTT, and jitter of the downlink network. See #QUALITY_TYPE.
    */
   virtual void onNetworkQuality(IChannel* rtcChannel, uid_t uid, int txQuality, int rxQuality) {
     (void)rtcChannel;
@@ -343,7 +347,7 @@ class IChannelEventHandler {
   }
   /// @endcond
 
-  /** Occurs when the most active speaker is detected.
+  /** Occurs when the most active remote speaker is detected.
 
   After a successful call of \ref IRtcEngine::enableAudioVolumeIndication(int, int, bool) "enableAudioVolumeIndication",
   the SDK continuously detects which remote user has the loudest volume. During the current period, the remote user,
@@ -354,7 +358,7 @@ class IChannelEventHandler {
   - If the most active speaker changes to another user, the SDK triggers this callback again and reports the `uid` of the new active speaker.
 
   @param rtcChannel IChannel
-  @param uid The user ID of the most active speaker.
+  @param uid The user ID of the most active remote speaker.
   */
   virtual void onActiveSpeaker(IChannel* rtcChannel, uid_t uid) {
     (void)rtcChannel;
@@ -531,8 +535,8 @@ class IChannelEventHandler {
    * "setRemoteSubscribeFallbackOption" and set
    * @p option as #STREAM_FALLBACK_OPTION_AUDIO_ONLY, the SDK triggers this
    * callback when the remote media stream falls back to audio-only mode due
-   * to poor uplink conditions, or when the remote media stream switches
-   * back to the video after the uplink network condition improves.
+   * to poor downlink conditions, or when the remote media stream switches
+   * back to the video after the downlink network condition improves.
    *
    * @note Once the remote media stream switches to the low stream due to
    * poor network conditions, you can monitor the stream switch between a
@@ -588,68 +592,71 @@ class IChannel {
    */
   virtual int setChannelEventHandler(IChannelEventHandler* channelEh) = 0;
   /** Joins the channel with a user ID.
-
-   This method differs from the `joinChannel` method in the `IRtcEngine` class in the following aspects:
-
-   | IChannel::joinChannel                                                                                                                    | IRtcEngine::joinChannel                                                                                      |
-   |------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-   | Does not contain the `channelId` parameter, because `channelId` is specified when creating the `IChannel` object.                              | Contains the `channelId` parameter, which specifies the channel to join.                                       |
-   | Contains the `options` parameter, which decides whether to subscribe to all streams before joining the channel.                            | Does not contain the `options` parameter. By default, users subscribe to all streams when joining the channel. |
-   | Users can join multiple channels simultaneously by creating multiple `IChannel` objects and calling the `joinChannel` method of each object. | Users can join only one channel.                                                                             |
-   | By default, the SDK does not publish any stream after the user joins the channel. You need to call the publish method to do that.        | By default, the SDK publishes streams once the user joins the channel.                                       |
-
-   Once the user joins the channel (switches to another channel), the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. If you do not want to subscribe to a specified stream or all remote streams, call the `mute` methods accordingly.
-
-   @note
-   - If you are already in a channel, you cannot rejoin it with the same `uid`.
-   - We recommend using different UIDs for different channels.
-   - If you want to join the same channel from different devices, ensure that the UIDs in all devices are different.
-   - Ensure that the app ID you use to generate the token is the same with the app ID used when creating the `IRtcEngine` object.
-
-   @param token The token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=Windows).
-   @param info (Optional) Additional information about the channel. This parameter can be set as null. Other users in the channel do not receive this information.
-   @param uid The user ID. A 32-bit unsigned integer with a value ranging from 1 to (232-1). This parameter must be unique. If `uid` is not assigned (or set as `0`), the SDK assigns a `uid` and reports it in the \ref agora::rtc::IChannelEventHandler::onJoinChannelSuccess "onJoinChannelSuccess" callback. The app must maintain this user ID.
-   @param options The channel media options: \ref agora::rtc::ChannelMediaOptions::ChannelMediaOptions "ChannelMediaOptions"
-
-   @return
-   - 0(ERR_OK): Success.
-   - < 0: Failure.
-      - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
-      - -3(ERR_NOT_READY): The SDK fails to be initialized. You can try re-initializing the SDK.
-      - -5(ERR_REFUSED): The request is rejected. This may be caused by the following:
-         - You have created an IChannel object with the same channel name.
-         - You have joined and published a stream in a channel created by the IChannel object. When you join a channel created by the IRtcEngine object, the SDK publishes the local audio and video streams to that channel by default. Because the SDK does not support publishing a local stream to more than one channel simultaneously, an error occurs in this occasion.
-      - -7(ERR_NOT_INITIALIZED): The SDK is not initialized before calling this method.
+   *
+   * Compared with the `joinChannel` method in the IRtcEngine class, this method supports joining multiple channels at
+   * a time by creating multiple IChannel objects and then calling `joinChannel` in each IChannel object.
+   *
+   * Once the user joins the channel, the user publishes the local audio and video streams and automatically
+   * subscribes to the audio and video streams of all the other users in the channel by default. Subscribing
+   * incurs all associated usage costs. To unsubscribe, set the `options` parameter or call the `mute` methods accordingly.
+   *
+   * @note
+   * - If you are already in a channel, you cannot rejoin it with the same `uid`.
+   * - We recommend using different UIDs for different channels.
+   * - If you want to join the same channel from different devices, ensure that the UIDs in all devices are different.
+   * - Ensure that the app ID you use to generate the token is the same with the app ID used when creating the `IRtcEngine` object.
+   *
+   * @param token The token generated at your server. See [Authenticate Your Users with Tokens](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=All%20Platforms).
+   * @param info (Optional) Additional information about the channel. This parameter can be set as null. Other users in the channel do not receive this information.
+   * @param uid The user ID. A 32-bit unsigned integer with a value ranging from 1 to (232-1). This parameter must be unique. If `uid` is not assigned (or set as `0`), the SDK assigns a `uid` and reports it in the \ref agora::rtc::IChannelEventHandler::onJoinChannelSuccess "onJoinChannelSuccess" callback. The app must maintain this user ID.
+   * @param options The channel media options: \ref agora::rtc::ChannelMediaOptions::ChannelMediaOptions "ChannelMediaOptions"
+   *
+   * @return
+   * - 0(ERR_OK): Success.
+   * - < 0: Failure.
+   *    - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+   *    - -3(ERR_NOT_READY): The SDK fails to be initialized. You can try re-initializing the SDK.
+   *    - -5(ERR_REFUSED): The request is rejected. This may be caused by the following:
+   *       - You have created an IChannel object with the same channel name.
+   *       - You have joined and published a stream in a channel created by the IChannel object. When you join a channel created by the IRtcEngine object, the SDK publishes the local audio and video streams to that channel by default. Because the SDK does not support publishing a local stream to more than one channel simultaneously, an error occurs in this occasion.
+   *    - -7(ERR_NOT_INITIALIZED): The SDK is not initialized before calling this method.
    */
   virtual int joinChannel(const char* token, const char* info, uid_t uid, const ChannelMediaOptions& options) = 0;
   /** Joins the channel with a user account.
-
-   After the user successfully joins the channel, the SDK triggers the following callbacks:
-
-   - The local client: \ref agora::rtc::IRtcEngineEventHandler::onLocalUserRegistered "onLocalUserRegistered" and \ref agora::rtc::IChannelEventHandler::onJoinChannelSuccess "onJoinChannelSuccess" .
-   - The remote client: \ref agora::rtc::IChannelEventHandler::onUserJoined "onUserJoined" and \ref agora::rtc::IRtcEngineEventHandler::onUserInfoUpdated "onUserInfoUpdated" , if the user joining the channel is in the `COMMUNICATION` profile, or is a host in the `LIVE_BROADCASTING` profile.
-
-   Once the user joins the channel (switches to another channel), the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. If you do not want to subscribe to a specified stream or all remote streams, call the `mute` methods accordingly.
-
-   @note To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account.
-   If a user joins the channel with the Agora Web SDK, ensure that the uid of the user is set to the same parameter type.
-
-   @param token The token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=Windows).
-   @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that the user account is unique and do not set it as null. Supported character scopes are:
-   - All lowercase English letters: a to z.
-   - All uppercase English letters: A to Z.
-   - All numeric characters: 0 to 9.
-   - The space character.
-   - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-   @param options The channel media options: \ref agora::rtc::ChannelMediaOptions::ChannelMediaOptions “ChannelMediaOptions”.
-
-   @return
-   - 0: Success.
-   - < 0: Failure.
-      - #ERR_INVALID_ARGUMENT (-2)
-      - #ERR_NOT_READY (-3)
-      - #ERR_REFUSED (-5)
-      - #ERR_NOT_INITIALIZED (-7)
+   *
+   * Compared with the `joinChannelWithUserAccount` method in the IRtcEngine class, this method supports joining multiple channels at
+   * a time by creating multiple IChannel objects and then calling `joinChannelWithUserAccount` in each IChannel object.
+   *
+   * After the user successfully joins the channel, the SDK triggers the following callbacks:
+   *
+   * - The local client: \ref agora::rtc::IRtcEngineEventHandler::onLocalUserRegistered "onLocalUserRegistered" and \ref agora::rtc::IChannelEventHandler::onJoinChannelSuccess "onJoinChannelSuccess" .
+   * - The remote client: \ref agora::rtc::IChannelEventHandler::onUserJoined "onUserJoined" and \ref agora::rtc::IRtcEngineEventHandler::onUserInfoUpdated "onUserInfoUpdated" , if the user joining the channel is in the `COMMUNICATION` profile, or is a host in the `LIVE_BROADCASTING` profile.
+   *
+   * Once the user joins the channel, the user publishes the local audio and video streams and
+   * automatically subscribes to the audio and video streams of all the other users in the channel by default.
+   * Subscribing incurs all associated usage costs. To unsubscribe, set the `options` parameters or call the `mute` methods accordingly.
+   *
+   * @note
+   * - To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account.
+   * If a user joins the channel with the Agora Web SDK, ensure that the uid of the user is set to the same parameter type.
+   * - Before using a String user name, ensure that you read [How can I use string user names](https://docs.agora.io/en/faq/string) for getting details about the limitations and implementation steps.
+   *
+   * @param token The token generated at your server. See [Authenticate Your Users with Tokens](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=All%20Platforms).
+   * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that the user account is unique and do not set it as null. Supported character scopes are:
+   * - All lowercase English letters: a to z.
+   * - All uppercase English letters: A to Z.
+   * - All numeric characters: 0 to 9.
+   * - The space character.
+   * - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
+   * @param options The channel media options: \ref agora::rtc::ChannelMediaOptions::ChannelMediaOptions “ChannelMediaOptions”.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *    - #ERR_INVALID_ARGUMENT (-2)
+   *    - #ERR_NOT_READY (-3)
+   *    - #ERR_REFUSED (-5)
+   *    - #ERR_NOT_INITIALIZED (-7)
    */
   virtual int joinChannelWithUserAccount(const char* token, const char* userAccount, const ChannelMediaOptions& options) = 0;
   /** Allows a user to leave a channel, such as hanging up or exiting a call.
@@ -668,21 +675,25 @@ class IChannel {
    - If you call the \ref IChannel::release "release" method immediately after the *leaveChannel* method, the *leaveChannel* process interrupts, and the \ref IChannelEventHandler::onLeaveChannel "onLeaveChannel" callback is not triggered.
    - If you call the *leaveChannel* method during a CDN live streaming, the SDK triggers the \ref IChannel::removePublishStreamUrl "removePublishStreamUrl" method.
 
-   @return
-   - 0(ERR_OK): Success.
-   - < 0: Failure.
-      - -1(ERR_FAILED): A general error occurs (no specified reason).
-      - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
-      - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
-   */
+     @return
+     - 0(ERR_OK): Success.
+     - < 0: Failure.
+        - -1(ERR_FAILED): A general error occurs (no specified reason).
+        - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+        - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
+     */
   virtual int leaveChannel() = 0;
 
   /** Publishes the local stream to the channel.
 
+   @deprecated This method is deprecated as of v3.4.5. Use \ref IChannel::muteLocalAudioStream "muteLocalAudioStream" (false)
+   or \ref IChannel::muteLocalVideoStream "muteLocalVideoStream" (false) instead.
+
    You must keep the following restrictions in mind when calling this method. Otherwise, the SDK returns the #ERR_REFUSED (5):
-   - This method publishes one stream only to the channel corresponding to the current `IChannel` object.
+   - This method publishes one stream only to the channel corresponding to the current IChannel object.
+   - In the interactive live streaming channel, only a host can call this method.
+   To switch the client role, call \ref IChannel::setClientRole "setClientRole" of the current IChannel object.
    - You can publish a stream to only one channel at a time. For details on joining multiple channels, see the advanced guide *Join Multiple Channels*.
-   - This method is equal to muteLocalAudioStream(false) and muteLocalVideoStream(false).
 
    @return
    - 0: Success.
@@ -693,8 +704,10 @@ class IChannel {
 
   /** Stops publishing a stream to the channel.
 
+   @deprecated This method is deprecated as of v3.4.5. Use \ref IChannel::muteLocalAudioStream "muteLocalAudioStream" (true)
+   or \ref IChannel::muteLocalVideoStream "muteLocalVideoStream" (true) instead.
+
    If you call this method in a channel where you are not publishing streams, the SDK returns #ERR_REFUSED (5).
-   - This method is equal to muteLocalAudioStream(true) and muteLocalVideoStream(true).
 
    @return
    - 0: Success.
@@ -735,7 +748,7 @@ class IChannel {
 
    The application should call this method to get the new `token`. Failure to do so will result in the SDK disconnecting from the server.
 
-   @param token Pointer to the new token.
+   @param token The new token.
 
    @return
    - 0(ERR_OK): Success.
@@ -793,9 +806,18 @@ class IChannel {
    *
    * In scenarios requiring high security, Agora recommends calling this method to enable the built-in encryption before joining a channel.
    *
-   * All users in the same channel must use the same encryption mode and encryption key. After a user leaves the channel, the SDK automatically disables the built-in encryption. To enable the built-in encryption, call this method before the user joins the channel again.
+   * After a user leaves the channel, the SDK automatically disables the built-in encryption.
+   * To re-enable the built-in encryption, call this method before the user joins the channel again.
    *
-   * @note If you enable the built-in encryption, you cannot use the RTMP or RTMPS streaming function.
+   * As of v3.4.5, Agora recommends using either the `AES_128_GCM2` or `AES_256_GCM2` encryption mode,
+   * both of which support adding a salt and are more secure. For details, see *Media Stream Encryption*.
+   *
+   * @warning All users in the same channel must use the same encryption mode, encryption key, and salt; otherwise,
+   * users cannot communicate with each other.
+   *
+   * @note
+   * - If you enable the built-in encryption, you cannot use the RTMP or RTMPS streaming function.
+   * - To enhance security, Agora recommends using a new key and salt every time you enable the media stream encryption.
    *
    * @param enabled Whether to enable the built-in encryption:
    * - true: Enable the built-in encryption.
@@ -999,51 +1021,72 @@ class IChannel {
   /**
    * Stops or resumes publishing the local audio stream.
    *
+   * @since v3.4.5
+   *
+   * This method only sets the publishing state of the audio stream in the channel of IChannel.
+   *
+   * A successful method call triggers the
+   * \ref IChannelEventHandler::onRemoteAudioStateChanged "onRemoteAudioStateChanged"
+   * callback on the remote client.
+   *
+   * You can only publish the local stream in one channel at a time. If you create multiple channels, ensure that
+   * you only call \ref IChannel::muteLocalAudioStream "muteLocalAudioStream" (false) in one channel;
+   * otherwise, the method call fails, and the SDK returns `-5 (ERR_REFUSED)`.
+   *
    * @note
-   * - When @p mute is set as @p true, this method does not affect any ongoing audio recording, because it does not disable the microphone.
-   * - You can call this method either before or after joining a channel. If you call \ref agora::rtc::IRtcEngine::setChannelProfile "setChannelProfile"
-   * after this method, the SDK resets whether or not to stop publishing the local audio according to the channel profile and user role.
-   * Therefore, we recommend calling this method after the `setChannelProfile` method.
-   * - At most one channel can be in unmute state at the same time. We don't support audio and video unmuted in different channels now.
+   * - This method does not change the usage state of the audio-capturing device.
+   * - Whether this method call takes effect is affected by the \ref IChannel::joinChannel "joinChannel"
+   * and \ref IChannel::setClientRole "setClientRole" methods. For details, see *Set the Publishing State*.
    *
    * @param mute Sets whether to stop publishing the local audio stream.
    * - true: Stop publishing the local audio stream.
-   * - false: (Default) Resumes publishing the local audio stream.
+   * - false: Resume publishing the local audio stream.
    *
    * @return
    * - 0: Success.
    * - < 0: Failure.
+   *  - `-5 (ERR_REFUSED)`: The request is rejected.
    */
   virtual int muteLocalAudioStream(bool mute) = 0;
   /** Stops or resumes publishing the local video stream.
    *
+   * @since v3.4.5
+   *
+   * This method only sets the publishing state of the video stream in the channel of IChannel.
+   *
+   * A successful method call triggers the \ref IChannelEventHandler::onRemoteVideoStateChanged "onRemoteVideoStateChanged"
+   * callback on the remote client.
+   *
+   * You can only publish the local stream in one channel at a time. If you create multiple channels,
+   * ensure that you only call \ref IChannel::muteLocalVideoStream "muteLocalVideoStream" (false) in one channel;
+   * otherwise, the method call fails, and the SDK returns `-5 (ERR_REFUSED)`.
+   *
    * @note
-   * - This method executes faster than the \ref IRtcEngine::enableLocalVideo "enableLocalVideo" method,
-   * which controls the sending of the local video stream.
-   * - When `mute` is set as `true`, this method does not affect any ongoing video recording, because it does not disable the camera.
-   * - You can call this method either before or after joining a channel. If you call \ref IRtcEngine::setChannelProfile "setChannelProfile"
-   * after this method, the SDK resets whether or not to stop publishing the local video according to the channel profile and user role.
-   * Therefore, Agora recommends calling this method after the `setChannelProfile` method.
-   * - At most one channel can be in unmute state at the same time. We don't support audio and video unmuted in different channels now.
+   * - This method does not change the usage state of the video-capturing device.
+   * - Whether this method call takes effect is affected by the \ref IChannel::joinChannel "joinChannel"
+   * and \ref IChannel::setClientRole "setClientRole" methods. For details, see *Set the Publishing State*.
    *
    * @param mute Sets whether to stop publishing the local video stream.
    * - true: Stop publishing the local video stream.
-   * - false: (Default) Resumes publishing the local video stream.
+   * - false: Resume publishing the local video stream.
    *
    * @return
    * - 0: Success.
    * - < 0: Failure.
+   *  - `-5 (ERR_REFUSED)`: The request is rejected.
    */
   virtual int muteLocalVideoStream(bool mute) = 0;
   /**
    * Stops or resumes subscribing to the audio streams of all remote users.
    *
-   * As of v3.3.0, after successfully calling this method, the local user stops or resumes
+   * After successfully calling this method, the local user stops or resumes
    * subscribing to the audio streams of all remote users, including all subsequent users.
    *
    * @note
    * - Call this method after joining a channel.
-   * - See recommended settings in *Set the Subscribing State*.
+   * - As of v3.3.0, this method contains the function of \ref IChannel::setDefaultMuteAllRemoteAudioStreams "setDefaultMuteAllRemoteAudioStreams".
+   * Agora recommends not calling `muteAllRemoteAudioStreams` and `setDefaultMuteAllRemoteAudioStreams`
+   * together; otherwise, the settings may not take effect. See *Set the Subscribing State*.
    *
    * @param mute Sets whether to stop subscribing to the audio streams of all remote users.
    * - true: Stop subscribing to the audio streams of all remote users.
@@ -1095,7 +1138,7 @@ class IChannel {
   /**
    * Stops or resumes subscribing to the video streams of all remote users.
    *
-   * As of v3.3.0, after successfully calling this method, the local user stops or resumes
+   * After successfully calling this method, the local user stops or resumes
    * subscribing to the video streams of all remote users, including all subsequent users.
    *
    * @note

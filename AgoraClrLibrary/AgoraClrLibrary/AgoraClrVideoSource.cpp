@@ -128,7 +128,7 @@ VideoContentHint AgoraClrLibrary::InnerVideoSource::NativeGetVideoContentHint()
     return (VideoContentHint)(clr->getVideoContentHint());
 }
 
-void AgoraClrLibrary::InnerVideoSource::Consume(array<Byte>^ buffer, EnumVideoPixelFormate frameType, int width, int height, int rotation, long timestamp)
+void AgoraClrLibrary::InnerVideoSource::Consume(array<Byte>^ buffer, EnumVideoPixelFormat frameType, int width, int height, int rotation, long timestamp)
 {
     auto rawBuffer = new unsigned char[buffer->Length]{};
     Marshal::Copy(buffer, 0, IntPtr(rawBuffer), buffer->Length);

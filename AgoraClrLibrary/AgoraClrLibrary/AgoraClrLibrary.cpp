@@ -6,18 +6,19 @@ using namespace AgoraClrLibrary;
 using namespace System;
 using namespace Runtime::InteropServices;
 
-AgoraClr::AgoraClr()
+AgoraClr::AgoraClr() :
+	rtcEngine(nullptr),
+	agoraMediaEngine(nullptr),
+	gchs(gcnew List<GCHandle>()),
+	agoraEventHandler(new AgoraClrEventHandler),
+	agoraPacketObserver(new AgoraClrPacketObserver),
+	agoraAudioObserver(new AgoraClrAudioFrameObserver),
+	agoraVideoObserver(new AgoraClrVideoFrameObserver),
+	agoraMetadataObserver(new AgoraClrMetadataObserver),
+	innerVideoSoruce(nullptr),
+	innerLocalVideoSink(nullptr),
+	innerRemoteVideoSink(nullptr)
 {
-	rtcEngine = nullptr;
-	agoraMediaEngine = nullptr;
-
-	gchs = gcnew List<GCHandle>();
-	agoraEventHandler = new AgoraClrEventHandler;
-	agoraPacketObserver = new AgoraClrPacketObserver;
-	agoraAudioObserver = new AgoraClrAudioFrameObserver;
-	agoraVideoObserver = new AgoraClrVideoFrameObserver;
-	agoraMetadataObserver = new AgoraClrMetadataObserver;
-
 	VideoFormatPreference = VideoFrameType::FRAME_TYPE_YUV420;
 	IsSmoothRenderingEnabled = false;
 	IsVideoRotationApplied = false;
@@ -27,8 +28,6 @@ AgoraClr::AgoraClr()
 	ObservedVideoFramePosition = static_cast<UINT>(EnumVideoObserverPositionType::POSITION_POST_CAPTURER);
 
 	MaxMetadataSize = 1024;
-
-	innerVideoSoruce = nullptr;
 
 	initializeEventHandler();
 	initializePacketObserver();
@@ -852,11 +851,36 @@ int AgoraClr::pullAudioFrame([Out] ClrAudioFrame^% frame)
 	//return agoraMediaEngine ? agoraMediaEngine->pullAudioFrame(frame) : -1;
 }
 
+int AgoraClrLibrary::AgoraClr::setLocalVideoRenderer(ClrVideoSink^ sink)
+{
+	auto result = rtcEngine->setLocalVideoRenderer(NULL);
+	if (innerLocalVideoSink != nullptr) innerLocalVideoSink->dispose();
+
+	if (sink != nullptr) {
+		innerLocalVideoSink = gcnew InnerVideoSink(sink);
+		result = rtcEngine->setLocalVideoRenderer(innerLocalVideoSink);
+	}
+
+	return result;
+}
+
+int AgoraClrLibrary::AgoraClr::setRemoteVideoRenderer(uid_t uid, ClrVideoSink^ sink)
+{
+	auto result = rtcEngine->setRemoteVideoRenderer(uid, NULL);
+	if (innerRemoteVideoSink != nullptr) innerRemoteVideoSink->dispose();
+
+	if (sink != nullptr) {
+		innerRemoteVideoSink = gcnew InnerVideoSink(sink);
+		result = rtcEngine->setRemoteVideoRenderer(uid, innerRemoteVideoSink);
+	}
+	return result;
+}
+
 bool AgoraClrLibrary::AgoraClr::setVideoSource(ClrVideoSource^ source)
 {
 	auto result = rtcEngine->setVideoSource(NULL);
 	if (innerVideoSoruce != nullptr) innerVideoSoruce->dispose();
-	
+
 	if (source != nullptr) {
 		innerVideoSoruce = gcnew InnerVideoSource(source);
 		result = rtcEngine->setVideoSource(innerVideoSoruce);

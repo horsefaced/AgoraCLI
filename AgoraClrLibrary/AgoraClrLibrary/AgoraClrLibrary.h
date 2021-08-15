@@ -12,6 +12,7 @@
 #include "AgoraClrVideoDeviceManager.h"
 #include "AgoraClrChannel.h"
 #include "AgoraClrClientRoleOptions.h"
+#include "AgoraClrVideoSink.h"
 
 #include <string>
 #include "AgoraClrVideoSource.h"
@@ -274,6 +275,9 @@ namespace AgoraClrLibrary
 		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
 		int pullAudioFrame([Out] ClrAudioFrame^% frame);
 
+		int setLocalVideoRenderer(ClrVideoSink^ sink);
+		int setRemoteVideoRenderer(uid_t uid, ClrVideoSink^ sink);
+
 		//原始音频数据
 		int setRecordingAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
 		int setPlaybackAudioFrameParameters(int sampleRate, int channel, RawAudioFrameOPModeType mode, int samplesPerCall);
@@ -424,6 +428,8 @@ namespace AgoraClrLibrary
 		List<GCHandle>^ gchs;
 
 		InnerVideoSource^ innerVideoSoruce;
+		InnerVideoSink^ innerLocalVideoSink;
+		InnerVideoSink^ innerRemoteVideoSink;
 
 		//Native Agora Event Handler
 		void NativeOnJoinChannelSuccess(const char* channel, uid_t uid, int elapsed);

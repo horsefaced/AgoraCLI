@@ -737,7 +737,7 @@ namespace AgoraClrLibrary {
 		ExternalVideoFrame* result = nullptr;
 	public:
 		VideoBufferType type;
-		EnumVideoPixelFormate format;
+		EnumVideoPixelFormat format;
 		array<Byte>^ buffer;
 		int stride;
 		int height;
@@ -1136,4 +1136,6 @@ namespace AgoraClrLibrary {
 			return result;
 		}
 	}; 
+
+
 }

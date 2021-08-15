@@ -51,11 +51,11 @@ namespace AgoraClrLibrary {
 		bool onStart();
 		void onStop();
 
-		EnumVideoPixelFormate getBufferType();
+		EnumVideoPixelFormat getBufferType();
 		EnumVideoCaptureType getVideoCaptureType();
 		EnumVideoContentHint getVideoContentHint();
 
-		delegate void ConsumeRawVideoFrameDelegate(array<Byte>^ buffer, EnumVideoPixelFormate frameType, int width, int height, int rotation, long timestamp);
+		delegate void ConsumeRawVideoFrameDelegate(array<Byte>^ buffer, EnumVideoPixelFormat frameType, int width, int height, int rotation, long timestamp);
 		event ConsumeRawVideoFrameDelegate^ consumeRawVideoFrame;
 	};
 
@@ -81,7 +81,7 @@ namespace AgoraClrLibrary {
 		VIDEO_CAPTURE_TYPE NativeGetVideoCaptureType();
 		VideoContentHint NativeGetVideoContentHint();
 
-		void Consume(array<Byte>^ buffer, EnumVideoPixelFormate frameType, int width, int height, int rotation, long timestamp);
+		void Consume(array<Byte>^ buffer, EnumVideoPixelFormat frameType, int width, int height, int rotation, long timestamp);
 	private:
 		ClrVideoSource^ clr;
 		VideoSource* raw;

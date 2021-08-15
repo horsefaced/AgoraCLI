@@ -1,5 +1,6 @@
 #pragma once
 #include "..\..\agorasdk\include\IAgoraRtcEngine.h"
+#include "..\include\common.h"
 
 using namespace agora::rtc;
 

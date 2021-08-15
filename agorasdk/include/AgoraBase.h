@@ -222,6 +222,9 @@ enum WARN_CODE_TYPE {
   /** 1053: Audio Processing Module: A residual echo is detected, which may be caused by the belated scheduling of system threads or the signal overflow.
    */
   WARN_APM_RESIDUAL_ECHO = 1053,
+  /** 1054: Audio Processing Module: AI NS is closed, this can be triggered by manual settings or by performance detection modules.
+   */
+  WARN_APM_AINS_CLOSED = 1054,
   /// @cond
   WARN_ADM_WIN_CORE_NO_RECORDING_DEVICE = 1322,
   /// @endcond
@@ -743,6 +746,12 @@ enum ERROR_CODE_TYPE {
   /** 1603: Video Device Module: An error occurs in setting the video encoder.
    */
   ERR_VCM_ENCODER_SET_ERROR = 1603,
+  /** 1735: (Windows only) The Windows Audio service is disabled. You need to
+   * either enable the Windows Audio service or restart the device.
+   *
+   * @since v3.5.0
+   */
+  ERR_ADM_WIN_CORE_SERVRE_SHUT_DOWN = 1735,
 };
 
 /** Output log filter level. */
