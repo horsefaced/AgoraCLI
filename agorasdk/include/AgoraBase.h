@@ -40,6 +40,20 @@
 #define AGORA_CALL
 #endif
 
+#ifdef __GNUC__
+#define AGORA_GCC_VERSION_AT_LEAST(x, y) (__GNUC__ > (x) || __GNUC__ == (x) && __GNUC_MINOR__ >= (y))
+#else
+#define AGORA_GCC_VERSION_AT_LEAST(x, y) 0
+#endif
+
+#if AGORA_GCC_VERSION_AT_LEAST(3, 1)
+#define AGORA_DEPRECATED_ATTRIBUTE __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define AGORA_DEPRECATED_ATTRIBUTE
+#else
+#define AGORA_DEPRECATED_ATTRIBUTE
+#endif
+
 namespace agora {
 namespace util {
 
@@ -239,13 +253,13 @@ enum WARN_CODE_TYPE {
    * - Update the sound card drive.
    */
   WARN_ADM_WIN_CORE_IMPROPER_CAPTURE_RELEASE = 1324,
-  /** 1610: The origin resolution of the remote video is beyond the range where the super-resolution algorithm can be applied.
+  /** 1610: The original resolution of the remote user's video is beyond the range where super resolution can be applied.
    */
   WARN_SUPER_RESOLUTION_STREAM_OVER_LIMITATION = 1610,
-  /** 1611: Another user is already using the super-resolution algorithm.
+  /** 1611: Super resolution is already being used to boost another remote user's video.
    */
   WARN_SUPER_RESOLUTION_USER_COUNT_OVER_LIMITATION = 1611,
-  /** 1612: The device does not support the super-resolution algorithm.
+  /** 1612: The device does not support using super resolution.
    */
   WARN_SUPER_RESOLUTION_DEVICE_NOT_SUPPORTED = 1612,
   /// @cond
@@ -441,14 +455,6 @@ enum ERROR_CODE_TYPE {
    *
    */
   ERR_MODULE_NOT_FOUND = 157,
-  /// @cond
-  /** 158: The dynamical library for the super-resolution algorithm is not integrated.
-   * When you call the \ref agora::rtc::IRtcEngine::enableRemoteSuperResolution "enableRemoteSuperResolution" method but
-   * do not integrate the dynamical library for the super-resolution algorithm
-   * into your project, the SDK reports this error code.
-   */
-  ERR_MODULE_SUPER_RESOLUTION_NOT_FOUND = 158,
-  /// @endcond
 
   /** 160: The client is already recording audio. To start a new recording,
    * call \ref agora::rtc::IRtcEngine::stopAudioRecording "stopAudioRecording" to stop

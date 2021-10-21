@@ -1127,7 +1127,7 @@ namespace AgoraClrLibrary {
 		EnumAudioRecordingPosition recordingPosition;
 		int recordingSampleRate;
 
-		AudioRecordingConfiguration to() {
+		operator AudioRecordingConfiguration () {
 			auto result = AudioRecordingConfiguration();
 			result.filePath = filePath == nullptr ? NULL : MarshalString(filePath).c_str();
 			result.recordingQuality = (agora::rtc::AUDIO_RECORDING_QUALITY_TYPE)recordingQuality;
@@ -1137,5 +1137,19 @@ namespace AgoraClrLibrary {
 		}
 	}; 
 
+	public ref class ClrAudioFileInfo {
+	public:
+		String^ filePath;
+		int durationMs;
 
+		ClrAudioFileInfo(){}
+		ClrAudioFileInfo(AudioFileInfo info) :filePath(gcnew String(info.filePath)), durationMs(info.durationMs){}
+
+		operator AudioFileInfo() {
+			auto result = AudioFileInfo();
+			result.filePath = filePath == nullptr ? NULL : MarshalString(filePath).c_str();
+			result.durationMs = durationMs;
+			return result;
+		}
+	};
 }

@@ -186,6 +186,16 @@ int AgoraClr::updateChannelMediaRelay(ClrChannelMediaRelayConfiguration^ config)
 	return rtcEngine->updateChannelMediaRelay(config);
 }
 
+int AgoraClrLibrary::AgoraClr::pauseAllChannelMediaRelay()
+{
+	return rtcEngine->pauseAllChannelMediaRelay();
+}
+
+int AgoraClrLibrary::AgoraClr::resumeAllChannelMediaRelay()
+{
+	return rtcEngine->resumeAllChannelMediaRelay();
+}
+
 int AgoraClr::stopChannelMediaRelay()
 {
 	return rtcEngine->stopChannelMediaRelay();
@@ -519,7 +529,8 @@ int AgoraClr::startAudioRecording(String^ path, int sampleRate, AudioRecordingQu
 
 int AgoraClrLibrary::AgoraClr::startAudioRecording(ClrAudioRecordingConfiguration config)
 {
-	return rtcEngine->startAudioRecording(config.to());
+	AudioRecordingConfiguration raw = config;
+	return rtcEngine->startAudioRecording(raw);
 }
 
 int AgoraClr::stopAudioRecording()
@@ -547,9 +558,9 @@ int AgoraClr::getAudioMixingDuration()
 	return rtcEngine->getAudioMixingDuration();
 }
 
-int AgoraClrLibrary::AgoraClr::getAudioMixingDuration(String^ filePath)
+int AgoraClrLibrary::AgoraClr::getAudioFileInfo(String^ filePath)
 {
-	return rtcEngine->getAudioMixingDuration(MarshalString(filePath).c_str());
+	return rtcEngine->getAudioFileInfo(MarshalString(filePath).c_str());
 }
 
 int AgoraClr::getAudioMixingCurrentPosition()
@@ -560,6 +571,26 @@ int AgoraClr::getAudioMixingCurrentPosition()
 int AgoraClr::setAudioMixingPosition(int pos)
 {
 	return rtcEngine->setAudioMixingPosition(pos);
+}
+
+int AgoraClrLibrary::AgoraClr::getAudioTrackCount()
+{
+	return rtcEngine->getAudioTrackCount();
+}
+
+int AgoraClrLibrary::AgoraClr::selectAudioTrack(int index)
+{
+	return rtcEngine->selectAudioTrack(index);
+}
+
+int AgoraClrLibrary::AgoraClr::setAudioMixingPlaybackSpeed(int speed)
+{
+	return rtcEngine->setAudioMixingPlaybackSpeed(speed);
+}
+
+int AgoraClrLibrary::AgoraClr::setAudioMixingDualMonoMode(EnumAudioMixingDualMonoMode mode)
+{
+	return rtcEngine->setAudioMixingDualMonoMode(static_cast<agora::media::AUDIO_MIXING_DUAL_MONO_MODE>(mode));
 }
 
 int AgoraClrLibrary::AgoraClr::startAudioMixing(String^ path, bool loop, bool replace, int cycle, int startPos)
@@ -627,9 +658,14 @@ int AgoraClr::setExternalAudioSource(bool enabled, int sampleRate, int channels)
 	return rtcEngine->setExternalAudioSource(enabled, sampleRate, channels);
 }
 
-int AgoraClr::pushAudioFrame(ClrAudioFrame^ frame)
+int AgoraClrLibrary::AgoraClr::setExternalAudioSourceVolume(int sourcePos, int volume)
 {
-	return agoraMediaEngine ? agoraMediaEngine->pushAudioFrame(frame) : -1;
+	return agoraMediaEngine ? agoraMediaEngine->setExternalAudioSourceVolume(sourcePos, volume) : -1;
+}
+
+int AgoraClr::pushAudioFrame(int sourcePos, ClrAudioFrame^ frame)
+{
+	return agoraMediaEngine ? agoraMediaEngine->pushAudioFrame(sourcePos, frame) : -1;
 }
 
 int AgoraClr::setLocalVoiceEqualization(AudioEqualizationBandFrequency freq, int bandGain)
@@ -1016,6 +1052,7 @@ void AgoraClr::initializeEventHandler()
 	agoraEventHandler->onFirstLocalVideoFramePublishedEvent = static_cast<OnFirstLocalVideoFramePublished::Pointer>(regEvent(gcnew OnFirstLocalVideoFramePublished::Type(this, &AgoraClr::NativeOnFirstLocalVideoFramePublished)));
 
 	agoraEventHandler->onRtmpStreamingEventEvent = static_cast<OnRtmpStreamingEvent::Pointer>(regEvent(gcnew OnRtmpStreamingEvent::Type(this, &AgoraClr::NativeOnRtmpStreamingEvent)));
+	agoraEventHandler->onRequestAudioFileInfoEvent = static_cast<OnRequestAudioFileInfo::Pointer>(regEvent(gcnew OnRequestAudioFileInfo::Type(this, &AgoraClr::NativeOnRequestAudioFileInfo)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -1420,6 +1457,11 @@ void AgoraClrLibrary::AgoraClr::NativeOnRtmpStreamingEvent(const char* url, RTMP
 {
 	if (this->onRtmpStreamingEvent)
 		this->onRtmpStreamingEvent(gcnew String(url), (EnumRtmpStreamingEvent)code);
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnRequestAudioFileInfo(const AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error)
+{
+	if (onRequestAudioFileInfo) onRequestAudioFileInfo(gcnew ClrAudioFileInfo(info), static_cast<EnumAudioFileInfoError>(error));
 }
 
 void AgoraClr::NativeOnUserMuteAudio(uid_t uid, bool muted)

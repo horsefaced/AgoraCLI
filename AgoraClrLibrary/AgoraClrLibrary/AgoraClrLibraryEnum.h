@@ -456,6 +456,7 @@ namespace AgoraClrLibrary {
 		NETWORK_TYPE_MOBILE_3G = 4,
 		/** 5: The network type is mobile 4G. */
 		NETWORK_TYPE_MOBILE_4G = 5,
+		NETWORK_TYPE_MOBILE_5G = 6,
 	};
 
 	public
@@ -477,7 +478,10 @@ namespace AgoraClrLibrary {
 		LOCAL_AUDIO_STREAM_ERROR_RECORD_FAILURE = 4,
 		LOCAL_AUDIO_STREAM_ERROR_ENCODE_FAILURE = 5,
 		LOCAL_AUDIO_STREAM_ERROR_NO_RECORDING_DEVICE = 6,
-		LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7
+		LOCAL_AUDIO_STREAM_ERROR_NO_PLAYOUT_DEVICE = 7,
+		LOCAL_AUDIO_STREAM_ERROR_INTERRUPTED = 8,
+		LOCAL_AUDIO_STREAM_ERROR_RECORD_INVALID_ID = 9,
+		LOCAL_AUDIO_STREAM_ERROR_PLAYOUT_INVALID_ID = 10,
 	};
 
 	public
@@ -887,43 +891,64 @@ namespace AgoraClrLibrary {
 
 	public enum class EnumChannelMediaRelayEvent {
 		/** 0: The user disconnects from the server due to poor network
-	 * connections.
-	 */
+		* connections.
+		*/
 		RELAY_EVENT_NETWORK_DISCONNECTED = 0,
 		/** 1: The network reconnects.
-		 */
-		 RELAY_EVENT_NETWORK_CONNECTED = 1,
-		 /** 2: The user joins the source channel.
-		  */
-		  RELAY_EVENT_PACKET_JOINED_SRC_CHANNEL = 2,
-		  /** 3: The user joins the destination channel.
-		   */
-		   RELAY_EVENT_PACKET_JOINED_DEST_CHANNEL = 3,
-		   /** 4: The SDK starts relaying the media stream to the destination channel.
-			*/
-			RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL = 4,
-			/** 5: The server receives the video stream from the source channel.
-			 */
-			 RELAY_EVENT_PACKET_RECEIVED_VIDEO_FROM_SRC = 5,
-			 /** 6: The server receives the audio stream from the source channel.
-			  */
-			  RELAY_EVENT_PACKET_RECEIVED_AUDIO_FROM_SRC = 6,
-			  /** 7: The destination channel is updated.
-			   */
-			   RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL = 7,
-			   /** 8: The destination channel update fails due to internal reasons.
-				*/
-				RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_REFUSED = 8,
-				/** 9: The destination channel does not change, which means that the
-				 * destination channel fails to be updated.
-				 */
-				 RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_NOT_CHANGE = 9,
-				 /** 10: The destination channel name is NULL.
-				  */
-				  RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_IS_NULL = 10,
-				  /** 11: The video profile is sent to the server.
-				   */
-				   RELAY_EVENT_VIDEO_PROFILE_UPDATE = 11,
+		*/
+		RELAY_EVENT_NETWORK_CONNECTED = 1,
+		/** 2: The user joins the source channel.
+		*/
+		RELAY_EVENT_PACKET_JOINED_SRC_CHANNEL = 2,
+		/** 3: The user joins the destination channel.
+		*/
+		RELAY_EVENT_PACKET_JOINED_DEST_CHANNEL = 3,
+		/** 4: The SDK starts relaying the media stream to the destination channel.
+		*/
+		RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL = 4,
+		/** 5: The server receives the video stream from the source channel.
+		*/
+		RELAY_EVENT_PACKET_RECEIVED_VIDEO_FROM_SRC = 5,
+		/** 6: The server receives the audio stream from the source channel.
+		*/
+		RELAY_EVENT_PACKET_RECEIVED_AUDIO_FROM_SRC = 6,
+		/** 7: The destination channel is updated.
+		*/
+		RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL = 7,
+		/** 8: The destination channel update fails due to internal reasons.
+		*/
+		RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_REFUSED = 8,
+		/** 9: The destination channel does not change, which means that the
+		* destination channel fails to be updated.
+		*/
+		RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_NOT_CHANGE = 9,
+		/** 10: The destination channel name is NULL.
+		*/
+		RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL_IS_NULL = 10,
+		/** 11: The video profile is sent to the server.
+		*/
+		RELAY_EVENT_VIDEO_PROFILE_UPDATE = 11,
+		/** 12: The SDK successfully pauses relaying the media stream to destination channels.
+		*
+		* @since v3.5.1
+		*/
+		RELAY_EVENT_PAUSE_SEND_PACKET_TO_DEST_CHANNEL_SUCCESS = 12,
+		/** 13: The SDK fails to pause relaying the media stream to destination channels.
+		*
+		* @since v3.5.1
+		*/
+		RELAY_EVENT_PAUSE_SEND_PACKET_TO_DEST_CHANNEL_FAILED = 13,
+		/** 14: The SDK successfully resumes relaying the media stream to destination channels.
+		*
+		* @since v3.5.1
+		*/
+		RELAY_EVENT_RESUME_SEND_PACKET_TO_DEST_CHANNEL_SUCCESS = 14,
+		/** 15: The SDK fails to resume relaying the media stream to destination channels.
+		*
+		* @since v3.5.1
+		*/
+		RELAY_EVENT_RESUME_SEND_PACKET_TO_DEST_CHANNEL_FAILED = 15,
+
 	};
 
 	public enum class PriorityType {
@@ -1382,4 +1407,33 @@ namespace AgoraClrLibrary {
 		AUDIO_RECORDING_POSITION_MIXED_PLAYBACK = 2,
 	};
 
+	public enum class EnumAudioMixingDualMonoMode {
+		/**
+		 * 0: Original mode.
+		 */
+		AUDIO_MIXING_DUAL_MONO_AUTO = 0,
+		/**
+		 * 1: Left channel mode. This mode replaces the audio of the right channel
+		 * with the audio of the left channel, which means the user can only hear
+		 * the audio of the left channel.
+		 */
+		 AUDIO_MIXING_DUAL_MONO_L = 1,
+		 /**
+		  * 2: Right channel mode. This mode replaces the audio of the left channel with
+		  * the audio of the right channel, which means the user can only hear the audio
+		  * of the right channel.
+		  */
+		  AUDIO_MIXING_DUAL_MONO_R = 2,
+		  /**
+		   * 3: Mixed channel mode. This mode mixes the audio of the left channel and
+		   * the right channel, which means the user can hear the audio of the left
+		   * channel and the right channel at the same time.
+		   */
+		   AUDIO_MIXING_DUAL_MONO_MIX = 3
+	};
+
+	public enum class EnumAudioFileInfoError {
+		AUDIO_FILE_INFO_ERROR_OK = 0,
+		AUDIO_FILE_INFO_ERROR_FAILURE = 1,
+	};
 }

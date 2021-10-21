@@ -1,6 +1,7 @@
 #ifndef AGORA_MEDIA_ENGINE_H
 #define AGORA_MEDIA_ENGINE_H
 #include <stdint.h>
+#include "AgoraBase.h"
 
 namespace agora {
 namespace media {
@@ -13,6 +14,57 @@ enum MEDIA_SOURCE_TYPE {
   /** Microphone.
    */
   AUDIO_RECORDING_SOURCE = 1,
+};
+
+/**
+ * The channel mode. Set in \ref agora::rtc::IRtcEngine::setAudioMixingDualMonoMode "setAudioMixingDualMonoMode".
+ *
+ * @since v3.5.1
+ */
+enum AUDIO_MIXING_DUAL_MONO_MODE {
+  /**
+   * 0: Original mode.
+   */
+  AUDIO_MIXING_DUAL_MONO_AUTO = 0,
+  /**
+   * 1: Left channel mode. This mode replaces the audio of the right channel
+   * with the audio of the left channel, which means the user can only hear
+   * the audio of the left channel.
+   */
+  AUDIO_MIXING_DUAL_MONO_L = 1,
+  /**
+   * 2: Right channel mode. This mode replaces the audio of the left channel with
+   * the audio of the right channel, which means the user can only hear the audio
+   * of the right channel.
+   */
+  AUDIO_MIXING_DUAL_MONO_R = 2,
+  /**
+   * 3: Mixed channel mode. This mode mixes the audio of the left channel and
+   * the right channel, which means the user can hear the audio of the left
+   * channel and the right channel at the same time.
+   */
+  AUDIO_MIXING_DUAL_MONO_MIX = 3
+};
+/**
+ * The push position of the external audio frame.
+ * Set in \ref IMediaEngine::pushAudioFrame(int32_t, IAudioFrameObserver::AudioFrame*) "pushAudioFrame"
+ * or \ref IMediaEngine::setExternalAudioSourceVolume "setExternalAudioSourceVolume".
+ *
+ * @since v3.5.1
+ */
+enum AUDIO_EXTERNAL_SOURCE_POSITION {
+  /** 0: The position before local playback. If you need to play the external audio frame on the local client,
+   * set this position.
+   */
+  AUDIO_EXTERNAL_PLAYOUT_SOURCE = 0,
+  /** 1: The position after audio capture and before audio pre-processing. If you need the audio module of the SDK
+   * to process the external audio frame, set this position.
+   */
+  AUDIO_EXTERNAL_RECORD_SOURCE_PRE_PROCESS = 1,
+  /** 2: The position after audio pre-processing and before audio encoding. If you do not need the audio module of
+   * the SDK to process the external audio frame, set this position.
+   */
+  AUDIO_EXTERNAL_RECORD_SOURCE_POST_PROCESS = 2,
 };
 
 /**
@@ -257,9 +309,9 @@ class IVideoFrameObserver {
    * - The video data that this callback gets has not been pre-processed, without the watermark, the cropped content, the rotation, and the image enhancement.
    *
    * @param videoFrame Pointer to VideoFrame.
-   * @return whether to ignore the current video frame if the pre-processing fails:
-   * - true: Do not ignore.
-   * - false: Ignore the current video frame, and do not send it back to the SDK.
+   * @return
+   * - true: Sets the SDK to receive the video frame.
+   * - false: Sets the SDK to discard the video frame.
    */
   virtual bool onCaptureVideoFrame(VideoFrame& videoFrame) = 0;
   /** @since v3.0.0
@@ -276,9 +328,9 @@ class IVideoFrameObserver {
    * - This callback does not support sending processed RGBA video data back to the SDK.
    *
    * @param videoFrame A pointer to VideoFrame
-   * @return Whether to ignore the current video frame if the processing fails:
-   * - true: Do not ignore the current video frame.
-   * - false: Ignore the current video frame, and do not send it back to the SDK.
+   * @return
+   * - true: Sets the SDK to receive the video frame.
+   * - false: Sets the SDK to discard the video frame.
    */
   virtual bool onPreEncodeVideoFrame(VideoFrame& videoFrame) { return true; }
   /** Occurs each time the SDK receives a video frame sent by the remote user.
@@ -296,9 +348,9 @@ class IVideoFrameObserver {
    *
    * @param uid ID of the remote user who sends the current video frame.
    * @param videoFrame Pointer to VideoFrame.
-   * @return whether to ignore the current video frame if the post-processing fails:
-   * - true: Do not ignore.
-   * - false: Ignore the current video frame, and do not send it back to the SDK.
+   * @return
+   * - true: Sets the SDK to receive the video frame.
+   * - false: Sets the SDK to discard the video frame.
    */
   virtual bool onRenderVideoFrame(unsigned int uid, VideoFrame& videoFrame) = 0;
   /** Occurs each time the SDK receives a video frame and prompts you to set the video format.
@@ -344,20 +396,25 @@ class IVideoFrameObserver {
    */
   virtual bool getMirrorApplied() { return false; }
   /**
-   **DEPRECATED**
-   Sets whether to output the acquired video frame smoothly.
-
-   If you want the video frames acquired from \ref IVideoFrameObserver::onRenderVideoFrame "onRenderVideoFrame" to be more evenly spaced, you can register the `getSmoothRenderingEnabled` callback in the `IVideoFrameObserver` class and set its return value as `true`.
-
-   @note
-   - Register this callback before joining a channel.
-   - This callback applies to scenarios where the acquired video frame is self-rendered after being processed, not to scenarios where the video frame is sent back to the SDK after being processed.
-
-   @return Set whether to smooth the video frames:
-   - true: Smooth the video frame.
-   - false: (Default) Do not smooth.
+   * Sets whether to output the acquired video frame smoothly.
+   *
+   * @since v3.0.0
+   *
+   * @deprecated As of v3.2.0, this callback function is deprecated, and the SDK
+   * smooths the video frames output by `onRenderVideoFrame` and `onRenderVideoFrameEx` by default.
+   *
+   * If you want the video frames acquired from `onRenderVideoFrame`
+   * or `onRenderVideoFrameEx` to be more evenly spaced, you can register the `getSmoothRenderingEnabled` callback in the `IVideoFrameObserver` class and set its return value as `true`.
+   *
+   * @note
+   * - Register this callback before joining a channel.
+   * - This callback applies to scenarios where the acquired video frame is self-rendered after being processed, not to scenarios where the video frame is sent back to the SDK after being processed.
+   *
+   * @return Set whether to smooth the video frames:
+   * - true: Smooth the video frame.
+   * - false: (Default) Do not smooth.
    */
-  virtual bool getSmoothRenderingEnabled() { return false; }
+  virtual bool getSmoothRenderingEnabled() AGORA_DEPRECATED_ATTRIBUTE { return false; }
   /**
    * Sets the frame position for the video observer.
    * @since v3.0.1
@@ -401,22 +458,22 @@ class IVideoFrameObserver {
   virtual bool isMultipleChannelFrameWanted() { return false; }
 
   /** Gets the video frame from multiple channels.
-
-   After you successfully register the video frame observer, if you set the return value of
-   \ref IVideoFrameObserver::isMultipleChannelFrameWanted "isMultipleChannelFrameWanted" as true, the SDK triggers this callback each time it receives a video frame
-   from any of the channel.
-
-   You can process the video data retrieved from this callback according to your scenario, and send the
-   processed data back to the SDK using the `videoFrame` parameter in this callback.
-
-   @note This callback does not support sending RGBA video data back to the SDK.
-
-   @param channelId The channel ID of this video frame.
-   @param uid The ID of the user sending this video frame.
-   @param videoFrame The pointer to VideoFrame.
-   @return Whether to send this video frame to the SDK if post-processing fails:
-   - `true`: Send this video frame.
-   - `false`: Do not send this video frame.
+   *
+   * After you successfully register the video frame observer, if you set the return value of
+   * \ref IVideoFrameObserver::isMultipleChannelFrameWanted "isMultipleChannelFrameWanted" as true, the SDK triggers this callback each time it receives a video frame
+   * from any of the channel.
+   *
+   * You can process the video data retrieved from this callback according to your scenario, and send the
+   * processed data back to the SDK using the `videoFrame` parameter in this callback.
+   *
+   * @note This callback does not support sending RGBA video data back to the SDK.
+   *
+   * @param channelId The channel ID of this video frame.
+   * @param uid The ID of the user sending this video frame.
+   * @param videoFrame The pointer to VideoFrame.
+   * @return
+   * - true: Sets the SDK to receive the video frame.
+   * - false: Sets the SDK to discard the video frame.
    */
   virtual bool onRenderVideoFrameEx(const char* channelId, unsigned int uid, VideoFrame& videoFrame) { return true; }
 };
@@ -772,8 +829,8 @@ class IVideoEncodedFrameObserver {
    * @param videoEncodedFrame The local encoded video frame. See VideoEncodedFrame.
    *
    * @return
-   * - true: If the video frame processing fails, the video frame is not passed back to the SDK.
-   * - false: If the video frame processing fails, the video frame is still passed back to the SDK.
+   * - true: Sets the SDK to receive the video frame.
+   * - false: Sets the SDK to discard the video frame.
    */
   virtual bool onVideoEncodedFrame(const VideoEncodedFrame& videoEncodedFrame) = 0;
 
@@ -818,30 +875,78 @@ class IMediaEngine {
   virtual int registerVideoFrameObserver(IVideoFrameObserver* observer) = 0;
   /** **DEPRECATED** */
   virtual int registerVideoRenderFactory(IExternalVideoRenderFactory* factory) = 0;
-  /** **DEPRECATED** Use \ref agora::media::IMediaEngine::pushAudioFrame(IAudioFrameObserver::AudioFrame* frame) "pushAudioFrame(IAudioFrameObserver::AudioFrame* frame)" instead.
-
-   Pushes the external audio frame.
-
-   @param type Type of audio capture device: #MEDIA_SOURCE_TYPE.
-   @param frame Audio frame pointer: \ref IAudioFrameObserver::AudioFrame "AudioFrame".
-   @param wrap Whether to use the placeholder. We recommend setting the default value.
-   - true: Use.
-   - false: (Default) Not use.
-
-   @return
-   - 0: Success.
-   - < 0: Failure.
+  /**
+   * Pushes the external audio frame.
+   *
+   * @deprecated This method is deprecated. Use \ref IMediaEngine::pushAudioFrame(int32_t,IAudioFrameObserver::AudioFrame*) "pushAudioFrame" [3/3] instead.
+   *
+   * @param type Type of audio capture device: #MEDIA_SOURCE_TYPE.
+   * @param frame Audio frame pointer: \ref IAudioFrameObserver::AudioFrame "AudioFrame".
+   * @param wrap Whether to use the placeholder. We recommend setting the default value.
+   * - true: Use.
+   * - false: (Default) Not use.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
    */
-  virtual int pushAudioFrame(MEDIA_SOURCE_TYPE type, IAudioFrameObserver::AudioFrame* frame, bool wrap) = 0;
+  virtual int pushAudioFrame(MEDIA_SOURCE_TYPE type, IAudioFrameObserver::AudioFrame* frame, bool wrap) AGORA_DEPRECATED_ATTRIBUTE = 0;
   /** Pushes the external audio frame.
-
-   @param frame Pointer to the audio frame: \ref IAudioFrameObserver::AudioFrame "AudioFrame".
-
-   @return
-   - 0: Success.
-   - < 0: Failure.
+   *
+   * @deprecated This method is deprecated. Use \ref IMediaEngine::pushAudioFrame(int32_t,IAudioFrameObserver::AudioFrame*) "pushAudioFrame" [3/3] instead.
+   *
+   * @param frame Pointer to the audio frame: \ref IAudioFrameObserver::AudioFrame "AudioFrame".
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
    */
-  virtual int pushAudioFrame(IAudioFrameObserver::AudioFrame* frame) = 0;
+  virtual int pushAudioFrame(IAudioFrameObserver::AudioFrame* frame) AGORA_DEPRECATED_ATTRIBUTE = 0;
+
+  /**
+   * Pushes the external audio frame to a specified position.
+   *
+   * @since v3.5.1
+   *
+   * According to your needs, you can push the external audio frame to one of three positions: after audio capture,
+   * before audio encoding, or before local playback. You can call this method multiple times to push one audio frame
+   * to multiple positions or multiple audio frames to different positions. For example, in the KTV scenario, you can
+   * push the singing voice to after audio capture, so that the singing voice can be processed by the SDK audio module
+   * and you can obtain a high-quality audio experience; you can also push the accompaniment to before audio encoding,
+   * so that the accompaniment is not affected by the audio module of the SDK.
+   *
+   * @note Call this method after joining a channel.
+   *
+   * @param sourcePos The push position of the external audio frame. See #AUDIO_EXTERNAL_SOURCE_POSITION.
+   * @param frame The external audio frame. See AudioFrame. The value range of the audio frame length (ms) is [10,60].
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-2 (ERR_INVALID_ARGUMENT)`: The parameter is invalid.
+   *  - `-12 (ERR_TOO_OFTEN)`: The call frequency is too high, causing the internal buffer to overflow. Call this method again after 30-50 ms.
+   */
+  virtual int pushAudioFrame(int32_t sourcePos, IAudioFrameObserver::AudioFrame* frame) = 0;
+  /**
+   * Sets the volume of the external audio frame in the specified position.
+   *
+   * @since v3.5.1
+   *
+   * You can call this method multiple times to set the volume of external audio frames in different positions.
+   * The volume setting takes effect for all external audio frames that are pushed to the specified position.
+   *
+   * @note Call this method after joining a channel.
+   *
+   * @param sourcePos The push position of the external audio frame. See #AUDIO_EXTERNAL_SOURCE_POSITION.
+   * @param volume The volume of the external audio frame. The value range is [0,100]. The default value is 100, which
+   * represents the original value.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `-2 (ERR_INVALID_ARGUMENT)`: The parameter is invalid.
+   */
+  virtual int setExternalAudioSourceVolume(int32_t sourcePos, int32_t volume) = 0;
   /** Pulls the remote audio data.
    *
    * Before calling this method, call the

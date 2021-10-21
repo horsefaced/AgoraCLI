@@ -328,3 +328,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onRtmpStreamingEvent(const char* url
 {
 	if (onRtmpStreamingEventEvent) onRtmpStreamingEventEvent(url, eventCode);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onRequestAudioFileInfo(const AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error)
+{
+	if (onRequestAudioFileInfoEvent) onRequestAudioFileInfoEvent(info, error);
+}

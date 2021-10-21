@@ -152,18 +152,25 @@ namespace AgoraClrLibrary
 		int adjustAudioMixingVolume(int volume);
 		int adjustAudioMixingPlayoutVolume(int volume);
 		int adjustAudioMixingPublishVolume(int volume);
+		int setAudioMixingPitch(int pitch);
 		int getAudioMixingPlayoutVolume();
 		int getAudioMixingPublishVolume();
-		[[DEPRECATED]]
-		int getAudioMixingDuration();
-		int getAudioMixingDuration(String^ filePath);
 		int getAudioMixingCurrentPosition();
 		int setAudioMixingPosition(int pos);
+		int getAudioTrackCount();
+		int selectAudioTrack(int index);
+		int setAudioMixingPlaybackSpeed(int speed);
+		int setAudioMixingDualMonoMode(EnumAudioMixingDualMonoMode mode);
+		[[DEPRECATED]]
+		int getAudioMixingDuration();
+		int getAudioFileInfo(String^ filePath);
+
 
 		//音乐文件播放及混音事件
 		onAudioMixingStateChanged^ onAudioMixingStateChanged;
 		Action^ onRemoteAudioMixingBegin;
 		Action^ onRemoteAudioMixingEnd;
+		onRequestAudioFileInfo^ onRequestAudioFileInfo;
 
 		//音效文件播放管理
 		int getEffectsVolume();
@@ -181,7 +188,6 @@ namespace AgoraClrLibrary
 		int getEffectDuration(String^ file);
 		int setEffectPosition(int soundId, int pos);
 		int getEffectCurrentPosition(int soundId);
-		int setAudioMixingPitch(int pitch);
 
 		//音效文件播放管理事件
 		onAudioEffectFinished^ onAudioEffectFinished;
@@ -217,6 +223,8 @@ namespace AgoraClrLibrary
 		//跨频道媒体流转发
 		int startChannelMediaRelay(ClrChannelMediaRelayConfiguration^ config);
 		int updateChannelMediaRelay(ClrChannelMediaRelayConfiguration^ config);
+		int pauseAllChannelMediaRelay();
+		int resumeAllChannelMediaRelay();
 		int stopChannelMediaRelay();
 
 		//跨频道媒体流转发事件
@@ -269,7 +277,8 @@ namespace AgoraClrLibrary
 		int setExternalVideoSource(bool enabled, bool useTexture);
 		int pushVideoFrame(ClrExternalVideoFrame^ frame);
 		int setExternalAudioSource(bool enabled, int sampleRate, int channels);
-		int pushAudioFrame(ClrAudioFrame^ frame);
+		int setExternalAudioSourceVolume(int sourcePos, int volume);
+		int pushAudioFrame(int sourcePos, ClrAudioFrame^ frame);
 
 		//音视频自渲染
 		int setExternalAudioSink(bool enabled, int sampleRate, int channels);
@@ -545,6 +554,7 @@ namespace AgoraClrLibrary
 		void NativeOnFirstLocalVideoFramePublished(int elapse);
 
 		void NativeOnRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT code);
+		void NativeOnRequestAudioFileInfo(const AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error);
 
 		void initializeEventHandler();
 		void initializePacketObserver();

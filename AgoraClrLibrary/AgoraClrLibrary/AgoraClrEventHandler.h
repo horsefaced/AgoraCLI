@@ -94,6 +94,8 @@ namespace AgoraClrLibrary {
 	using OnFirstLocalAudioFramePublished = ET<int>;
 	using OnRtmpStreamingEvent = ET<const char*, RTMP_STREAMING_EVENT>;
 
+	using OnRequestAudioFileInfo = ET<const AudioFileInfo&, AUDIO_FILE_INFO_ERROR>;
+
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
 	delegate void NativeOnRejoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -260,6 +262,8 @@ namespace AgoraClrLibrary {
 
 		OnRtmpStreamingEvent::Pointer onRtmpStreamingEventEvent = nullptr;
 
+		OnRequestAudioFileInfo::Pointer onRequestAudioFileInfoEvent = nullptr;
+
 		void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
 		void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
 		void onWarning(int warn, const char* msg) override;
@@ -341,6 +345,8 @@ namespace AgoraClrLibrary {
 		void onFirstLocalVideoFramePublished(int elapsed) override;
 
 		void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
+
+		void onRequestAudioFileInfo(const AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error) override;
 	};
 
 }
