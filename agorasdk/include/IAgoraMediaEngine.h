@@ -72,6 +72,8 @@ enum AUDIO_EXTERNAL_SOURCE_POSITION {
  */
 class IAudioFrameObserver {
  public:
+  IAudioFrameObserver() {}
+  virtual ~IAudioFrameObserver() {}
   /** The frame type. */
   enum AUDIO_FRAME_TYPE {
     /** 0: PCM16. */
@@ -219,6 +221,8 @@ class IAudioFrameObserver {
  */
 class IVideoFrameObserver {
  public:
+  IVideoFrameObserver() {}
+  virtual ~IVideoFrameObserver() {}
   /** The video frame type. */
   enum VIDEO_FRAME_TYPE {
     /**

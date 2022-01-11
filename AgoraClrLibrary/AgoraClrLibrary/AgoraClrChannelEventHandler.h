@@ -30,7 +30,7 @@ namespace AgoraClrLibrary {
 	using OnStreamMessageErrorType = ET<IChannel*, uid_t, int, int, int, int>;
 	using OnChannelMediaRelayStateChangedType = ET<IChannel*, CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR>;
 	using OnChannelMediaRelayEventType = ET<IChannel*, CHANNEL_MEDIA_RELAY_EVENT>;
-	using OnRtmpStreamingStateChangedType = ET<IChannel*, const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR>;
+	using OnRtmpStreamingStateChangedType = ET<IChannel*, const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR_TYPE>;
 	using OnTranscodingUpdatedType = ET<IChannel*>;
 	using OnStreamInjectedStatusType = ET<IChannel*, const char*, uid_t, int>;
 	using OnRemoteSubscribeFallbackToAudioOnlyType = ET<IChannel*, uid_t, bool>;
@@ -167,7 +167,7 @@ namespace AgoraClrLibrary {
 			call(onChannelMediaRelayEventEvent, channel, code);
 		}
 
-		void onRtmpStreamingStateChanged(IChannel* channel, const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR code) override {
+		void onRtmpStreamingStateChanged(IChannel* channel, const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE code) override {
 			call(onRtmpStreamingStateChangedEvent, channel, url, state, code);
 		}
 

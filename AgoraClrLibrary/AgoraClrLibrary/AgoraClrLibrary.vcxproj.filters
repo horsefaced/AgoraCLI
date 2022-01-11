@@ -66,6 +66,9 @@
     <ClInclude Include="AgoraClrVideoSink.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="AgoraClrMediaRecorder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AgoraClrLibrary.cpp">
@@ -105,6 +108,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="AgoraClrVideoSink.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AgoraClrMediaRecorder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

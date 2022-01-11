@@ -274,7 +274,7 @@ void AgoraClrEventHandler::onRemoteAudioMixingEnd()
 	if (onRemoteAudioMixingEndEvent) onRemoteAudioMixingEndEvent();
 }
 
-void AgoraClrEventHandler::onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error)
+void AgoraClrEventHandler::onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE error)
 {
 	if (onRtmpStreamingStateChangedEvent) onRtmpStreamingStateChangedEvent(url, state, error);
 }

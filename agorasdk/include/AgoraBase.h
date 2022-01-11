@@ -430,7 +430,6 @@ enum ERROR_CODE_TYPE {
   ERR_ENCRYPTED_STREAM_NOT_ALLOWED_PUBLISH = 130,
   /** 134: The user account is invalid. */
   ERR_INVALID_USER_ACCOUNT = 134,
-
   /** 151: CDN related errors. Remove the original URL address and add a new one by calling the \ref agora::rtc::IRtcEngine::removePublishStreamUrl "removePublishStreamUrl" and \ref agora::rtc::IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" methods.
    */
   ERR_PUBLISH_STREAM_CDN_ERROR = 151,

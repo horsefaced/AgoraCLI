@@ -1050,11 +1050,13 @@ namespace AgoraClrLibrary {
 		float lighteningLevel;
 		float smoothnessLevel;
 		float rednessLevel;
+		float sharpnessLevel;
 
 		ClrBeautyOptions() :
 			lighteningLevel(0),
 			smoothnessLevel(0),
 			rednessLevel(0),
+			sharpnessLevel(0),
 			lighteningContrastLevel(EnumLighteningContrastLevel::LIGHTENING_CONTRAST_NORMAL) {}
 
 		operator BeautyOptions () {
@@ -1062,7 +1064,8 @@ namespace AgoraClrLibrary {
 				static_cast<BeautyOptions::LIGHTENING_CONTRAST_LEVEL>(lighteningContrastLevel),
 				lighteningLevel,
 				smoothnessLevel,
-				rednessLevel
+				rednessLevel,
+				sharpnessLevel
 				);
 		}
 

@@ -13,6 +13,7 @@
 #include "AgoraClrChannel.h"
 #include "AgoraClrClientRoleOptions.h"
 #include "AgoraClrVideoSink.h"
+#include "AgoraClrMediaRecorder.h"
 
 #include <string>
 #include "AgoraClrVideoSource.h"
@@ -96,6 +97,8 @@ namespace AgoraClrLibrary
 		int muteRemoteVideoStream(UINT uid, bool mute);
 		int muteAllRemoteVideoStreams(bool mute);
 		int setDefaultMuteAllRemoteVideoStreams(bool mute);
+
+		
 
 		//本地媒体事件
 		onLocalAudioStateChanged^ onLocalAudioStateChanged;
@@ -330,6 +333,9 @@ namespace AgoraClrLibrary
 		int startAudioRecording(ClrAudioRecordingConfiguration config);
 		int stopAudioRecording();
 
+		//音视频录制
+		AgoraClrMediaRecorder^ getMediaRecorder();
+
 		//直播导入在线媒体流
 		int addInjectStreamUrl(String^ url, ClrInjectStreamConfig^ config);
 		int removeInjectStreamUrl(String^ url);
@@ -537,7 +543,7 @@ namespace AgoraClrLibrary
 		void NativeOnAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE reason);
 		void NativeOnRemoteAudioMixingBegin();
 		void NativeOnRemoteAudioMixingEnd();
-		void NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error);
+		void NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE error);
 		void NativeOnChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error);
 		void NativeOnChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event);
 		void NativeOnLastmileProbeResult(const LastmileProbeResult& result);

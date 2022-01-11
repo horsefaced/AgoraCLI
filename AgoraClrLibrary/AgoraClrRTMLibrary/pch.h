@@ -14,9 +14,9 @@
 #include "..\include\common.h"
 
 #if defined _M_IX86
-#pragma comment(lib, "../../agorasdk/x86/lib/agora_rtm_sdk.lib")
+#pragma comment(lib, "../../agorasdk/x86/agora_rtm_sdk.lib")
 #elif defined _M_X64
-#pragma comment(lib, "../../agorasdk/x64/lib/agora_rtm_sdk.lib")
+#pragma comment(lib, "../../agorasdk/x86_64/agora_rtm_sdk.lib")
 #endif
 
 #endif //PCH_H

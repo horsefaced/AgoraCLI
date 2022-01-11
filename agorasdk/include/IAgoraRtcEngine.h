@@ -21,6 +21,17 @@
 
 namespace agora {
 namespace rtc {
+/** The IMediaRecorderObserver class.
+ *
+ * @since v3.5.2
+ */
+class IMediaRecorderObserver;
+/**
+ * The MediaRecorderConfiguration struct.
+ *
+ * @since v3.5.2
+ */
+struct MediaRecorderConfiguration;
 typedef unsigned int uid_t;
 typedef void* view_t;
 /** Maximum length of the device ID.
@@ -358,6 +369,13 @@ enum LOCAL_VIDEO_STREAM_ERROR {
    */
   LOCAL_VIDEO_STREAM_ERROR_DEVICE_NOT_FOUND = 8,
   /**
+   * 10: (macOS and Windows only) The SDK cannot find the video device in the video device list. Check whether the ID
+   * of the video device is valid.
+   *
+   * @since v3.5.2
+   */
+  LOCAL_VIDEO_STREAM_ERROR_DEVICE_INVALID_ID = 10,
+  /**
    * 11: The shared window is minimized when you call
    * \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId"
    * to share a window.
@@ -376,9 +394,20 @@ enum LOCAL_VIDEO_STREAM_ERROR {
    * the web video or document. After the user exits full-screen mode, the SDK reports this error code.
    */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
-  /// @cond
+  /**
+   * 13: (Windows only) The window being shared is overlapped by another window, so the overlapped area is blacked out by
+   * the SDK during window sharing.
+   *
+   * @since v3.5.2
+   */
+  LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_OCCLUDED = 13,
+  /**
+   * 20: (Windows only) The SDK does not support sharing this type of window.
+   *
+   * @since v3.5.2
+   */
   LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
-  /// @endcond
+
 };
 
 /** Local audio state types.
@@ -833,6 +862,13 @@ enum VIRTUAL_BACKGROUND_SOURCE_STATE_REASON {
    */
   VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
 };
+/// @cond
+enum CONTENT_INSPECT_RESULT {
+  CONTENT_INSPECT_NEUTRAL = 1,
+  CONTENT_INSPECT_SEXY = 2,
+  CONTENT_INSPECT_PORN = 3,
+};
+/// @endcond
 
 /** Reasons for a user being offline. */
 enum USER_OFFLINE_REASON_TYPE {
@@ -865,34 +901,68 @@ enum RTMP_STREAM_PUBLISH_STATE {
   /** The RTMP or RTMPS streaming fails. See the errCode parameter for the detailed error information. You can also call the \ref IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" method to publish the RTMP or RTMPS streaming again.
    */
   RTMP_STREAM_PUBLISH_STATE_FAILURE = 4,
+  /** The SDK is disconnecting from the Agora streaming server and CDN.
+   * When you call remove or stop to stop the streaming normally, the SDK reports the streaming state as `DISCONNECTING`, `IDLE` in sequence.
+   *
+   * @since v3.6.0
+   */
+  RTMP_STREAM_PUBLISH_STATE_DISCONNECTING = 5,
 };
 
 /**
  Error codes of the RTMP or RTMPS streaming.
  */
-enum RTMP_STREAM_PUBLISH_ERROR {
-  /** The RTMP or RTMPS streaming publishes successfully. */
+enum RTMP_STREAM_PUBLISH_ERROR_TYPE {
+  /** 0: The RTMP or RTMPS streaming publishes successfully. */
   RTMP_STREAM_PUBLISH_ERROR_OK = 0,
-  /** Invalid argument used. If, for example, you do not call the \ref IRtcEngine::setLiveTranscoding "setLiveTranscoding" method to configure the LiveTranscoding parameters before calling the addPublishStreamUrl method, the SDK returns this error. Check whether you set the parameters in the *setLiveTranscoding* method properly. */
+  /** 1: Invalid argument used. If, for example, you do not call the \ref IRtcEngine::setLiveTranscoding "setLiveTranscoding" method to configure the LiveTranscoding parameters before calling the addPublishStreamUrl method, the SDK returns this error. Check whether you set the parameters in the *setLiveTranscoding* method properly. */
   RTMP_STREAM_PUBLISH_ERROR_INVALID_ARGUMENT = 1,
-  /** The RTMP or RTMPS streaming is encrypted and cannot be published. */
+  /** 2: The RTMP or RTMPS streaming is encrypted and cannot be published. */
   RTMP_STREAM_PUBLISH_ERROR_ENCRYPTED_STREAM_NOT_ALLOWED = 2,
-  /** Timeout for the RTMP or RTMPS streaming. Call the \ref IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" method to publish the streaming again. */
+  /** 3: Timeout for the RTMP or RTMPS streaming. Call the \ref IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" method to publish the streaming again. */
   RTMP_STREAM_PUBLISH_ERROR_CONNECTION_TIMEOUT = 3,
-  /** An error occurs in Agora's streaming server. Call the `addPublishStreamUrl` method to publish the streaming again. */
+  /** 4: An error occurs in Agora's streaming server. Call the `addPublishStreamUrl` method to publish the streaming again. */
   RTMP_STREAM_PUBLISH_ERROR_INTERNAL_SERVER_ERROR = 4,
-  /** An error occurs in the CDN server. */
+  /** 5: An error occurs in the CDN server. */
   RTMP_STREAM_PUBLISH_ERROR_RTMP_SERVER_ERROR = 5,
-  /** The RTMP or RTMPS streaming publishes too frequently. */
+  /** 6; The RTMP or RTMPS streaming publishes too frequently. */
   RTMP_STREAM_PUBLISH_ERROR_TOO_OFTEN = 6,
-  /** The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones. */
+  /** 7: The host publishes more than 10 URLs. Delete the unnecessary URLs before adding new ones. */
   RTMP_STREAM_PUBLISH_ERROR_REACH_LIMIT = 7,
-  /** The host manipulates other hosts' URLs. Check your app logic. */
+  /** 8: The host manipulates other hosts' URLs. Check your app logic. */
   RTMP_STREAM_PUBLISH_ERROR_NOT_AUTHORIZED = 8,
-  /** Agora's server fails to find the RTMP or RTMPS streaming. */
+  /** 9: Agora's server fails to find the RTMP or RTMPS streaming. */
   RTMP_STREAM_PUBLISH_ERROR_STREAM_NOT_FOUND = 9,
-  /** The format of the RTMP or RTMPS streaming URL is not supported. Check whether the URL format is correct. */
+  /** 10: The format of the RTMP or RTMPS streaming URL is not supported. Check whether the URL format is correct. */
   RTMP_STREAM_PUBLISH_ERROR_FORMAT_NOT_SUPPORTED = 10,
+  /**
+   * 11: The user role is not host, so the user cannot use the CDN live streaming function.
+   * Check your application code logic.
+   *
+   * @since v3.6.0
+   */
+  RTMP_STREAM_PUBLISH_ERROR_NOT_BROADCASTER = 11,  // Note: match to ERR_PUBLISH_STREAM_NOT_BROADCASTER in AgoraBase.h
+  /**
+   * 13: The `updateRtmpTranscoding` or `setLiveTranscoding` method is called to update the transcoding configuration in a scenario where there is streaming without transcoding.
+   * Check your application code logic.
+   *
+   * @since v3.6.0
+   */
+  RTMP_STREAM_PUBLISH_ERROR_TRANSCODING_NO_MIX_STREAM = 13,  // Note: match to ERR_PUBLISH_STREAM_TRANSCODING_NO_MIX_STREAM in AgoraBase.h
+  /**
+   * 14: Errors occurred in the host's network.
+   *
+   * @since v3.6.0
+   */
+  RTMP_STREAM_PUBLISH_ERROR_NET_DOWN = 14,  // Note: match to ERR_NET_DOWN in AgoraBase.h
+  /**
+   * 15: Your App ID does not have permission to use the CDN live streaming function.
+   * Refer to [Prerequisites](https://docs.agora.io/en/Interactive%20Broadcast/cdn_streaming_windows?platform=Windows#prerequisites) to
+   * enable the CDN live streaming permission.
+   *
+   * @since v3.6.0
+   */
+  RTMP_STREAM_PUBLISH_ERROR_INVALID_APPID = 15,  // Note: match to ERR_PUBLISH_STREAM_APPID_INVALID in AgoraBase.h
   /**
    * 100: The streaming has been stopped normally. After you call
    * \ref IRtcEngine::removePublishStreamUrl "removePublishStreamUrl"
@@ -905,7 +975,7 @@ enum RTMP_STREAM_PUBLISH_ERROR {
 
 /** Events during the RTMP or RTMPS streaming. */
 enum RTMP_STREAMING_EVENT {
-  /** An error occurs when you add a background image or a watermark image to the RTMP or RTMPS stream.
+  /** 1: An error occurs when you add a background image or a watermark image to the RTMP or RTMPS stream.
    */
   RTMP_STREAMING_EVENT_FAILED_LOAD_IMAGE = 1,
   /** 2: The streaming URL is already being used for CDN live streaming. If you want to start new streaming, use a new streaming URL.
@@ -913,6 +983,16 @@ enum RTMP_STREAMING_EVENT {
    * @since v3.4.5
    */
   RTMP_STREAMING_EVENT_URL_ALREADY_IN_USE = 2,
+  /** 3: The feature is not supported.
+   *
+   * @since v3.6.0
+   */
+  RTMP_STREAMING_EVENT_ADVANCED_FEATURE_NOT_SUPPORT = 3,
+  /** 4: Reserved.
+   *
+   * @since v3.6.0
+   */
+  RTMP_STREAMING_EVENT_REQUEST_TOO_OFTEN = 4,
 };
 
 /** States of importing an external video stream in the interactive live streaming. */
@@ -1165,82 +1245,66 @@ enum AGORA_DEPRECATED_ATTRIBUTE AUDIO_REVERB_PRESET {
    */
   AUDIO_REVERB_OFF = 0x00000000,  // Turn off audio reverb
   /**
-   *
    * The reverberation style typical of a KTV venue (enhanced).
    */
   AUDIO_REVERB_FX_KTV = 0x00100001,
   /**
-   *
    * The reverberation style typical of a concert hall (enhanced).
    */
   AUDIO_REVERB_FX_VOCAL_CONCERT = 0x00100002,
   /**
-   *
    * The reverberation style typical of an uncle's voice.
    */
   AUDIO_REVERB_FX_UNCLE = 0x00100003,
   /**
-   *
    * The reverberation style typical of a little sister's voice.
    */
   AUDIO_REVERB_FX_SISTER = 0x00100004,
   /**
-   *
    * The reverberation style typical of a recording studio (enhanced).
    */
   AUDIO_REVERB_FX_STUDIO = 0x00100005,
   /**
-   *
    * The reverberation style typical of popular music (enhanced).
    */
   AUDIO_REVERB_FX_POPULAR = 0x00100006,
   /**
-   *
    * The reverberation style typical of R&B music (enhanced).
    */
   AUDIO_REVERB_FX_RNB = 0x00100007,
   /**
-   *
    * The reverberation style typical of the vintage phonograph.
    */
   AUDIO_REVERB_FX_PHONOGRAPH = 0x00100008,
   /**
-   *
    * The reverberation style typical of popular music.
    */
   AUDIO_REVERB_POPULAR = 0x00000001,
   /**
-   *
    * The reverberation style typical of R&B music.
    */
   AUDIO_REVERB_RNB = 0x00000002,
   /**
-   *
    * The reverberation style typical of rock music.
    */
   AUDIO_REVERB_ROCK = 0x00000003,
   /**
-   *
    * The reverberation style typical of hip-hop music.
    */
   AUDIO_REVERB_HIPHOP = 0x00000004,
   /**
-   *
    * The reverberation style typical of a concert hall.
    */
   AUDIO_REVERB_VOCAL_CONCERT = 0x00000005,
   /**
-   *
    * The reverberation style typical of a KTV venue.
    */
   AUDIO_REVERB_KTV = 0x00000006,
   /**
-   *
    * The reverberation style typical of a recording studio.
    */
   AUDIO_REVERB_STUDIO = 0x00000007,
   /**
-   *
    * The reverberation of the virtual stereo. The virtual stereo is an effect that renders the monophonic
    * audio as the stereo audio, so that all users in the channel can hear the stereo voice effect.
    * To achieve better virtual stereo reverberation, Agora recommends setting `profile` in `setAudioProfile`
@@ -1248,12 +1312,10 @@ enum AGORA_DEPRECATED_ATTRIBUTE AUDIO_REVERB_PRESET {
    */
   AUDIO_VIRTUAL_STEREO = 0x00200001,
   /**
-   *
    * A pitch correction effect that corrects the user's pitch based on the pitch of the natural C major scale.
    */
   AUDIO_ELECTRONIC_VOICE = 0x00300001,
   /**
-   *
    * A 3D voice effect that makes the voice appear to be moving around the user.
    */
   AUDIO_THREEDIM_VOICE = 0x00400001
@@ -1489,10 +1551,15 @@ enum VOICE_CONVERSION_PRESET {
 };
 /** Audio codec profile types. The default value is LC_ACC. */
 enum AUDIO_CODEC_PROFILE_TYPE {
-  /** 0: LC-AAC, which is the low-complexity audio codec type. */
+  /** 0: (Default) LC-AAC */
   AUDIO_CODEC_PROFILE_LC_AAC = 0,
-  /** 1: HE-AAC, which is the high-efficiency audio codec type. */
+  /** 1: HE-AAC */
   AUDIO_CODEC_PROFILE_HE_AAC = 1,
+  /** 2: HE-AAC v2
+   *
+   * @since v3.6.0
+   */
+  AUDIO_CODEC_PROFILE_HE_AAC_V2 = 2,
 };
 
 /** Remote audio states.
@@ -1569,7 +1636,7 @@ enum REMOTE_AUDIO_STATE_REASON {
 
 /** The state of the remote video. */
 enum REMOTE_VIDEO_STATE {
-  /** 0: The remote video is in the default state, probably due to #REMOTE_VIDEO_STATE_REASON_LOCAL_MUTED (3), #REMOTE_VIDEO_STATE_REASON_REMOTE_MUTED (5), or #REMOTE_VIDEO_STATE_REASON_REMOTE_OFFLINE (7).
+  /** 0: The remote video is in the default state, probably due to #REMOTE_VIDEO_STATE_REASON_LOCAL_MUTED (3), #REMOTE_VIDEO_STATE_REASON_REMOTE_MUTED (5), or #REMOTE_VIDEO_STATE_REASON_REMOTE_OFFLINE (7).
    */
   REMOTE_VIDEO_STATE_STOPPED = 0,
 
@@ -1902,8 +1969,6 @@ enum CONNECTION_CHANGED_REASON_TYPE {
   CONNECTION_CHANGED_CLIENT_IP_ADDRESS_CHANGED = 13,
   /** 14: Timeout for the keep-alive of the connection between the SDK and Agora's edge server. The connection state changes to CONNECTION_STATE_RECONNECTING(4). */
   CONNECTION_CHANGED_KEEP_ALIVE_TIMEOUT = 14,
-  /** 15: In cloud proxy mode, the proxy server connection interrupted. */
-  CONNECTION_CHANGED_PROXY_SERVER_INTERRUPTED = 15,
 };
 
 /** Network type. */
@@ -2015,6 +2080,17 @@ enum CLOUD_PROXY_TYPE {
   TCP_PROXY = 2,
   /// @endcond
 };
+/// @cond
+/** The local  proxy mode type. */
+enum LOCAL_PROXY_MODE {
+  /** 0: Connect local proxy with high priority, if not connected to local proxy, fallback to sdrtn.
+   */
+  kConnectivityFirst = 0,
+  /** 1: Only connect local proxy
+   */
+  kLocalOnly = 1,
+};
+/// @endcond
 
 #if (defined(__APPLE__) && TARGET_OS_IOS)
 /**
@@ -2255,7 +2331,9 @@ struct RtcStats {
   /**
    * Application CPU usage (%).
    *
-   * @note The `cpuAppUsage` reported in the \ref IRtcEngineEventHandler::onLeaveChannel "onLeaveChannel" callback is always 0.
+   * @note
+   * - The `cpuAppUsage` reported in the \ref IRtcEngineEventHandler::onLeaveChannel "onLeaveChannel" callback is always 0.
+   * - As of Android 8.1, you cannot get the CPU usage from this attribute due to system limitations.
    */
   double cpuAppUsage;
   /**
@@ -2264,7 +2342,9 @@ struct RtcStats {
    * In the multi-kernel environment, this member represents the average CPU usage.
    * The value **=** 100 **-** System Idle Progress in Task Manager (%).
    *
-   * @note The `cpuTotalUsage` reported in the \ref IRtcEngineEventHandler::onLeaveChannel "onLeaveChannel" callback is always 0.
+   * @note
+   * - The `cpuTotalUsage` reported in the \ref IRtcEngineEventHandler::onLeaveChannel "onLeaveChannel" callback is always 0.
+   * - As of Android 8.1, you cannot get the CPU usage from this attribute due to system limitations.
    */
   double cpuTotalUsage;
   /** The round-trip time delay from the client to the local router.
@@ -2899,7 +2979,7 @@ typedef struct TranscodingUser {
  The properties of the watermark and background images.
  */
 typedef struct RtcImage {
-  RtcImage() : url(NULL), x(0), y(0), width(0), height(0) {}
+  RtcImage() : url(NULL), x(0), y(0), width(0), height(0), zOrder(0), alpha(1.0) {}
   /** HTTP/HTTPS URL address of the image on the live video. The maximum length of this parameter is 1024 bytes. */
   const char* url;
   /** Horizontal position of the image from the upper left of the live video. */
@@ -2910,17 +2990,32 @@ typedef struct RtcImage {
   int width;
   /** Height of the image on the live video. */
   int height;
+  /**
+   * The layer number of the watermark or background image. The value range is [0,255]:
+   * - `0`: (Default) The bottom layer.
+   * - `255`: The top layer.
+   *
+   * @since v3.6.0
+   */
+  int zOrder;
+  /** The transparency of the watermark or background image. The value range is [0.0,1.0]:
+   * - `0.0`: Completely transparent.
+   * - `1.0`: (Default) Opaque.
+   *
+   * @since v3.6.0
+   */
+  double alpha;
 } RtcImage;
 /// @cond
 /** The configuration for advanced features of the RTMP or RTMPS streaming with transcoding.
  */
 typedef struct LiveStreamAdvancedFeature {
   LiveStreamAdvancedFeature() : featureName(NULL), opened(false) {}
-
+  LiveStreamAdvancedFeature(const char* feat_name, bool open) : featureName(feat_name), opened(open) {}
   /** The advanced feature for high-quality video with a lower bitrate. */
-  const char* LBHQ = "lbhq";
+  // static const char* LBHQ = "lbhq";
   /** The advanced feature for the optimized video encoder. */
-  const char* VEO = "veo";
+  // static const char* VEO = "veo";
 
   /** The name of the advanced feature. It contains LBHQ and VEO.
    */
@@ -2932,6 +3027,7 @@ typedef struct LiveStreamAdvancedFeature {
    */
   bool opened;
 } LiveStreamAdvancedFeature;
+
 /// @endcond
 /** A struct for managing CDN live audio/video transcoding settings.
  */
@@ -2988,6 +3084,8 @@ typedef struct LiveTranscoding {
   VIDEO_CODEC_TYPE_FOR_STREAM videoCodecType;
 
   /** The number of users in the interactive live streaming.
+   *
+   *  The value range is [0, 17].
    */
   unsigned int userCount;
   /** TranscodingUser
@@ -3002,16 +3100,33 @@ typedef struct LiveTranscoding {
   /** **DEPRECATED** The metadata sent to the CDN live client defined by the RTMP or HTTP-FLV metadata.
    */
   const char* metadata;
-  /** The watermark image added to the CDN live publishing stream.
-
-  Ensure that the format of the image is PNG. Once a watermark image is added, the audience of the CDN live publishing stream can see the watermark image. See RtcImage.
-  */
+  /**
+   * The watermark on the live video. The format must be in the PNG format. See RtcImage.
+   * You can add a watermark or use an array to add multiple watermarks.
+   * This parameter is used in conjunction with `watermarkCount`.
+   */
   RtcImage* watermark;
-  /** The background image added to the CDN live publishing stream.
 
-   Once a background image is added, the audience of the CDN live publishing stream can see the background image. See RtcImage.
-  */
+  /**
+   * The number of watermarks on the live video. The value range is [0,100].
+   * This parameter is used in conjunction with `watermark`.
+   *
+   * @since v3.6.0
+   */
+  unsigned int watermarkCount;
+
+  /**
+   * The background image on the live video. The format must be in the PNG format. See RtcImage.
+   * You can add a background image or use an array to add multiple background images.
+   * This parameter is used in conjunction with `backgroundImageCount`.
+   */
   RtcImage* backgroundImage;
+  /**
+   * The number of background images on the live video. The value range is [0,100].
+   * This parameter is used in conjunction with `backgroundImage`.
+   */
+  unsigned int backgroundImageCount;
+
   /** Self-defined audio-sample rate: #AUDIO_SAMPLE_RATE_TYPE.
    */
   AUDIO_SAMPLE_RATE_TYPE audioSampleRate;
@@ -3041,7 +3156,7 @@ typedef struct LiveTranscoding {
   /** The number of enabled advanced features. The default value is 0. */
   unsigned int advancedFeatureCount;
   /// @endcond
-  LiveTranscoding() : width(360), height(640), videoBitrate(400), videoFramerate(15), lowLatency(false), videoGop(30), videoCodecProfile(VIDEO_CODEC_PROFILE_HIGH), backgroundColor(0x000000), videoCodecType(VIDEO_CODEC_H264_FOR_STREAM), userCount(0), transcodingUsers(NULL), transcodingExtraInfo(NULL), metadata(NULL), watermark(NULL), backgroundImage(NULL), audioSampleRate(AUDIO_SAMPLE_RATE_48000), audioBitrate(48), audioChannels(1), audioCodecProfile(AUDIO_CODEC_PROFILE_LC_AAC), advancedFeatures(NULL), advancedFeatureCount(0) {}
+  LiveTranscoding() : width(360), height(640), videoBitrate(400), videoFramerate(15), lowLatency(false), videoGop(30), videoCodecProfile(VIDEO_CODEC_PROFILE_HIGH), backgroundColor(0x000000), videoCodecType(VIDEO_CODEC_H264_FOR_STREAM), userCount(0), transcodingUsers(NULL), transcodingExtraInfo(NULL), metadata(NULL), watermark(NULL), watermarkCount(0), backgroundImage(NULL), backgroundImageCount(0), audioSampleRate(AUDIO_SAMPLE_RATE_48000), audioBitrate(48), audioChannels(1), audioCodecProfile(AUDIO_CODEC_PROFILE_LC_AAC), advancedFeatures(NULL), advancedFeatureCount(0) {}
 } LiveTranscoding;
 
 /** Camera capturer configuration.
@@ -3194,6 +3309,29 @@ struct ChannelMediaRelayConfiguration {
 
   ChannelMediaRelayConfiguration() : srcInfo(nullptr), destInfos(nullptr), destCount(0) {}
 };
+/// @cond
+struct LocalAccessPointConfiguration {
+  /** local access point ip address list.
+   */
+  const char** ipList;
+  /** the number of local access point ip address.
+   */
+  int ipListSize;
+  /** local access point domain list.
+   */
+  const char** domainList;
+  /** the number of local access point domain.
+   */
+  int domainListSize;
+  /** certificate domain name installed on specific local access point. pass "" means using sni domain on specific local access point
+   */
+  const char* verifyDomainName;
+  /** local proxy connection mode, connectivity first or local only.
+   */
+  LOCAL_PROXY_MODE mode;
+  LocalAccessPointConfiguration() : ipList(nullptr), ipListSize(0), domainList(nullptr), domainListSize(0), verifyDomainName(nullptr), mode(kConnectivityFirst) {}
+};
+/// @endcond
 
 /**  **DEPRECATED** Lifecycle of the CDN live video stream.
  */
@@ -3376,10 +3514,10 @@ struct VideoCanvas {
 /** Image enhancement options.
  */
 struct BeautyOptions {
-  /** The contrast level, used with the @p lightening parameter.
+  /** The contrast level, often used in conjunction with `lighteningLevel`.
    */
   enum LIGHTENING_CONTRAST_LEVEL {
-    /** Low contrast level. */
+    /** 0: Low contrast level. */
     LIGHTENING_CONTRAST_LOW = 0,
     /** (Default) Normal contrast level. */
     LIGHTENING_CONTRAST_NORMAL,
@@ -3387,24 +3525,34 @@ struct BeautyOptions {
     LIGHTENING_CONTRAST_HIGH
   };
 
-  /** The contrast level, used with the @p lightening parameter.
+  /** The contrast level, often used in conjunction with `lighteningLevel`.
+   * The higher the value, the greater the contrast level. See #LIGHTENING_CONTRAST_LEVEL.
    */
   LIGHTENING_CONTRAST_LEVEL lighteningContrastLevel;
 
-  /** The brightness level. The value ranges from 0.0 (original) to 1.0. */
+  /**
+   * The brightening level, in the range [0.0,1.0], where 0.0 means the original brightening. The default value is 0.6. The higher the value, the greater the brightening level.
+   */
   float lighteningLevel;
 
-  /** The sharpness level. The value ranges between 0 (original) and 1. This parameter is usually used to remove blemishes.
+  /** The smoothness level, in the range [0.0,1.0], where 0.0 means the original smoothness. The default value is 0.5. The higher the value, the greater the smoothness level.
    */
   float smoothnessLevel;
 
-  /** The redness level. The value ranges between 0 (original) and 1. This parameter adjusts the red saturation level.
+  /** The redness level, in the range [0.0,1.0], where 0.0 means the original redness. The default value is 0.1. The higher the value, the greater the redness level.
    */
   float rednessLevel;
 
-  BeautyOptions(LIGHTENING_CONTRAST_LEVEL contrastLevel, float lightening, float smoothness, float redness) : lighteningLevel(lightening), smoothnessLevel(smoothness), rednessLevel(redness), lighteningContrastLevel(contrastLevel) {}
+  /** The sharpness level, in the range [0.0,1.0], where 0.0 means the original sharpness.
+   * The default value is 0.3. The higher the value, the greater the sharpness level.
+   *
+   * @since v3.6.0
+   */
+  float sharpnessLevel;
 
-  BeautyOptions() : lighteningLevel(0), smoothnessLevel(0), rednessLevel(0), lighteningContrastLevel(LIGHTENING_CONTRAST_NORMAL) {}
+  BeautyOptions(LIGHTENING_CONTRAST_LEVEL contrastLevel, float lightening, float smoothness, float redness, float sharpness) : lighteningLevel(lightening), smoothnessLevel(smoothness), rednessLevel(redness), lighteningContrastLevel(contrastLevel), sharpnessLevel(sharpness) {}
+
+  BeautyOptions() : lighteningLevel(0), smoothnessLevel(0), rednessLevel(0), sharpnessLevel(0), lighteningContrastLevel(LIGHTENING_CONTRAST_NORMAL) {}
 };
 
 /** The custom background image.
@@ -3504,6 +3652,46 @@ struct UserInfo {
   char userAccount[MAX_USER_ACCOUNT_LENGTH];
   UserInfo() : uid(0) { userAccount[0] = '\0'; }
 };
+/**
+ * The configuration of the audio and video call loop test.
+ *
+ * @since v3.5.2
+ */
+struct EchoTestConfiguration {
+  /**
+   * The view used to render the local user's video. This parameter is only applicable to scenarios testing video
+   * devices, that is, when `enableVideo` is `true`.
+   */
+  view_t view;
+  /**
+   * Whether to enable the audio device for the call loop test:
+   * - true: (Default) Enables the audio device. To test the audio device, set this parameter as `true`.
+   * - false: Disables the audio device.
+   */
+  bool enableAudio;
+  /**
+   * Whether to enable the video device for the call loop test:
+   * - true: (Default) Enables the video device. To test the video device, set this parameter as `true`.
+   * - false: Disables the video device.
+   */
+  bool enableVideo;
+  /**
+   * The token used to secure the audio and video call loop test. If you do not enable App Certificate in Agora
+   * Console, you do not need to pass a value in this parameter; if you have enabled App Certificate in Agora Console,
+   * you must pass a token in this parameter, the `uid` used when you generate the token must be 0xFFFFFFFF, and the
+   * channel name used must be the channel name that identifies each audio and video call loop tested. For server-side
+   * token generation, see [Authenticate Your Users with Tokens](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=All%20Platforms).
+   */
+  const char* token;
+  /**
+   * The channel name that identifies each audio and video call loop. To ensure proper loop test functionality, the
+   * channel name passed in to identify each loop test cannot be the same when users of the same project (App ID)
+   * perform audio and video call loop tests on different devices.
+   */
+  const char* channelId;
+  EchoTestConfiguration() : view(NULL), enableAudio(true), enableVideo(true), token(NULL), channelId(NULL) {}
+  EchoTestConfiguration(view_t v, bool ea, bool ev, const char* t, const char* c) : view(v), enableAudio(ea), enableVideo(ev), token(t), channelId(c) {}
+};
 
 /**
  *  Regions for connetion.
@@ -3551,6 +3739,71 @@ enum ENCRYPTION_CONFIG {
    */
   ENCRYPTION_FORCE_DISABLE_PACKET = (1 << 1)
 };
+/// @cond
+typedef int ContentInspectType;
+/**
+ * (Default) content inspect type invalid
+ */
+const ContentInspectType kContentInspectInvalid = 0;
+/**
+ * Content inspect type moderation
+ */
+const ContentInspectType kContentInspectModeration = 1;
+/**
+ * Content inspect type supervise
+ */
+const ContentInspectType kContentInspectSupervise = 2;
+
+enum MAX_CONTENT_INSPECT_MODULE_TYPE {
+  /** The maximum count of content inspect feature type is 32.
+   */
+  MAX_CONTENT_INSPECT_MODULE_COUNT = 32
+};
+/// @endcond
+/// @cond
+/** Definition of ContentInspectModule.
+ */
+struct ContentInspectModule {
+  /**
+   * The content inspect module type.
+   * the module type can be 0 to 31.
+   * kContentInspectInvalid(0)
+   * kContentInspectModeration(1)
+   * kContentInspectSupervise(2)
+   */
+  ContentInspectType type;
+  /**The content inspect frequency, default is 0 second.
+   * the frequency <= 0 is invalid.
+   */
+  int interval;
+  /**The content inspect default value.
+   */
+  ContentInspectModule() {
+    type = kContentInspectInvalid;
+    interval = 0;
+  }
+};
+/// @endcond
+/// @cond
+/** Definition of ContentInspectConfig.
+ */
+struct ContentInspectConfig {
+  /** The extra information, max length of extraInfo is 1024.
+   *  The extra information will send to server with content(image).
+   */
+  const char* extraInfo;
+  /**The content inspect modules, max length of modules is 32.
+   * the content(snapshot of send video stream, image) can be used to max of 32 types functions.
+   */
+  ContentInspectModule modules[MAX_CONTENT_INSPECT_MODULE_COUNT];
+  /**The content inspect module count.
+   */
+  int moduleCount;
+
+  ContentInspectConfig() : extraInfo(NULL), moduleCount(0) {}
+};
+/// @endcond
+
 /** Definition of IPacketObserver.
  */
 class IPacketObserver {
@@ -3714,7 +3967,159 @@ class IVideoSource {
 };
 #endif
 
-/** The SDK uses the IRtcEngineEventHandler interface class to send callbacks to the application. The application inherits the methods of this interface class to get these callbacks.
+#if (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
+/**
+ * The target size of the thumbnail or icon. (macOS only)
+ *
+ * @since v3.5.2
+ */
+struct SIZE {
+  /** The target width (px) of the thumbnail or icon. The default value is 0.
+   */
+  int width;
+  /** The target height (px) of the thumbnail or icon. The default value is 0.
+   */
+  int height;
+
+  SIZE() : width(0), height(0) {}
+  SIZE(int w, int h) : width(w), height(h) {}
+};
+#endif
+/**
+ * The image content of the thumbnail or icon.
+ *
+ * @since v3.5.2
+ *
+ * @note The default image is in the RGBA format. If you need to use another format, you need to convert the image on
+ * your own.
+ */
+struct ThumbImageBuffer {
+  /**
+   * The buffer of the thumbnail or icon.
+   */
+  const char* buffer;
+  /**
+   * The buffer length (bytes) of the thumbnail or icon.
+   */
+  unsigned int length;
+  /**
+   * The actual width (px) of the thumbnail or icon.
+   */
+  unsigned int width;
+  /**
+   * The actual height (px) of the thumbnail or icon.
+   */
+  unsigned int height;
+  ThumbImageBuffer() : buffer(nullptr), length(0), width(0), height(0) {}
+};
+/**
+ * The type of the shared target.
+ *
+ * @since v3.5.2
+ */
+enum ScreenCaptureSourceType {
+  /**
+   * -1: Unknown type.
+   */
+  ScreenCaptureSourceType_Unknown = -1,
+  /**
+   * 0: The shared target is a window.
+   */
+  ScreenCaptureSourceType_Window = 0,
+  /**
+   * 1: The shared target is a screen of a particular monitor.
+   */
+  ScreenCaptureSourceType_Screen = 1,
+  /**
+   * 2: Reserved parameter.
+   */
+  ScreenCaptureSourceType_Custom = 2,
+};
+/**
+ * The information about the specified shareable window or screen.
+ *
+ * @since v3.5.2
+ */
+struct ScreenCaptureSourceInfo {
+  /**
+   * The type of the shared target. See \ref agora::rtc::ScreenCaptureSourceType "ScreenCaptureSourceType".
+   */
+  ScreenCaptureSourceType type;
+  /**
+   * The window ID for a window or the display ID for a screen.
+   */
+  view_t sourceId;
+  /**
+   * The name of the window or screen. UTF-8 encoding.
+   */
+  const char* sourceName;
+  /**
+   * The image content of the thumbnail. See ThumbImageBuffer.
+   */
+  ThumbImageBuffer thumbImage;
+  /**
+   * The image content of the icon. See ThumbImageBuffer.
+   */
+  ThumbImageBuffer iconImage;
+  /**
+   * The process to which the window belongs. UTF-8 encoding.
+   */
+  const char* processPath;
+  /**
+   * The title of the window. UTF-8 encoding.
+   */
+  const char* sourceTitle;
+  /**
+   * Determines whether the screen is the primary display:
+   * - true: The screen is the primary display.
+   * - false: The screen is not the primary display.
+   */
+  bool primaryMonitor;
+  ScreenCaptureSourceInfo() : type(ScreenCaptureSourceType_Unknown), sourceId(nullptr), sourceName(nullptr), processPath(nullptr), sourceTitle(nullptr), primaryMonitor(false) {}
+};
+/**
+ * The IScreenCaptureSourceList class.
+ *
+ * @since v3.5.2
+ */
+class IScreenCaptureSourceList {
+ protected:
+  virtual ~IScreenCaptureSourceList(){};
+
+ public:
+  /**
+   * Gets the number of shareable windows and screens.
+   *
+   * @since v3.5.2
+   *
+   * @return The number of shareable windows and screens.
+   */
+  virtual unsigned int getCount() = 0;
+  /**
+   * Gets information about the specified shareable window or screen.
+   *
+   * @since v3.5.2
+   *
+   * After you get IScreenCaptureSourceList, you can pass in the index value of the specified shareable window or
+   * screen to get information about that window or screen from ScreenCaptureSourceInfo.
+   *
+   * @param index The index of the specified shareable window or screen. The value range is [0,`getCount()`).
+   *
+   * @return ScreenCaptureSourceInfo
+   */
+  virtual ScreenCaptureSourceInfo getSourceInfo(unsigned int index) = 0;
+  /**
+   * Releases IScreenCaptureSourceList.
+   *
+   * @since v3.5.2
+   *
+   * After you get the list of shareable windows and screens, to avoid memory leaks, call `release` to release
+   * `IScreenCaptureSourceList` instead of deleting `IScreenCaptureSourceList` directly.
+   */
+  virtual void release() = 0;
+};
+
+/** The SDK uses the IRtcEngineEventHandler interface class to send callbacks to the application. The application inherits the methods of this interface class to retrieve these callbacks.
 
  All methods in this interface class have default (empty) implementations. Therefore, the application can only inherit some required events. In the callbacks, avoid time-consuming tasks or calling blocking APIs, such as the SendMessage method. Otherwise, the SDK may not work properly.
  */
@@ -4241,7 +4646,7 @@ class IRtcEngineEventHandler {
    * \ref IRtcEngine::joinChannel "joinChannel" method until the SDK
    * triggers this callback.
    */
-  virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) {
+  virtual void onFirstRemoteVideoDecoded(uid_t uid, int width, int height, int elapsed) AGORA_DEPRECATED_ATTRIBUTE {
     (void)uid;
     (void)width;
     (void)height;
@@ -4698,6 +5103,38 @@ The SDK triggers this callback when the local user fails to receive the stream m
     (void)enabled;
     (void)reason;
   }
+  /// @cond
+  /** Reports result of Content Inspect*/
+  virtual void onContentInspectResult(CONTENT_INSPECT_RESULT result) { (void)result; }
+  /// @endcond
+  /**
+   * Reports the result of taking a video snapshot.
+   *
+   * @since v3.5.2
+   *
+   * After a successful \ref IRtcEngine::takeSnapshot "takeSnapshot" method call, the SDK triggers this callback to
+   * report whether the snapshot is successfully taken as well as the details for the snapshot taken.
+   *
+   * @param channel The channel name.
+   * @param uid The user ID of the user. A `uid` of 0 indicates the local user.
+   * @param filePath The local path of the snapshot.
+   * @param width The width (px) of the snapshot.
+   * @param height The height (px) of the snapshot.
+   * @param errCode The message that confirms success or the reason why the snapshot is not successfully taken:
+   * - `0`: Success.
+   * - < 0: Failure:
+   *  - `-1`: The SDK fails to write data to a file or encode a JPEG image.
+   *  - `-2`: The SDK does not find the video stream of the specified user within one second after
+   * the \ref IRtcEngine::takeSnapshot "takeSnapshot" method call succeeds.
+   */
+  virtual void onSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode) {
+    (void)channel;
+    (void)uid;
+    (void)filePath;
+    (void)width;
+    (void)height;
+    (void)errCode;
+  }
 
   /** Occurs when the state of the media stream relay changes.
    *
@@ -4752,17 +5189,18 @@ The SDK triggers this callback when the local user fails to receive the stream m
   }
 
   /**
-   Occurs when the state of the RTMP or RTMPS streaming changes.
-
-   The SDK triggers this callback to report the result of the local user calling the \ref agora::rtc::IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" or \ref agora::rtc::IRtcEngine::removePublishStreamUrl "removePublishStreamUrl" method.
-
-   This callback indicates the state of the RTMP or RTMPS streaming. When exceptions occur, you can troubleshoot issues by referring to the detailed error descriptions in the *errCode* parameter.
-
-   @param url The CDN streaming URL.
-   @param state The RTMP or RTMPS streaming state. See: #RTMP_STREAM_PUBLISH_STATE.
-   @param errCode The detailed error information for streaming. See: #RTMP_STREAM_PUBLISH_ERROR.
+   * Occurs when the state of the RTMP or RTMPS streaming changes.
+   *
+   * When the CDN live streaming state changes, the SDK triggers this callback to report the current state and the reason
+   * why the state has changed.
+   *
+   * When exceptions occur, you can troubleshoot issues by referring to the detailed error descriptions in the *errCode* parameter.
+   *
+   * @param url The CDN streaming URL.
+   * @param state The RTMP or RTMPS streaming state. See: #RTMP_STREAM_PUBLISH_STATE.
+   * @param errCode The detailed error information for streaming. See: #RTMP_STREAM_PUBLISH_ERROR_TYPE.
    */
-  virtual void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode) {
+  virtual void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE errCode) {
     (void)url;
     (void)state;
     (void)errCode;
@@ -5157,6 +5595,20 @@ class IAudioDeviceCollection {
    */
   virtual int setDevice(const char deviceId[MAX_DEVICE_ID_LENGTH]) = 0;
 
+  /**
+   * Gets the default audio device of the system.
+   *
+   * @since v3.6.0
+   *
+   * @param deviceName The name of the system default audio device.
+   * @param deviceId The device ID of the the system default audio device.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int getDefaultDevice(char deviceName[MAX_DEVICE_ID_LENGTH], char deviceId[MAX_DEVICE_ID_LENGTH]) = 0;
+
   /** Sets the volume of the application.
 
   @param volume Application volume. The value ranges between 0 (lowest volume) and 255 (highest volume).
@@ -5259,6 +5711,36 @@ class IAudioDeviceManager {
    - < 0: Failure.
    */
   virtual int setRecordingDevice(const char deviceId[MAX_DEVICE_ID_LENGTH]) = 0;
+
+  /**
+   * Sets the audio playback device used by the SDK to follow the system default audio playback device.
+   *
+   * @since v3.6.0
+   *
+   * @param enable Whether to follow the system default audio playback device:
+   * - true: Follow. The SDK immediately switches the audio playback device when the system default audio playback device changes.
+   * - false: Do not follow. The SDK switches the audio playback device to the system default audio playback device only when the currently used audio playback device is disconnected.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int followSystemPlaybackDevice(bool enable) = 0;
+
+  /**
+   * Sets the audio recording device used by the SDK to follow the system default audio recording device.
+   *
+   * @since v3.6.0
+   *
+   * @param enable Whether to follow the system default audio recording device:
+   * - true: Follow. The SDK immediately switches the audio recording device when the system default audio recording device changes.
+   * - false: Do not follow. The SDK switches the audio recording device to the system default audio recording device only when the currently used audio recording device is disconnected.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int followSystemRecordingDevice(bool enable) = 0;
 
   /** Starts the audio playback device test.
    *
@@ -5905,7 +6387,7 @@ class IRtcEngine {
    * - 0(ERR_OK): Success.
    * - < 0: Failure.
    *  - -1(ERR_FAILED): A general error occurs (no specified reason).
-   *  - -2(ERR_INALID_ARGUMENT): No `IRtcEngineEventHandler` object is specified.
+   *  - -2(ERR_INVALID_ARGUMENT): No `IRtcEngineEventHandler` object is specified.
    *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized. Check whether `context` is properly set.
    *  - -22(ERR_RESOURCE_LIMITED): The resource is limited. The app uses too much of the system resource and fails to allocate any resources.
    *  - -101(ERR_INVALID_APP_ID): The App ID is invalid.
@@ -5978,7 +6460,7 @@ class IRtcEngine {
    * - 0(ERR_OK): Success.
    * - < 0: Failure.
    *  - -1(ERR_FAILED): A general error occurs (no specified reason).
-   *  - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+   *  - -2(ERR_INVALID_ARGUMENT): The parameter is invalid.
    *  - -5 (ERR_REFUSED): The request is rejected. In multichannel scenarios, if you have set any of the following in
    * one channel, the SDK returns this error code when the user switches the user role to host in another channel:
    *    - Call `joinChannel` with the `options` parameter and use the default settings `publishLocalAudio = true` or `publishLocalVideo = true`.
@@ -6020,7 +6502,7 @@ class IRtcEngine {
    * - 0(ERR_OK): Success.
    * - < 0: Failure.
    *  - -1(ERR_FAILED): A general error occurs (no specified reason).
-   *  - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+   *  - -2(ERR_INVALID_ARGUMENT): The parameter is invalid.
    *  - -5 (ERR_REFUSED): The request is rejected. In multichannel scenarios, if you have set any of the following in
    * one channel, the SDK returns this error code when the user switches the user role to host in another channel:
    *    - Call `joinChannel` with the `options` parameter and use the default settings `publishLocalAudio = true` or `publishLocalVideo = true`.
@@ -6061,12 +6543,15 @@ class IRtcEngine {
    @return
    - 0(ERR_OK): Success.
    - < 0: Failure.
-      - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+      - -2(ERR_INVALID_ARGUMENT): The parameter is invalid.
       - -3(ERR_NOT_READY): The SDK fails to be initialized. You can try re-initializing the SDK.
       - -5(ERR_REFUSED): The request is rejected. This may be caused by the following:
           - You have created an IChannel object with the same channel name.
           - You have joined and published a stream in a channel created by the IChannel object. When you join a channel created by the IRtcEngine object, the SDK publishes the local audio and video streams to that channel by default. Because the SDK does not support publishing a local stream to more than one channel simultaneously, an error occurs in this occasion.
       - -7(ERR_NOT_INITIALIZED): The SDK is not initialized before calling this method.
+      - -17(ERR_JOIN_CHANNEL_REJECTED): The request to join the channel is rejected. The SDK supports joining only one
+      IRtcEngine channel at a time. Therefore, the SDK returns this error code when a user who has already joined an
+      IRtcEngine channel calls the joining channel method of the IRtcEngine class with a valid channel name.
    */
   virtual int joinChannel(const char* token, const char* channelId, const char* info, uid_t uid) = 0;
   /** Joins a channel with the user ID, and configures whether to publish or automatically subscribe to the audio or video streams.
@@ -6109,12 +6594,15 @@ class IRtcEngine {
    @return
    * - 0(ERR_OK): Success.
    * - < 0: Failure.
-   *    - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+   *    - -2(ERR_INVALID_ARGUMENT): The parameter is invalid.
    *    - -3(ERR_NOT_READY): The SDK fails to be initialized. You can try re-initializing the SDK.
    *    - -5(ERR_REFUSED): The request is rejected. This may be caused by the following:
    *        - You have created an IChannel object with the same channel name.
    *        - You have joined and published a stream in a channel created by the IChannel object. When you join a channel created by the IRtcEngine object, the SDK publishes the local audio and video streams to that channel by default. Because the SDK does not support publishing a local stream to more than one channel simultaneously, an error occurs in this occasion.
    *    - -7(ERR_NOT_INITIALIZED): The SDK is not initialized before calling this method.
+   *    - -17(ERR_JOIN_CHANNEL_REJECTED): The request to join the channel is rejected. The SDK supports joining only one
+   * IRtcEngine channel at a time. Therefore, the SDK returns this error code when a user who has already joined an
+   * IRtcEngine channel calls the joining channel method of the IRtcEngine class with a valid channel name.
    */
   virtual int joinChannel(const char* token, const char* channelId, const char* info, uid_t uid, const ChannelMediaOptions& options) = 0;
   /** Switches to a different channel.
@@ -6152,7 +6640,7 @@ class IRtcEngine {
    * - 0(ERR_OK): Success.
    * - < 0: Failure.
    *  - -1(ERR_FAILED): A general error occurs (no specified reason).
-   *  - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+   *  - -2(ERR_INVALID_ARGUMENT): The parameter is invalid.
    *  - -5(ERR_REFUSED): The request is rejected, probably because the user is not an audience.
    *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
    *  - -102(ERR_INVALID_CHANNEL_NAME): The channel name is invalid.
@@ -6191,7 +6679,7 @@ class IRtcEngine {
    * - 0(ERR_OK): Success.
    * - < 0: Failure.
    *  - -1(ERR_FAILED): A general error occurs (no specified reason).
-   *  - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+   *  - -2(ERR_INVALID_ARGUMENT): The parameter is invalid.
    *  - -5(ERR_REFUSED): The request is rejected, probably because the user is not an audience.
    *  - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
    *  - -102(ERR_INVALID_CHANNEL_NAME): The channel name is invalid.
@@ -6219,10 +6707,14 @@ class IRtcEngine {
    - 0(ERR_OK): Success.
    - < 0: Failure.
       - -1(ERR_FAILED): A general error occurs (no specified reason).
-      - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+      - -2(ERR_INVALID_ARGUMENT): The parameter is invalid.
       - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
    */
   virtual int leaveChannel() = 0;
+
+  /// @cond
+  virtual int setAVSyncSource(const char* channelId, uid_t uid) = 0;
+  /// @endcond
 
   /** Gets a new token when the current token expires after a period of time.
 
@@ -6239,7 +6731,7 @@ class IRtcEngine {
    - 0(ERR_OK): Success.
    - < 0: Failure.
       - -1(ERR_FAILED): A general error occurs (no specified reason).
-      - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+      - -2(ERR_INVALID_ARGUMENT): The parameter is invalid.
       - -7(ERR_NOT_INITIALIZED): The SDK is not initialized.
    */
   virtual int renewToken(const char* token) = 0;
@@ -6321,6 +6813,9 @@ class IRtcEngine {
       - #ERR_NOT_READY (-3)
       - #ERR_REFUSED (-5)
       - #ERR_NOT_INITIALIZED (-7)
+      - -17(ERR_JOIN_CHANNEL_REJECTED): The request to join the channel is rejected. The SDK supports joining only one
+      IRtcEngine channel at a time. Therefore, the SDK returns this error code when a user who has already joined an
+      IRtcEngine channel calls the joining channel method of the IRtcEngine class with a valid channel name.
    */
   virtual int joinChannelWithUserAccount(const char* token, const char* channelId, const char* userAccount) = 0;
   /** Joins the channel with a user account, and configures
@@ -6362,6 +6857,9 @@ class IRtcEngine {
    *    - #ERR_INVALID_ARGUMENT (-2)
    *    - #ERR_NOT_READY (-3)
    *    - #ERR_REFUSED (-5)
+   *    - -17(ERR_JOIN_CHANNEL_REJECTED): The request to join the channel is rejected. The SDK supports joining only one
+   * IRtcEngine channel at a time. Therefore, the SDK returns this error code when a user who has already joined an
+   * IRtcEngine channel calls the joining channel method of the IRtcEngine class with a valid channel name.
    */
   virtual int joinChannelWithUserAccount(const char* token, const char* channelId, const char* userAccount, const ChannelMediaOptions& options) = 0;
 
@@ -6441,13 +6939,43 @@ class IRtcEngine {
    */
   virtual int startEchoTest(int intervalInSeconds) = 0;
 
-  /** Stops the audio call test.
+  /** Starts an audio and video call loop test.
+   *
+   * @since v3.5.2
+   *
+   * Before joining a channel, to test whether the user's local sending and receiving streams are normal, you can call
+   * this method to perform an audio and video call loop test, which tests whether the audio and video devices and the
+   * user's upstream and downstream networks are working properly.
+   *
+   * After starting the test, the user needs to make a sound or face the camera. The audio or video is output after
+   * about two seconds. If the audio playback is normal, the audio device and the user's upstream and downstream
+   * networks are working properly; if the video playback is normal, the video device and the user's upstream and
+   * downstream networks are working properly.
+   *
+   * @note
+   * - Call this method before joining a channel.
+   * - After calling this method, call \ref IRtcEngine::stopEchoTest "stopEchoTest" to end the test; otherwise, the
+   * user cannot perform the next audio and video call loop test and cannot join the channel.
+   * - In the `LIVE_BROADCASTING` profile, only a host can call this method.
+   *
+   * @param config The configuration of the audio and video call loop test. See EchoTestConfiguration.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int startEchoTest(const EchoTestConfiguration& config) = 0;
 
-   @return
-   - 0: Success.
-   - < 0: Failure.
+  /** Stops call loop test.
+   *
+   * After calling `startEchoTest [2/3]` or `startEchoTest [3/3]`, call this method if you want to stop the call loop test.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
    */
   virtual int stopEchoTest() = 0;
+
   /** Sets the Agora cloud proxy service.
    *
    * @since v3.3.0
@@ -7139,7 +7667,7 @@ class IRtcEngine {
    *
    * @note
    * - If the local audio mixing file does not exist, or if the SDK does not support the file format or cannot access the music file URL, the SDK returns #WARN_AUDIO_MIXING_OPEN_ERROR (701).
-   * - If you want to play an online music file, ensure that the time interval between calling this method is more than 100 ms, or the #AUDIO_MIXING_ERROR_TOO_FREQUENT_CALL (702) error code occurs.
+   * - If you want to play an online music file, ensure that the time interval between calling this method is more than 100 ms, or the `AUDIO_MIXING_ERROR_TOO_FREQUENT_CALL(702)` error code occurs.
    * - To avoid blocking, as of v3.4.5, this method changes from a synchronous call to an asynchronous call.
    * - For the audio file formats supported by this method, see [What formats of audio files does the Agora RTC SDK support](https://docs.agora.io/en/faq/audio_format).
    *
@@ -7922,7 +8450,7 @@ class IRtcEngine {
    - Do not use this method with \ref IRtcEngine::setLocalVoiceReverbPreset "setLocalVoiceReverbPreset" , because the method called later overrides the one called earlier. For detailed considerations, see the advanced guide *Set the Voice Effect*.
    - You can call this method either before or after joining a channel.
 
-   @param voiceChanger Sets the local voice changer option. The default value is #VOICE_CHANGER_OFF,
+   @param voiceChanger Sets the local voice changer option. The default value is `VOICE_CHANGER_OFF`,
    which means the original voice. See details in #VOICE_CHANGER_PRESET.
 
    @return
@@ -8779,15 +9307,49 @@ class IRtcEngine {
 
    */
   virtual int enableLoopbackRecording(bool enabled, const char* deviceName = NULL) = 0;
-
-#if (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE)
+  /**
+   * Gets a list of shareable screens and windows.
+   *
+   * @since v3.5.2
+   *
+   * You can call this method before sharing a screen or window to get a list of shareable screens and windows, which
+   * enables a user to use thumbnails in the list to easily choose a particular screen or window to share. This list
+   * also contains important information such as window ID and screen ID, with which you can
+   * call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" or
+   * \ref IRtcEngine::startScreenCaptureByDisplayId "startScreenCaptureByDisplayId" to start the sharing.
+   *
+   * @note This method applies to macOS and Windows only.
+   *
+   * @param thumbSize The target size of the screen or window thumbnail. The width and height are in pixels. See SIZE.
+   * The SDK scales the original image to make the length of the longest side of the image the same as that of the
+   * target size without distorting the original image. For example, if the original image is 400 × 300 and `thumbSize`
+   * is 100 × 100, the actual size of the thumbnail is 100 × 75. If the target size is larger than the original size,
+   * the thumbnail is the original image and the SDK does not scale it.
+   * @param iconSize The target size of the icon corresponding to the application program. The width and height are in
+   * pixels. See SIZE. The SDK scales the original image to make the length of the longest side of the image the same
+   * as that of the target size without distorting the original image. For example, if the original image is 400 × 300
+   * and `iconSize` is 100 × 100, the actual size of the icon is 100 × 75. If the target size is larger than the
+   * original size, the icon is the original image and the SDK does not scale it.
+   * @param includeScreen Whether the SDK returns screen information in addition to window information:
+   * - true: The SDK returns screen and window information.
+   * - false: The SDK returns window information only.
+   *
+   * @return IScreenCaptureSourceList
+   */
+  virtual IScreenCaptureSourceList* getScreenCaptureSources(const SIZE& thumbSize, const SIZE& iconSize, const bool includeScreen) = 0;
   /** Shares the whole or part of a screen by specifying the display ID.
    *
    * @note
-   * - This method is for macOS only.
+   * - This method is for macOS and Windows only.
    * - Ensure that you call this method after joining a channel.
    *
-   * @param displayId The display ID of the screen to be shared. This parameter specifies which screen you want to share.
+   * @warning On Windows platforms, if the user device is connected to another display, to avoid screen sharing issues,
+   * use `startScreenCaptureByDisplayId` to start sharing instead of
+   * using \ref IRtcEngine::startScreenCaptureByScreenRect "startScreenCaptureByScreenRect".
+   *
+   * @param displayId The display ID of the screen to be shared. Use this parameter to specify which screen you want to
+   * share. For more information on how to get the display ID, see the advanced feature guide *Share the Screen* or get
+   * the display ID from `sourceId` returned by \ref IRtcEngine::getScreenCaptureSources "getScreenCaptureSources".
    * @param regionRect (Optional) Sets the relative location of the region to the screen. NIL means sharing the whole screen. See Rectangle. If the specified region overruns the screen, the SDK shares only the region within it; if you set width or height as 0, the SDK shares the whole screen.
    * @param captureParams The screen sharing encoding parameters. The default video dimension is 1920 x 1080, that is, 2,073,600 pixels. Agora uses the value of `videoDimension` to calculate the charges.
    * For details, see descriptions in ScreenCaptureParameters.
@@ -8799,7 +9361,6 @@ class IRtcEngine {
    *    - #ERR_INVALID_ARGUMENT: The argument is invalid.
    */
   virtual int startScreenCaptureByDisplayId(unsigned int displayId, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) = 0;
-#endif
 
 #if defined(_WIN32)
   /** Shares the whole or part of a screen by specifying the screen rect.
@@ -8807,6 +9368,10 @@ class IRtcEngine {
    * @note
    * - Ensure that you call this method after joining a channel.
    * - Applies to the Windows platform only.
+   *
+   * @warning On Windows platforms, if the user device is connected to another display, to avoid screen sharing issues,
+   * use \ref IRtcEngine::startScreenCaptureByDisplayId "startScreenCaptureByDisplayId" to start sharing instead of
+   * using \ref IRtcEngine::startScreenCaptureByScreenRect "startScreenCaptureByScreenRect".
    *
    * @param screenRect Sets the relative location of the screen to the virtual screen. For information on how to get screenRect, see the advanced guide *Share Screen*.
    * @param regionRect (Optional) Sets the relative location of the region to the screen. NULL means sharing the whole screen. See Rectangle. If the specified region overruns the screen, the SDK shares only the region within it; if you set width or height as 0, the SDK shares the whole screen.
@@ -8816,7 +9381,7 @@ class IRtcEngine {
    * @return
    * - 0: Success.
    * - < 0: Failure:
-   *  - #ERR_INVALID_ARGUMENT : The argument is invalid.
+   *  - #ERR_INVALID_ARGUMENT: The argument is invalid.
    */
   virtual int startScreenCaptureByScreenRect(const Rectangle& screenRect, const Rectangle& regionRect, const ScreenCaptureParameters& captureParams) = 0;
 #endif
@@ -9335,6 +9900,8 @@ class IRtcEngine {
 
   /** Publishes the local stream to a specified CDN live address.  (CDN live only.)
 
+   @deprecated This method is deprecated as of v3.6.0. See [Release Notes](https://docs.agora.io/en/Interactive%20Broadcast/release_windows_video?platform=Windows) for an alternative solution.
+
    The SDK returns the result of this method call in the \ref IRtcEngineEventHandler::onStreamPublished "onStreamPublished" callback.
 
    The \ref agora::rtc::IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" method call triggers the \ref agora::rtc::IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged" callback on the local client to report the state of adding a local stream to the CDN.
@@ -9355,9 +9922,11 @@ class IRtcEngine {
         - #ERR_INVALID_ARGUMENT (-2): The CDN streaming URL is NULL or has a string length of 0.
         - #ERR_NOT_INITIALIZED (-7): You have not initialized the RTC engine when publishing the stream.
    */
-  virtual int addPublishStreamUrl(const char* url, bool transcodingEnabled) = 0;
+  virtual int addPublishStreamUrl(const char* url, bool transcodingEnabled) AGORA_DEPRECATED_ATTRIBUTE = 0;
 
   /** Removes an RTMP or RTMPS stream from the CDN. (CDN live only.)
+
+   @deprecated This method is deprecated as of v3.6.0. See [Release Notes](https://docs.agora.io/en/Interactive%20Broadcast/release_windows_video?platform=Windows) for an alternative solution.
 
    This method removes the CDN streaming URL (added by the \ref IRtcEngine::addPublishStreamUrl "addPublishStreamUrl" method) from a CDN live stream. The SDK returns the result of this method call in the \ref IRtcEngineEventHandler::onStreamUnpublished "onStreamUnpublished" callback.
 
@@ -9374,9 +9943,11 @@ class IRtcEngine {
    - 0: Success.
    - < 0: Failure.
    */
-  virtual int removePublishStreamUrl(const char* url) = 0;
+  virtual int removePublishStreamUrl(const char* url) AGORA_DEPRECATED_ATTRIBUTE = 0;
 
   /** Sets the video layout and audio settings for CDN live. (CDN live only.)
+
+   @deprecated This method is deprecated as of v3.6.0. See [Release Notes](https://docs.agora.io/en/Interactive%20Broadcast/release_windows_video?platform=Windows) for an alternative solution.
 
    The SDK triggers the \ref agora::rtc::IRtcEngineEventHandler::onTranscodingUpdated "onTranscodingUpdated" callback when you call the `setLiveTranscoding` method to update the transcoding setting.
 
@@ -9393,7 +9964,104 @@ class IRtcEngine {
    - 0: Success.
    - < 0: Failure.
    */
-  virtual int setLiveTranscoding(const LiveTranscoding& transcoding) = 0;
+  virtual int setLiveTranscoding(const LiveTranscoding& transcoding) AGORA_DEPRECATED_ATTRIBUTE = 0;
+  /**
+   * Starts pushing media streams to a CDN without transcoding.
+   *
+   * @since v3.6.0
+   *
+   * You can call this method to push a live audio-and-video stream to the specified CDN address. This method can push
+   * media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this
+   * method multiple times.
+   *
+   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged"
+   * callback on the local client to report the state of the streaming.
+   *
+   * @note
+   * - Ensure that you enable the RTMP Converter service before using this function. See Prerequisites in *Push Streams to CDN*.
+   * - Call this method after joining a channel.
+   * - Only hosts in the `LIVE_BROADCASTING` profile can call this method.
+   * - If you want to retry pushing streams after a failed push, make sure to call \ref IRtcEngine::stopRtmpStream "stopRtmpStream" first,
+   * then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
+   * - If you want to push media streams in the RTMPS protocol to CDN, call \ref IRtcEngine::startRtmpStreamWithTranscoding "startRtmpStreamWithTranscoding"
+   * instead of \ref IRtcEngine::startRtmpStreamWithoutTranscoding "startRtmpStreamWithoutTranscoding".
+   *
+   * @param url The address of the CDN live streaming. The format is RTMP. The character length cannot exceed 1024 bytes.
+   * Special characters such as Chinese characters are not supported.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT(-2)`: url is null or the string length is 0.
+   *  - `ERR_NOT_INITIALIZED(-7)`: The SDK is not initialized before calling this method.
+   */
+  virtual int startRtmpStreamWithoutTranscoding(const char* url) = 0;
+  /**
+   * Starts pushing media streams to a CDN and sets the transcoding configuration.
+   *
+   * @since v3.6.0
+   *
+   * You can call this method to push a live audio-and-video stream to the specified CDN address and set the transcoding
+   * configuration. This method can push media streams to only one CDN address at a time, so if you need to push streams to
+   * multiple addresses, call this method multiple times.
+   *
+   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged"
+   * callback on the local client to report the state of the streaming.
+   *
+   * @note
+   * - Ensure that you enable the RTMP Converter service before using this function. See Prerequisites in *Push Streams to CDN*.
+   * - Call this method after joining a channel.
+   * - Only hosts in the `LIVE_BROADCASTING` profile can call this method.
+   * - If you want to retry pushing streams after a failed push, make sure to call \ref IRtcEngine::stopRtmpStream "stopRtmpStream" first,
+   * then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
+   * - If you want to push media streams in the RTMPS protocol to CDN, call \ref IRtcEngine::startRtmpStreamWithTranscoding "startRtmpStreamWithTranscoding"
+   * instead of \ref IRtcEngine::startRtmpStreamWithoutTranscoding "startRtmpStreamWithoutTranscoding".
+   *
+   * @param url The address of the CDN live streaming. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes.
+   * Special characters such as Chinese characters are not supported.
+   * @param transcoding The transcoding configuration for CDN live streaming. See LiveTranscoding.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   *  - `ERR_INVALID_ARGUMENT(-2)`: url is null or the string length is 0.
+   *  - `ERR_NOT_INITIALIZED(-7)`: The SDK is not initialized before calling this method.
+   */
+  virtual int startRtmpStreamWithTranscoding(const char* url, const LiveTranscoding& transcoding) = 0;
+  /**
+   * Updates the transcoding configuration.
+   *
+   * @since v3.6.0
+   *
+   * After you start pushing media streams to CDN with transcoding, you can dynamically update the transcoding configuration according to the scenario.
+   * The SDK triggers the \ref IRtcEngineEventHandler::onTranscodingUpdated "onTranscodingUpdated" callback after the
+   * transcoding configuration is updated.
+   *
+   * @param transcoding The transcoding configuration for CDN live streaming. See LiveTranscoding.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int updateRtmpTranscoding(const LiveTranscoding& transcoding) = 0;
+  /**
+   * Stops pushing media streams to a CDN.
+   *
+   * @since v3.6.0
+   *
+   * You can call this method to stop the live stream on the specified CDN address.
+   * This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times.
+   *
+   * After you call this method, the SDK triggers the \ref IRtcEngineEventHandler::onRtmpStreamingStateChanged "onRtmpStreamingStateChanged" callback on the local client to report the state of the streaming.
+   *
+   * @param url The address of the CDN live streaming. The format is RTMP or RTMPS.
+   * The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int stopRtmpStream(const char* url) = 0;
 
   /** **DEPRECATED** Adds a watermark image to the local video or CDN live stream.
 
@@ -9460,6 +10128,12 @@ class IRtcEngine {
    * @note
    * - Call this method after calling the \ref IRtcEngine::enableVideo "enableVideo" method.
    * - On Android, this method applies to Android 5.0 or later.
+   * - Agora has updated the Agora image enhancement algorithm from v3.6.0 to enhance image enhancement effects and support sharpness adjustment.
+   * If you want to experience optimized image enhancement effects or set the sharpness, integrate the following dynamic library into the project before calling this method:
+   *  - Android: `libagora_video_process_extension.so`
+   *  - iOS: `AgoraVideoProcessExtension.xcframework`
+   *  - macOS: `AgoraVideoProcessExtension.framework`
+   *  - Windows: `libagora_video_process_extension.dll`
    *
    * @param enabled Determines whether to enable image enhancement:
    * - true: Enables image enhancement.
@@ -9816,6 +10490,15 @@ class IRtcEngine {
    - < 0: Failure.
    */
   virtual int setParameters(const char* parameters) = 0;
+
+  // virtual int getMediaRecorder(IMediaRecorderObserver *observer, int sys_version = 0) = 0;
+
+
+  // virtual int startRecording(const MediaRecorderConfiguration &config) = 0;
+
+  // virtual int stopRecording() = 0;
+
+  // virtual int releaseRecorder() = 0;
 #if defined(_WIN32)
   /**
    * Customizes the local video renderer. (for Windows only)
@@ -9856,18 +10539,7 @@ class IRtcEngine {
   virtual int setRemoteVideoRenderer(uid_t uid, IVideoSink* videoSink) = 0;
 #endif
   /// @cond
-  /** set local access point addresses in local proxy mode. use this method before join
-   channel.
-
-   @param ips local access point ip addresses.
-   @param ipSize the number of local access point.
-   @param domain The domain described in certificate installed on specific local access point. pass "" means using sni domain on specific local access point
-
-   @return
-   - 0: Success
-   - < 0: Failure
-   */
-  virtual int setLocalAccessPoint(const char** ips, int ipSize, const char* domain) = 0;
+  virtual int setLocalAccessPoint(const LocalAccessPointConfiguration& config) = 0;
   /// @endcond
 #if defined(__ANDROID__) || (defined(__APPLE__) && TARGET_OS_IOS)
   /**
@@ -9909,12 +10581,48 @@ class IRtcEngine {
    * fail to successfully enable the flash by calling \ref IRtcEngine::setCameraTorchOn "setCameraTorchOn"
    * due to system issues.
    *
+   *
    * @return
    * - true: The device supports enabling the flash.
    * - false: The device does not support enabling the flash.
    */
   virtual bool isCameraTorchSupported() = 0;
 #endif
+
+  /**
+   * Takes a snapshot of a video stream.
+   *
+   * @since v3.5.2
+   *
+   * This method takes a snapshot of a video stream from the specified user, generates a JPG image,
+   * and saves it to the specified path.
+   *
+   * The method is asynchronous, and the SDK has not taken the snapshot when the method call returns.
+   * After a successful method call, the SDK triggers the \ref IRtcEngineEventHandler::onSnapshotTaken "onSnapshotTaken"
+   * callback to report whether the snapshot is successfully taken as well as the details of the snapshot taken.
+   *
+   * @note
+   * - Call this method after joining a channel.
+   * - If the video of the specified user is pre-processed, for example, added with watermarks or image enhancement
+   * effects, the generated snapshot also includes the pre-processing effects.
+   *
+   * @param channel The channel name.
+   * @param uid The user ID of the user. Set `uid` as 0 if you want to take a snapshot of the local user's video.
+   * @param filePath The local path (including the filename extensions) of the snapshot. For example,
+   * `C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.jpg` on Windows,
+   * `/App Sandbox/Library/Caches/example.jpg` on iOS, `～/Library/Logs/example.jpg` on macOS, and
+   * `/storage/emulated/0/Android/data/<package name>/files/example.jpg` on Android. Ensure that the path you specify
+   * exists and is writable.
+   *
+   * @return
+   * - 0: Success.
+   * - < 0: Failure.
+   */
+  virtual int takeSnapshot(const char* channel, uid_t uid, const char* filePath) = 0;
+
+  /// @cond
+  virtual int enableContentInspect(bool enabled, const ContentInspectConfig& config) = 0;
+  /// @endcond
 };
 
 class IRtcEngineParameter {
@@ -10100,7 +10808,7 @@ class AVideoDeviceManager : public agora::util::AutoPtr<IVideoDeviceManager> {
   AVideoDeviceManager(IRtcEngine* engine) { queryInterface(engine, AGORA_IID_VIDEO_DEVICE_MANAGER); }
 };
 
-class AParameter : public agora::util::AutoPtr<IRtcEngineParameter> {
+class AGORA_CPP_API AParameter : public agora::util::AutoPtr<IRtcEngineParameter> {
  public:
   AParameter(IRtcEngine& engine) { initialize(&engine); }
   AParameter(IRtcEngine* engine) { initialize(engine); }
@@ -10115,483 +10823,92 @@ class AParameter : public agora::util::AutoPtr<IRtcEngineParameter> {
 };
 /** **DEPRECATED** The RtcEngineParameters class is deprecated, use the IRtcEngine class instead.
  */
-class RtcEngineParameters {
+class AGORA_CPP_API RtcEngineParameters {
  public:
   RtcEngineParameters(IRtcEngine& engine) : m_parameter(&engine) {}
   RtcEngineParameters(IRtcEngine* engine) : m_parameter(engine) {}
 
-  int enableLocalVideo(bool enabled) { return setParameters("{\"rtc.video.capture\":%s,\"che.video.local.capture\":%s,\"che.video.local.render\":%s,\"che.video.local.send\":%s}", enabled ? "true" : "false", enabled ? "true" : "false", enabled ? "true" : "false", enabled ? "true" : "false"); }
-
-  int muteLocalVideoStream(bool mute) { return setParameters("{\"rtc.video.mute_me\":%s}", mute ? "true" : "false"); }
-
-  int muteAllRemoteVideoStreams(bool mute) { return m_parameter ? m_parameter->setBool("rtc.video.mute_peers", mute) : -ERR_NOT_INITIALIZED; }
-
-  int setDefaultMuteAllRemoteVideoStreams(bool mute) { return m_parameter ? m_parameter->setBool("rtc.video.set_default_mute_peers", mute) : -ERR_NOT_INITIALIZED; }
-
-  int muteRemoteVideoStream(uid_t uid, bool mute) { return setObject("rtc.video.mute_peer", "{\"uid\":%u,\"mute\":%s}", uid, mute ? "true" : "false"); }
-
-  int setPlaybackDeviceVolume(int volume) {  // [0,255]
-    return m_parameter ? m_parameter->setInt("che.audio.output.volume", volume) : -ERR_NOT_INITIALIZED;
-  }
-
-  int startAudioRecording(const char* filePath, AUDIO_RECORDING_QUALITY_TYPE quality) { return startAudioRecording(filePath, 32000, quality); }
-
-  int startAudioRecording(const char* filePath, int sampleRate, AUDIO_RECORDING_QUALITY_TYPE quality) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-#if defined(_WIN32)
-    util::AString path;
-    if (!m_parameter->convertPath(filePath, path))
-      filePath = path->c_str();
-    else
-      return -ERR_INVALID_ARGUMENT;
-#endif
-    return setObject("che.audio.start_recording", "{\"filePath\":\"%s\",\"sampleRate\":%d,\"quality\":%d}", filePath, sampleRate, quality);
-  }
-
-  int stopAudioRecording() { return setParameters("{\"che.audio.stop_recording\":true, \"che.audio.stop_nearend_recording\":true, \"che.audio.stop_farend_recording\":true}"); }
-
-  int startAudioMixing(const char* filePath, bool loopback, bool replace, int cycle, int startPos = 0) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-#if defined(_WIN32)
-    util::AString path;
-    if (!m_parameter->convertPath(filePath, path))
-      filePath = path->c_str();
-    else
-      return -ERR_INVALID_ARGUMENT;
-#endif
-    return setObject("che.audio.start_file_as_playout", "{\"filePath\":\"%s\",\"loopback\":%s,\"replace\":%s,\"cycle\":%d, \"startPos\":%d}", filePath, loopback ? "true" : "false", replace ? "true" : "false", cycle, startPos);
-  }
-
-  int stopAudioMixing() { return m_parameter ? m_parameter->setBool("che.audio.stop_file_as_playout", true) : -ERR_NOT_INITIALIZED; }
-
-  int pauseAudioMixing() { return m_parameter ? m_parameter->setBool("che.audio.pause_file_as_playout", true) : -ERR_NOT_INITIALIZED; }
-
-  int resumeAudioMixing() { return m_parameter ? m_parameter->setBool("che.audio.pause_file_as_playout", false) : -ERR_NOT_INITIALIZED; }
-
-  int adjustAudioMixingVolume(int volume) {
-    int ret = adjustAudioMixingPlayoutVolume(volume);
-    if (ret == 0) {
-      adjustAudioMixingPublishVolume(volume);
-    }
-    return ret;
-  }
-
-  int adjustAudioMixingPlayoutVolume(int volume) { return m_parameter ? m_parameter->setInt("che.audio.set_file_as_playout_volume", volume) : -ERR_NOT_INITIALIZED; }
-
-  int getAudioMixingPlayoutVolume() {
-    int volume = 0;
-    int r = m_parameter ? m_parameter->getInt("che.audio.get_file_as_playout_volume", volume) : -ERR_NOT_INITIALIZED;
-    if (r == 0) r = volume;
-    return r;
-  }
-
-  int adjustAudioMixingPublishVolume(int volume) { return m_parameter ? m_parameter->setInt("che.audio.set_file_as_playout_publish_volume", volume) : -ERR_NOT_INITIALIZED; }
-
-  int getAudioMixingPublishVolume() {
-    int volume = 0;
-    int r = m_parameter ? m_parameter->getInt("che.audio.get_file_as_playout_publish_volume", volume) : -ERR_NOT_INITIALIZED;
-    if (r == 0) r = volume;
-    return r;
-  }
-
-  int getAudioMixingDuration() {
-    int duration = 0;
-    int r = m_parameter ? m_parameter->getInt("che.audio.get_mixing_file_length_ms", duration) : -ERR_NOT_INITIALIZED;
-    if (r == 0) r = duration;
-    return r;
-  }
-
-  int getAudioMixingCurrentPosition() {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    int pos = 0;
-    int r = m_parameter->getInt("che.audio.get_mixing_file_played_ms", pos);
-    if (r == 0) r = pos;
-    return r;
-  }
-
-  int setAudioMixingPosition(int pos /*in ms*/) { return m_parameter ? m_parameter->setInt("che.audio.mixing.file.position", pos) : -ERR_NOT_INITIALIZED; }
-
-  int setAudioMixingPitch(int pitch) {
-    if (!m_parameter) {
-      return -ERR_NOT_INITIALIZED;
-    }
-    if (pitch > 12 || pitch < -12) {
-      return -ERR_INVALID_ARGUMENT;
-    }
-    return m_parameter->setInt("che.audio.set_playout_file_pitch_semitones", pitch);
-  }
-
-  int getEffectsVolume() {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    int volume = 0;
-    int r = m_parameter->getInt("che.audio.game_get_effects_volume", volume);
-    if (r == 0) r = volume;
-    return r;
-  }
-
-  int setEffectsVolume(int volume) { return m_parameter ? m_parameter->setInt("che.audio.game_set_effects_volume", volume) : -ERR_NOT_INITIALIZED; }
-
-  int setVolumeOfEffect(int soundId, int volume) { return setObject("che.audio.game_adjust_effect_volume", "{\"soundId\":%d,\"gain\":%d}", soundId, volume); }
-
-  int playEffect(int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish = false) {
-#if defined(_WIN32)
-    util::AString path;
-    if (!m_parameter->convertPath(filePath, path))
-      filePath = path->c_str();
-    else if (!filePath)
-      filePath = "";
-#endif
-    return setObject("che.audio.game_play_effect", "{\"soundId\":%d,\"filePath\":\"%s\",\"loopCount\":%d, \"pitch\":%lf,\"pan\":%lf,\"gain\":%d, \"send2far\":%d}", soundId, filePath, loopCount, pitch, pan, gain, publish);
-  }
-
-  int stopEffect(int soundId) { return m_parameter ? m_parameter->setInt("che.audio.game_stop_effect", soundId) : -ERR_NOT_INITIALIZED; }
-
-  int stopAllEffects() { return m_parameter ? m_parameter->setBool("che.audio.game_stop_all_effects", true) : -ERR_NOT_INITIALIZED; }
-
-  int preloadEffect(int soundId, char* filePath) { return setObject("che.audio.game_preload_effect", "{\"soundId\":%d,\"filePath\":\"%s\"}", soundId, filePath); }
-
-  int unloadEffect(int soundId) { return m_parameter ? m_parameter->setInt("che.audio.game_unload_effect", soundId) : -ERR_NOT_INITIALIZED; }
-
-  int pauseEffect(int soundId) { return m_parameter ? m_parameter->setInt("che.audio.game_pause_effect", soundId) : -ERR_NOT_INITIALIZED; }
-
-  int pauseAllEffects() { return m_parameter ? m_parameter->setBool("che.audio.game_pause_all_effects", true) : -ERR_NOT_INITIALIZED; }
-
-  int resumeEffect(int soundId) { return m_parameter ? m_parameter->setInt("che.audio.game_resume_effect", soundId) : -ERR_NOT_INITIALIZED; }
-
-  int resumeAllEffects() { return m_parameter ? m_parameter->setBool("che.audio.game_resume_all_effects", true) : -ERR_NOT_INITIALIZED; }
-
-  int enableSoundPositionIndication(bool enabled) { return m_parameter ? m_parameter->setBool("che.audio.enable_sound_position", enabled) : -ERR_NOT_INITIALIZED; }
-
-  int setRemoteVoicePosition(uid_t uid, double pan, double gain) { return setObject("che.audio.game_place_sound_position", "{\"uid\":%u,\"pan\":%lf,\"gain\":%lf}", uid, pan, gain); }
-
-  int setLocalVoicePitch(double pitch) { return m_parameter ? m_parameter->setInt("che.audio.morph.pitch_shift", static_cast<int>(pitch * 100)) : -ERR_NOT_INITIALIZED; }
-
-  int setLocalVoiceEqualization(AUDIO_EQUALIZATION_BAND_FREQUENCY bandFrequency, int bandGain) { return setObject("che.audio.morph.equalization", "{\"index\":%d,\"gain\":%d}", static_cast<int>(bandFrequency), bandGain); }
-
-  int setLocalVoiceReverb(AUDIO_REVERB_TYPE reverbKey, int value) { return setObject("che.audio.morph.reverb", "{\"key\":%d,\"value\":%d}", static_cast<int>(reverbKey), value); }
-
-  int setLocalVoiceChanger(VOICE_CHANGER_PRESET voiceChanger) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    if (voiceChanger == 0x00000000) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", static_cast<int>(voiceChanger));
-    } else if (voiceChanger > 0x00000000 && voiceChanger < 0x00100000) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", static_cast<int>(voiceChanger));
-    } else if (voiceChanger > 0x00100000 && voiceChanger < 0x00200000) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", static_cast<int>(voiceChanger - 0x00100000 + 6));
-    } else if (voiceChanger > 0x00200000 && voiceChanger < 0x00300000) {
-      return m_parameter->setInt("che.audio.morph.beauty_voice", static_cast<int>(voiceChanger - 0x00200000));
-    } else {
-      return -ERR_INVALID_ARGUMENT;
-    }
-  }
-
-  int setLocalVoiceReverbPreset(AUDIO_REVERB_PRESET reverbPreset) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    if (reverbPreset == 0x00000000) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", static_cast<int>(reverbPreset));
-    } else if (reverbPreset > 0x00000000 && reverbPreset < 0x00100000) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", static_cast<int>(reverbPreset + 8));
-    } else if (reverbPreset > 0x00100000 && reverbPreset < 0x00200000) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", static_cast<int>(reverbPreset - 0x00100000));
-    } else if (reverbPreset > 0x00200000 && reverbPreset < 0x00200002) {
-      return m_parameter->setInt("che.audio.morph.virtual_stereo", static_cast<int>(reverbPreset - 0x00200000));
-    } else if (reverbPreset > (AUDIO_REVERB_PRESET)0x00300000 && reverbPreset < (AUDIO_REVERB_PRESET)0x00300002)
-      return setObject("che.audio.morph.electronic_voice", "{\"key\":%d,\"value\":%d}", 1, 4);
-    else if (reverbPreset > (AUDIO_REVERB_PRESET)0x00400000 && reverbPreset < (AUDIO_REVERB_PRESET)0x00400002)
-      return m_parameter->setInt("che.audio.morph.threedim_voice", 10);
-    else {
-      return -ERR_INVALID_ARGUMENT;
-    }
-  }
-
-  int setAudioEffectPreset(AUDIO_EFFECT_PRESET preset) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    if (preset == AUDIO_EFFECT_OFF) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 0);
-    }
-    if (preset == ROOM_ACOUSTICS_KTV) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", 1);
-    }
-    if (preset == ROOM_ACOUSTICS_VOCAL_CONCERT) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", 2);
-    }
-    if (preset == ROOM_ACOUSTICS_STUDIO) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", 5);
-    }
-    if (preset == ROOM_ACOUSTICS_PHONOGRAPH) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", 8);
-    }
-    if (preset == ROOM_ACOUSTICS_VIRTUAL_STEREO) {
-      return m_parameter->setInt("che.audio.morph.virtual_stereo", 1);
-    }
-    if (preset == ROOM_ACOUSTICS_SPACIAL) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 15);
-    }
-    if (preset == ROOM_ACOUSTICS_ETHEREAL) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 5);
-    }
-    if (preset == ROOM_ACOUSTICS_3D_VOICE) {
-      return m_parameter->setInt("che.audio.morph.threedim_voice", 10);
-    }
-    if (preset == VOICE_CHANGER_EFFECT_UNCLE) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", 3);
-    }
-    if (preset == VOICE_CHANGER_EFFECT_OLDMAN) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 1);
-    }
-    if (preset == VOICE_CHANGER_EFFECT_BOY) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 2);
-    }
-    if (preset == VOICE_CHANGER_EFFECT_SISTER) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", 4);
-    }
-    if (preset == VOICE_CHANGER_EFFECT_GIRL) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 3);
-    }
-    if (preset == VOICE_CHANGER_EFFECT_PIGKING) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 4);
-    }
-    if (preset == VOICE_CHANGER_EFFECT_HULK) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 6);
-    }
-    if (preset == STYLE_TRANSFORMATION_RNB) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", 7);
-    }
-    if (preset == STYLE_TRANSFORMATION_POPULAR) {
-      return m_parameter->setInt("che.audio.morph.reverb_preset", 6);
-    }
-    if (preset == PITCH_CORRECTION) {
-      return setObject("che.audio.morph.electronic_voice", "{\"key\":%d,\"value\":%d}", 1, 4);
-    }
-    return -ERR_INVALID_ARGUMENT;
-  }
-
-  int setVoiceBeautifierPreset(VOICE_BEAUTIFIER_PRESET preset) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    if (preset == VOICE_BEAUTIFIER_OFF) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 0);
-    }
-    if (preset == CHAT_BEAUTIFIER_MAGNETIC) {
-      return m_parameter->setInt("che.audio.morph.beauty_voice", 1);
-    }
-    if (preset == CHAT_BEAUTIFIER_FRESH) {
-      return m_parameter->setInt("che.audio.morph.beauty_voice", 2);
-    }
-    if (preset == CHAT_BEAUTIFIER_VITALITY) {
-      return m_parameter->setInt("che.audio.morph.beauty_voice", 3);
-    }
-    if (preset == SINGING_BEAUTIFIER) {
-      return setObject("che.audio.morph.beauty_sing", "{\"key\":%d,\"value\":%d}", 1, 1);
-    }
-    if (preset == TIMBRE_TRANSFORMATION_VIGOROUS) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 7);
-    }
-    if (preset == TIMBRE_TRANSFORMATION_DEEP) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 8);
-    }
-    if (preset == TIMBRE_TRANSFORMATION_MELLOW) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 9);
-    }
-    if (preset == TIMBRE_TRANSFORMATION_FALSETTO) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 10);
-    }
-    if (preset == TIMBRE_TRANSFORMATION_FULL) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 11);
-    }
-    if (preset == TIMBRE_TRANSFORMATION_CLEAR) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 12);
-    }
-    if (preset == TIMBRE_TRANSFORMATION_RESOUNDING) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 13);
-    }
-    if (preset == TIMBRE_TRANSFORMATION_RINGING) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 14);
-    }
-    return -ERR_INVALID_ARGUMENT;
-  }
-
-  int setAudioEffectParameters(AUDIO_EFFECT_PRESET preset, int param1, int param2) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    if (preset == PITCH_CORRECTION) {
-      return setObject("che.audio.morph.electronic_voice", "{\"key\":%d,\"value\":%d}", param1, param2);
-    }
-    if (preset == ROOM_ACOUSTICS_3D_VOICE) {
-      return m_parameter->setInt("che.audio.morph.threedim_voice", param1);
-    }
-    return -ERR_INVALID_ARGUMENT;
-  }
-
-  int setVoiceBeautifierParameters(VOICE_BEAUTIFIER_PRESET preset, int param1, int param2) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    if (preset == SINGING_BEAUTIFIER) {
-      return setObject("che.audio.morph.beauty_sing", "{\"key\":%d,\"value\":%d}", param1, param2);
-    }
-    return -ERR_INVALID_ARGUMENT;
-  }
-
-  /** **DEPRECATED** Use \ref IRtcEngine::disableAudio "disableAudio" instead. Disables the audio function in the channel.
-
-   @return
-   - 0: Success.
-   - < 0: Failure.
-   */
-  int pauseAudio() { return m_parameter ? m_parameter->setBool("che.pause.audio", true) : -ERR_NOT_INITIALIZED; }
-
-  int resumeAudio() { return m_parameter ? m_parameter->setBool("che.pause.audio", false) : -ERR_NOT_INITIALIZED; }
-
-  int setHighQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate) { return setObject("che.audio.codec.hq", "{\"fullband\":%s,\"stereo\":%s,\"fullBitrate\":%s}", fullband ? "true" : "false", stereo ? "true" : "false", fullBitrate ? "true" : "false"); }
-
-  int adjustRecordingSignalVolume(int volume) {  //[0, 400]: e.g. 50~0.5x 100~1x 400~4x
-    if (volume < 0)
-      volume = 0;
-    else if (volume > 400)
-      volume = 400;
-    return m_parameter ? m_parameter->setInt("che.audio.record.signal.volume", volume) : -ERR_NOT_INITIALIZED;
-  }
-
-  int adjustPlaybackSignalVolume(int volume) {  //[0, 400]
-    if (volume < 0)
-      volume = 0;
-    else if (volume > 400)
-      volume = 400;
-    return m_parameter ? m_parameter->setInt("che.audio.playout.signal.volume", volume) : -ERR_NOT_INITIALIZED;
-  }
-
-  int enableAudioVolumeIndication(int interval, int smooth, bool report_vad) {  // in ms: <= 0: disable, > 0: enable, interval in ms
-    if (interval < 0) interval = 0;
-    return setObject("che.audio.volume_indication", "{\"interval\":%d,\"smooth\":%d,\"vad\":%d}", interval, smooth, report_vad);
-  }
-
-  int muteLocalAudioStream(bool mute) { return setParameters("{\"rtc.audio.mute_me\":%s}", mute ? "true" : "false"); }
-  // mute/unmute all peers. unmute will clear all muted peers specified mutePeer() interface
-
-  int muteRemoteAudioStream(uid_t uid, bool mute) { return setObject("rtc.audio.mute_peer", "{\"uid\":%u,\"mute\":%s}", uid, mute ? "true" : "false"); }
-
-  int muteAllRemoteAudioStreams(bool mute) { return m_parameter ? m_parameter->setBool("rtc.audio.mute_peers", mute) : -ERR_NOT_INITIALIZED; }
-
-  int setVoiceConversionPreset(VOICE_CONVERSION_PRESET preset) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    if (preset == VOICE_CONVERSION_OFF) {
-      return m_parameter->setInt("che.audio.morph.voice_changer", 0);
-    }
-    if (preset == VOICE_CHANGER_NEUTRAL) {
-      return m_parameter->setInt("che.audio.morph.vocal_changer", 1);
-    }
-    if (preset == VOICE_CHANGER_SWEET) {
-      return m_parameter->setInt("che.audio.morph.vocal_changer", 2);
-    }
-    if (preset == VOICE_CHANGER_SOLID) {
-      return m_parameter->setInt("che.audio.morph.vocal_changer", 3);
-    }
-    if (preset == VOICE_CHANGER_BASS) {
-      return m_parameter->setInt("che.audio.morph.vocal_changer", 4);
-    }
-    return -ERR_INVALID_ARGUMENT;
-  }
-
-  int setDefaultMuteAllRemoteAudioStreams(bool mute) { return m_parameter ? m_parameter->setBool("rtc.audio.set_default_mute_peers", mute) : -ERR_NOT_INITIALIZED; }
-
-  int setExternalAudioSource(bool enabled, int sampleRate, int channels) {
-    if (enabled)
-      return setParameters("{\"che.audio.external_capture\":true,\"che.audio.set_external_source_format\":{\"sampleRate\":%d,\"channelCnt\":%d}}", sampleRate, channels);
-    else
-      return setParameters("{\"che.audio.external_capture\":false}");
-  }
-
-  int setExternalAudioSink(bool enabled, int sampleRate, int channels) {
-    if (enabled)
-      return setParameters("{\"che.audio.external_render\":true,\"che.audio.external_render.pull\":true,\"che.audio.set_render_raw_audio_format\":{\"sampleRate\":%d,\"channelCnt\":%d,\"mode\":%d}}", sampleRate, channels, RAW_AUDIO_FRAME_OP_MODE_TYPE::RAW_AUDIO_FRAME_OP_MODE_READ_ONLY);
-    else
-      return setParameters("{\"che.audio.external_render\":false,\"che.audio.external_render.pull\":false}");
-  }
-
-  int setLogFile(const char* filePath) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-#if defined(_WIN32)
-    util::AString path;
-    if (!m_parameter->convertPath(filePath, path))
-      filePath = path->c_str();
-    else if (!filePath)
-      filePath = "";
-#endif
-    return m_parameter->setString("rtc.log_file", filePath);
-  }
-
-  int setLogFilter(unsigned int filter) { return m_parameter ? m_parameter->setUInt("rtc.log_filter", filter & LOG_FILTER_MASK) : -ERR_NOT_INITIALIZED; }
-
-  int setLogFileSize(unsigned int fileSizeInKBytes) { return m_parameter ? m_parameter->setUInt("rtc.log_size", fileSizeInKBytes) : -ERR_NOT_INITIALIZED; }
-
-  int setLocalRenderMode(RENDER_MODE_TYPE renderMode) { return setRemoteRenderMode(0, renderMode); }
-
-  int setRemoteRenderMode(uid_t uid, RENDER_MODE_TYPE renderMode) { return setParameters("{\"che.video.render_mode\":[{\"uid\":%u,\"renderMode\":%d}]}", uid, renderMode); }
-
-  int setCameraCapturerConfiguration(const CameraCapturerConfiguration& config) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    if (config.preference == CAPTURER_OUTPUT_PREFERENCE_MANUAL) {
-      m_parameter->setInt("che.video.capture_width", config.captureWidth);
-      m_parameter->setInt("che.video.capture_height", config.captureHeight);
-    }
-    return m_parameter->setInt("che.video.camera_capture_mode", (int)config.preference);
-  }
-
-  int enableDualStreamMode(bool enabled) { return setParameters("{\"rtc.dual_stream_mode\":%s,\"che.video.enableLowBitRateStream\":%d}", enabled ? "true" : "false", enabled ? 1 : 0); }
-
-  int setRemoteVideoStreamType(uid_t uid, REMOTE_VIDEO_STREAM_TYPE streamType) {
-    return setParameters("{\"rtc.video.set_remote_video_stream\":{\"uid\":%u,\"stream\":%d}, \"che.video.setstream\":{\"uid\":%u,\"stream\":%d}}", uid, streamType, uid, streamType);
-    //        return setObject("rtc.video.set_remote_video_stream", "{\"uid\":%u,\"stream\":%d}", uid, streamType);
-  }
-
-  int setRemoteDefaultVideoStreamType(REMOTE_VIDEO_STREAM_TYPE streamType) { return m_parameter ? m_parameter->setInt("rtc.video.set_remote_default_video_stream_type", streamType) : -ERR_NOT_INITIALIZED; }
-
-  int setRecordingAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) { return setObject("che.audio.set_capture_raw_audio_format", "{\"sampleRate\":%d,\"channelCnt\":%d,\"mode\":%d,\"samplesPerCall\":%d}", sampleRate, channel, mode, samplesPerCall); }
-
-  int setPlaybackAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall) { return setObject("che.audio.set_render_raw_audio_format", "{\"sampleRate\":%d,\"channelCnt\":%d,\"mode\":%d,\"samplesPerCall\":%d}", sampleRate, channel, mode, samplesPerCall); }
-
-  int setMixedAudioFrameParameters(int sampleRate, int samplesPerCall) { return setObject("che.audio.set_mixed_raw_audio_format", "{\"sampleRate\":%d,\"samplesPerCall\":%d}", sampleRate, samplesPerCall); }
-
-  int enableWebSdkInteroperability(bool enabled) {  // enable interoperability with zero-plugin web sdk
-    return setParameters("{\"rtc.video.web_h264_interop_enable\":%s,\"che.video.web_h264_interop_enable\":%s}", enabled ? "true" : "false", enabled ? "true" : "false");
-  }
+  int enableLocalVideo(bool enabled);
+  int muteLocalVideoStream(bool mute);
+  int muteAllRemoteVideoStreams(bool mute);
+  int setDefaultMuteAllRemoteVideoStreams(bool mute);
+  int muteRemoteVideoStream(uid_t uid, bool mute);
+  int setPlaybackDeviceVolume(int volume /* [0,255] */);
+  int startAudioRecording(const char* filePath, AUDIO_RECORDING_QUALITY_TYPE quality);
+  int startAudioRecording(const char* filePath, int sampleRate, AUDIO_RECORDING_QUALITY_TYPE quality);
+  int stopAudioRecording();
+  int startAudioMixing(const char* filePath, bool loopback, bool replace, int cycle, int startPos = 0);
+  int stopAudioMixing();
+  int pauseAudioMixing();
+  int resumeAudioMixing();
+  int adjustAudioMixingVolume(int volume);
+  int adjustAudioMixingPlayoutVolume(int volume);
+  int getAudioMixingPlayoutVolume();
+  int adjustAudioMixingPublishVolume(int volume);
+  int getAudioMixingPublishVolume();
+  int getAudioMixingDuration();
+  int getAudioMixingCurrentPosition();
+  int setAudioMixingPosition(int pos /*in ms*/);
+  int setAudioMixingPitch(int pitch);
+  int getEffectsVolume();
+  int setEffectsVolume(int volume);
+  int setVolumeOfEffect(int soundId, int volume);
+  int playEffect(int soundId, const char* filePath, int loopCount, double pitch, double pan, int gain, bool publish = false);
+  int stopEffect(int soundId);
+  int stopAllEffects();
+  int preloadEffect(int soundId, char* filePath);
+  int unloadEffect(int soundId);
+  int pauseEffect(int soundId);
+  int pauseAllEffects();
+  int resumeEffect(int soundId);
+  int resumeAllEffects();
+  int enableSoundPositionIndication(bool enabled);
+  int setRemoteVoicePosition(uid_t uid, double pan, double gain);
+  int setLocalVoicePitch(double pitch);
+  int setLocalVoiceEqualization(AUDIO_EQUALIZATION_BAND_FREQUENCY bandFrequency, int bandGain);
+  int setLocalVoiceReverb(AUDIO_REVERB_TYPE reverbKey, int value);
+  int setLocalVoiceChanger(VOICE_CHANGER_PRESET voiceChanger);
+  int setLocalVoiceReverbPreset(AUDIO_REVERB_PRESET reverbPreset);
+  int setAudioEffectPreset(AUDIO_EFFECT_PRESET preset);
+  int setVoiceBeautifierPreset(VOICE_BEAUTIFIER_PRESET preset);
+  int setAudioEffectParameters(AUDIO_EFFECT_PRESET preset, int param1, int param2);
+  int setVoiceBeautifierParameters(VOICE_BEAUTIFIER_PRESET preset, int param1, int param2);
+  int pauseAudio();
+  int resumeAudio();
+  int setHighQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate);
+  int adjustRecordingSignalVolume(int volume /* [0, 400]: e.g. 50~0.5x 100~1x 400~4x */);
+  int adjustPlaybackSignalVolume(int volume /* [0, 400] */);
+  int enableAudioVolumeIndication(int interval, int smooth, bool report_vad);  // in ms: <= 0: disable, > 0: enable, interval in ms
+  int muteLocalAudioStream(bool mute);
+  int muteRemoteAudioStream(uid_t uid, bool mute);
+  int muteAllRemoteAudioStreams(bool mute);
+  int setVoiceConversionPreset(VOICE_CONVERSION_PRESET preset);
+  int setDefaultMuteAllRemoteAudioStreams(bool mute);
+  int setExternalAudioSource(bool enabled, int sampleRate, int channels);
+  int setExternalAudioSink(bool enabled, int sampleRate, int channels);
+  int setLogFile(const char* filePath);
+  int setLogFilter(unsigned int filter);
+  int setLogFileSize(unsigned int fileSizeInKBytes);
+  int setLocalRenderMode(RENDER_MODE_TYPE renderMode);
+  int setRemoteRenderMode(uid_t uid, RENDER_MODE_TYPE renderMode);
+  int setCameraCapturerConfiguration(const CameraCapturerConfiguration& config);
+  int enableDualStreamMode(bool enabled);
+  int setRemoteVideoStreamType(uid_t uid, REMOTE_VIDEO_STREAM_TYPE streamType);
+  int setRemoteDefaultVideoStreamType(REMOTE_VIDEO_STREAM_TYPE streamType);
+  int setRecordingAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall);
+  int setPlaybackAudioFrameParameters(int sampleRate, int channel, RAW_AUDIO_FRAME_OP_MODE_TYPE mode, int samplesPerCall);
+  int setMixedAudioFrameParameters(int sampleRate, int samplesPerCall);
+  int enableWebSdkInteroperability(bool enabled);
 
   // only for live broadcast
-
-  int setVideoQualityParameters(bool preferFrameRateOverImageQuality) { return setParameters("{\"rtc.video.prefer_frame_rate\":%s,\"che.video.prefer_frame_rate\":%s}", preferFrameRateOverImageQuality ? "true" : "false", preferFrameRateOverImageQuality ? "true" : "false"); }
-
-  int setLocalVideoMirrorMode(VIDEO_MIRROR_MODE_TYPE mirrorMode) {
-    if (!m_parameter) return -ERR_NOT_INITIALIZED;
-    const char* value;
-    switch (mirrorMode) {
-      case VIDEO_MIRROR_MODE_AUTO:
-        value = "default";
-        break;
-      case VIDEO_MIRROR_MODE_ENABLED:
-        value = "forceMirror";
-        break;
-      case VIDEO_MIRROR_MODE_DISABLED:
-        value = "disableMirror";
-        break;
-      default:
-        return -ERR_INVALID_ARGUMENT;
-    }
-    return m_parameter->setString("che.video.localViewMirrorSetting", value);
-  }
-
-  int setLocalPublishFallbackOption(STREAM_FALLBACK_OPTIONS option) { return m_parameter ? m_parameter->setInt("rtc.local_publish_fallback_option", option) : -ERR_NOT_INITIALIZED; }
-
-  int setRemoteSubscribeFallbackOption(STREAM_FALLBACK_OPTIONS option) { return m_parameter ? m_parameter->setInt("rtc.remote_subscribe_fallback_option", option) : -ERR_NOT_INITIALIZED; }
-
+  int setVideoQualityParameters(bool preferFrameRateOverImageQuality);
+  int setLocalVideoMirrorMode(VIDEO_MIRROR_MODE_TYPE mirrorMode);
+  int setLocalPublishFallbackOption(STREAM_FALLBACK_OPTIONS option);
+  int setRemoteSubscribeFallbackOption(STREAM_FALLBACK_OPTIONS option);
 #if (defined(__APPLE__) && TARGET_OS_MAC && !TARGET_OS_IPHONE) || defined(_WIN32)
-
-  int enableLoopbackRecording(bool enabled, const char* deviceName = NULL) {
-    if (!deviceName) {
-      return setParameters("{\"che.audio.loopback.recording\":%s}", enabled ? "true" : "false");
-    } else {
-      return setParameters("{\"che.audio.loopback.deviceName\":\"%s\",\"che.audio.loopback.recording\":%s}", deviceName, enabled ? "true" : "false");
-    }
-  }
+  int enableLoopbackRecording(bool enabled, const char* deviceName = NULL);
 #endif
-
-  int setInEarMonitoringVolume(int volume) { return m_parameter ? m_parameter->setInt("che.audio.headset.monitoring.parameter", volume) : -ERR_NOT_INITIALIZED; }
+  int setInEarMonitoringVolume(int volume);
 
  protected:
   AParameter& parameter() { return m_parameter; }
@@ -10611,10 +10928,274 @@ class RtcEngineParameters {
     va_end(args);
     return m_parameter ? m_parameter->setObject(key, buf) : -ERR_NOT_INITIALIZED;
   }
-  int stopAllRemoteVideo() { return m_parameter ? m_parameter->setBool("che.video.peer.stop_render", true) : -ERR_NOT_INITIALIZED; }
 
  private:
   AParameter m_parameter;
+};
+/**
+ * The format of the recording file.
+ *
+ * @since v3.5.2
+ */
+enum MediaRecorderContainerFormat {
+  /**
+   * 1: (Default) MP4.
+   */
+  FORMAT_MP4 = 1,
+  /**
+   * Reserved parameter.
+   */
+  FORMAT_FLV = 2,
+};
+/**
+ * The recording content.
+ *
+ * @since v3.5.2
+ */
+enum MediaRecorderStreamType {
+  /**
+   * Only audio.
+   */
+  STREAM_TYPE_AUDIO = 0x01,
+  /**
+   * Only video.
+   */
+  STREAM_TYPE_VIDEO = 0x02,
+  /**
+   * (Default) Audio and video.
+   */
+  STREAM_TYPE_BOTH = STREAM_TYPE_AUDIO | STREAM_TYPE_VIDEO,
+};
+/**
+ * The current recording state.
+ *
+ * @since v3.5.2
+ */
+enum RecorderState {
+  /**
+   * -1: An error occurs during the recording. See RecorderErrorCode for the reason.
+   */
+  RECORDER_STATE_ERROR = -1,
+  /**
+   * 2: The audio and video recording is started.
+   */
+  RECORDER_STATE_START = 2,
+  /**
+   * 3: The audio and video recording is stopped.
+   */
+  RECORDER_STATE_STOP = 3,
+};
+/**
+ * The reason for the state change
+ *
+ * @since v3.5.2
+ */
+enum RecorderErrorCode {
+  /**
+   * 0: No error occurs.
+   */
+  RECORDER_ERROR_NONE = 0,
+  /**
+   * 1: The SDK fails to write the recorded data to a file.
+   */
+  RECORDER_ERROR_WRITE_FAILED = 1,
+  /**
+   * 2: The SDK does not detect audio and video streams to be recorded, or audio and video streams are interrupted for more than five seconds during recording.
+   */
+  RECORDER_ERROR_NO_STREAM = 2,
+  /**
+   * 3: The recording duration exceeds the upper limit.
+   */
+  RECORDER_ERROR_OVER_MAX_DURATION = 3,
+  /**
+   * 4: The recording configuration changes.
+   */
+  RECORDER_ERROR_CONFIG_CHANGED = 4,
+  /**
+   * 5: The SDK detects audio and video streams from users using versions of the SDK earlier than v3.0.0 in
+   * the `COMMUNICATION` channel profile.
+   */
+  RECORDER_ERROR_CUSTOM_STREAM_DETECTED = 5,
+};
+/**
+ * Configurations for the local audio and video recording.
+ *
+ * @since v3.5.2
+ */
+struct MediaRecorderConfiguration {
+  /**
+   * The absolute path (including the filename extensions) of the recording file.
+   * For example, `C:\Users\<user_name>\AppData\Local\Agora\<process_name>\example.mp4` on Windows,
+   * `/App Sandbox/Library/Caches/example.mp4` on iOS, `/Library/Logs/example.mp4` on macOS, and
+   * `/storage/emulated/0/Android/data/<package name>/files/example.mp4` on Android.
+   *
+   * @note Ensure that the specified path exists and is writable.
+   */
+  const char* storagePath;
+  /**
+   * The format of the recording file. See \ref agora::rtc::MediaRecorderContainerFormat "MediaRecorderContainerFormat".
+   */
+  MediaRecorderContainerFormat containerFormat;
+  /**
+   * The recording content. See \ref agora::rtc::MediaRecorderStreamType "MediaRecorderStreamType".
+   */
+  MediaRecorderStreamType streamType;
+  /**
+   * The maximum recording duration, in milliseconds. The default value is 120000.
+   */
+  int maxDurationMs;
+  /**
+   * The interval (ms) of updating the recording information. The value range is
+   * [1000,10000]. Based on the set value of `recorderInfoUpdateInterval`, the
+   * SDK triggers the \ref IMediaRecorderObserver::onRecorderInfoUpdated "onRecorderInfoUpdated"
+   * callback to report the updated recording information.
+   */
+  int recorderInfoUpdateInterval;
+
+  MediaRecorderConfiguration() : storagePath(nullptr), containerFormat(FORMAT_MP4), streamType(STREAM_TYPE_BOTH), maxDurationMs(120000), recorderInfoUpdateInterval(0) {}
+  MediaRecorderConfiguration(const char* path, MediaRecorderContainerFormat format, MediaRecorderStreamType type, int duration, int interval) : storagePath(path), containerFormat(format), streamType(type), maxDurationMs(duration), recorderInfoUpdateInterval(interval) {}
+};
+/**
+ * Information for the recording file.
+ *
+ * @since v3.5.2
+ */
+struct RecorderInfo {
+  /**
+   * The absolute path of the recording file.
+   */
+  const char* fileName;
+  /**
+   * The recording duration, in milliseconds.
+   */
+  unsigned int durationMs;
+  /**
+   * The size in bytes of the recording file.
+   */
+  unsigned int fileSize;
+
+  RecorderInfo() = default;
+  RecorderInfo(const char* name, unsigned int dur, unsigned int size) : fileName(name), durationMs(dur), fileSize(size) {}
+};
+
+/**
+ * The IMediaRecorderObserver class.
+ *
+ * @since v3.5.2
+ */
+class IMediaRecorderObserver {
+ public:
+  /**
+   * Occurs when the recording state changes.
+   *
+   * @since v3.5.2
+   *
+   * When the local audio and video recording state changes, the SDK triggers this callback to report the current
+   * recording state and the reason for the change.
+   *
+   * @param state The current recording state. See \ref agora::rtc::RecorderState "RecorderState".
+   * @param error The reason for the state change. See \ref agora::rtc::RecorderErrorCode "RecorderErrorCode".
+   */
+  virtual void onRecorderStateChanged(RecorderState state, RecorderErrorCode error) = 0;
+  /**
+   * Occurs when the recording information is updated.
+   *
+   * @since v3.5.2
+   *
+   * After you successfully register this callback and enable the local audio and video recording, the SDK periodically triggers
+   * the `onRecorderInfoUpdated` callback based on the set value of `recorderInfoUpdateInterval`. This callback reports the
+   * filename, duration, and size of the current recording file.
+   *
+   * @param info Information for the recording file. See RecorderInfo.
+   *
+   */
+  virtual void onRecorderInfoUpdated(const RecorderInfo& info){};
+};
+/**
+ * The IMediaRecorder class, for recording the audio and video on the client. IMediaRecorder can record the
+ * following content:
+ * - The audio captured by the local microphone and encoded in AAC format.
+ * - The video captured by the local camera and encoded by the SDK.
+ *
+ * @since v3.5.2
+ *
+ * @note In the `COMMUNICATION` channel profile, this function is unavailable when there are users using versions of
+ * the SDK earlier than v3.0.0 in the channel.
+ */
+class IMediaRecorder {
+ public:
+  /**
+   * Gets the IMediaRecorder object.
+   *
+   * @since v3.5.2
+   *
+   * @note Call this method after initializing the IRtcEngine object.
+   *
+   * @param engine IRtcEngine
+   * @param callback IMediaRecorderObserver
+   *
+   * @return IMediaRecorder
+   */
+  AGORA_CPP_API static IMediaRecorder* getMediaRecorder(IRtcEngine* engine, IMediaRecorderObserver* callback);
+  /**
+   * Starts recording the local audio and video.
+   *
+   * @since v3.5.2
+   *
+   * After successfully getting the object, you can call this method to enable the recording of the local audio and video.
+   *
+   * This method can record the following content:
+   * - The audio captured by the local microphone and encoded in AAC format.
+   * - The video captured by the local camera and encoded by the SDK.
+   *
+   * The SDK can generate a recording file only when it detects the recordable audio and video streams; when there are
+   * no audio and video streams to be recorded or the audio and video streams are interrupted for more than five
+   * seconds, the SDK stops recording and triggers the
+   * \ref IMediaRecorderObserver::onRecorderStateChanged "onRecorderStateChanged" (RECORDER_STATE_ERROR, RECORDER_ERROR_NO_STREAM)
+   * callback.
+   *
+   * @note Call this method after joining the channel.
+   *
+   * @param config The recording configurations. See MediaRecorderConfiguration.
+   *
+   * @return
+   * - 0(ERR_OK): Success.
+   * - < 0: Failure:
+   *    - `-2(ERR_INVALID_ARGUMENT)`: The parameter is invalid. Ensure the following:
+   *      - The specified path of the recording file exists and is writable.
+   *      - The specified format of the recording file is supported.
+   *      - The maximum recording duration is correctly set.
+   *    - `-4(ERR_NOT_SUPPORTED)`: IRtcEngine does not support the request due to one of the following reasons:
+   *      - The recording is ongoing.
+   *      - The recording stops because an error occurs.
+   *    - `-7(ERR_NOT_INITIALIZED)`: This method is called before the initialization of IRtcEngine. Ensure that you have
+   * called \ref IMediaRecorder::getMediaRecorder "getMediaRecorder" before calling `startRecording`.
+   */
+  virtual int startRecording(const MediaRecorderConfiguration& config) = 0;
+  /**
+   * Stops recording the local audio and video.
+   *
+   * @since v3.5.2
+   *
+   * @note Call this method after calling \ref IMediaRecorder::startRecording "startRecording".
+   *
+   * @return
+   * - 0(ERR_OK): Success.
+   * - < 0: Failure:
+   *  - `-7(ERR_NOT_INITIALIZED)`: This method is called before the initialization of IRtcEngine. Ensure that you have
+   * called \ref IMediaRecorder::getMediaRecorder "getMediaRecorder" before calling `stopRecording`.
+   */
+  virtual int stopRecording() = 0;
+  /**
+   * Releases the IMediaRecorder object.
+   *
+   * @since v3.5.2
+   *
+   * This method releases the IRtcEngine object and all other resources used by the IMediaRecorder object. After calling
+   * this method, if you want to enable the recording again, you must call
+   * \ref IMediaRecorder::getMediaRecorder "getMediaRecorder" to get the IMediaRecorder object.
+   */
+  virtual void releaseRecorder() = 0;
 };
 
 }  // namespace rtc

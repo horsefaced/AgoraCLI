@@ -152,6 +152,7 @@
     <ClInclude Include="AgoraClrVideoSink.h" />
     <ClInclude Include="AgoraClrVideoSource.h" />
     <ClInclude Include="AgoraClrClientRoleOptions.h" />
+    <ClInclude Include="AgoraClrMediaRecorder.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stdafx.h" />
   </ItemGroup>
@@ -184,6 +185,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="AgoraClrVideoSource.cpp" />
+    <ClCompile Include="AgoraClrMediaRecorder.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
     </ClCompile>

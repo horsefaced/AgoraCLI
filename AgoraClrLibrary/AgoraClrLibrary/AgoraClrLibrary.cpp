@@ -538,6 +538,11 @@ int AgoraClr::stopAudioRecording()
 	return rtcEngine->stopAudioRecording();
 }
 
+AgoraClrMediaRecorder^ AgoraClrLibrary::AgoraClr::getMediaRecorder()
+{
+	return gcnew AgoraClrMediaRecorder(this->rtcEngine);
+}
+
 int AgoraClr::pauseAudioMixing()
 {
 	return rtcEngine->pauseAudioMixing();
@@ -1355,7 +1360,7 @@ void AgoraClr::NativeOnRemoteAudioMixingEnd()
 		onRemoteAudioMixingEnd();
 }
 
-void AgoraClr::NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error)
+void AgoraClr::NativeOnRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE error)
 {
 	if (onRtmpStreamingStateChanged)
 		onRtmpStreamingStateChanged(gcnew String(url), static_cast<EnumRtmpStreamPublishState>(state), static_cast<EnumRtmpStreamPublishError>(error));

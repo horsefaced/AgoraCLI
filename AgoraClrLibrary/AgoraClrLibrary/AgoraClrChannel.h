@@ -142,7 +142,7 @@ namespace AgoraClrLibrary {
 		void NativeOnStreamMessageError(IChannel* channel, uid_t uid, int streamId, int code, int missed, int cached);
 		void NativeOnChannelMediaRelayStateChanged(IChannel* channel, CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR code);
 		void NativeOnChannelMediaRelayEvent(IChannel* channel, CHANNEL_MEDIA_RELAY_EVENT code);
-		void NativeOnRtmpStreamingStateChanged(IChannel* channel, const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR code);
+		void NativeOnRtmpStreamingStateChanged(IChannel* channel, const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE code);
 		void NativeOnTranscodingUpdated(IChannel* channel);
 		void NativeOnStreamInjectedStatus(IChannel* channel, const char* url, uid_t uid, int status);
 		void NativeOnRemoteSubscribeFallbackToAudioOnly(IChannel* channel, uid_t uid, bool isFallbackOrRecover);

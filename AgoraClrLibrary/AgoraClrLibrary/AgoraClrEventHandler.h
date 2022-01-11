@@ -80,7 +80,7 @@ namespace AgoraClrLibrary {
 	typedef void(__stdcall* PFOnLocalAudioStats)(const LocalAudioStats&);
 	typedef void(__stdcall* PFOnAudioMixingStateChanged)(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_REASON_TYPE);
 	typedef void(__stdcall* PFOnRemoteAudioMixingBegin)();
-	typedef void(__stdcall* PFOnRtmpStreamingStateChanged)(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR);
+	typedef void(__stdcall* PFOnRtmpStreamingStateChanged)(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR_TYPE);
 	typedef void(__stdcall* PFOnChannelMediaRelayStateChanged)(CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR);
 
 	using PFOnChannelMediaRelayEvent = stdTemplateCall<CHANNEL_MEDIA_RELAY_EVENT>;
@@ -166,7 +166,7 @@ namespace AgoraClrLibrary {
 	delegate void NativeOnFirstRemoteAudioDecodedDelegate(uid_t, int);
 	delegate void NativeOnLocalAudioStatsDelegate(const LocalAudioStats&);
 	delegate void NativeOnAudioMixingStateChangedDelegate(AUDIO_MIXING_STATE_TYPE, AUDIO_MIXING_REASON_TYPE);
-	delegate void NativeOnRtmpStreamingStateChangedDelegate(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR);
+	delegate void NativeOnRtmpStreamingStateChangedDelegate(const char*, RTMP_STREAM_PUBLISH_STATE, RTMP_STREAM_PUBLISH_ERROR_TYPE);
 	delegate void NativeOnChannelMediaRelayStateChangedDelegate(CHANNEL_MEDIA_RELAY_STATE, CHANNEL_MEDIA_RELAY_ERROR);
 	delegate void NativeOnChannelMediaRelayEventDelegate(CHANNEL_MEDIA_RELAY_EVENT);
 	delegate void NativeOnLastmileProbeResultDelegate(const LastmileProbeResult&);
@@ -332,7 +332,7 @@ namespace AgoraClrLibrary {
 		void onAudioMixingStateChanged(AUDIO_MIXING_STATE_TYPE state, AUDIO_MIXING_REASON_TYPE reason) override;
 		void onRemoteAudioMixingBegin() override;
 		void onRemoteAudioMixingEnd() override;
-		void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR error) override;
+		void onRtmpStreamingStateChanged(const char* url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE error) override;
 		void onChannelMediaRelayStateChanged(CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR error) override;
 		void onChannelMediaRelayEvent(CHANNEL_MEDIA_RELAY_EVENT event) override;
 		void onLastmileProbeResult(const LastmileProbeResult& result) override;
