@@ -8,6 +8,8 @@
 #include "AgoraClrVideoDeviceManager.h"
 #include "AgoraClrLibraryEnum.h"
 
+#include "windef.h"
+
 #include <msclr\marshal.h>
 #include <string>
 #include <iostream>
@@ -1155,4 +1157,85 @@ namespace AgoraClrLibrary {
 			return result;
 		}
 	};
-}
+
+	public ref class ClrEchoTestConfiguration {
+	public:
+		IntPtr view;
+		bool enableAudio;
+		bool enableVideo;
+		String^ token;
+		String^ channelId;
+
+		ClrEchoTestConfiguration(): view(nullptr), enableAudio(true), enableVideo(true), token(nullptr), channelId(nullptr) {}
+		operator agora::rtc::EchoTestConfiguration() {
+			return EchoTestConfiguration(view.ToPointer(), enableAudio, enableVideo, MarshalString(token).c_str(), MarshalString(channelId).c_str());
+		}
+	};
+
+	public ref class ClrThumbImageBuffer {
+	public:
+		array<unsigned char>^ buffer;
+		int width;
+		int height;
+
+		ClrThumbImageBuffer(const agora::rtc::ThumbImageBuffer& buffer)
+		{
+			this->buffer = gcnew array<unsigned char>(buffer.length);
+			Marshal::Copy(IntPtr(const_cast<void*>(static_cast<const void*>(buffer.buffer))), this->buffer, 0, buffer.length);
+		}
+	};
+
+	public ref class ClrScreenCaptureSourceInfo {
+	public:
+		EnumScreenCaptureSourceType type;
+		IntPtr sourceId;
+		String^ sourceName;
+		ClrThumbImageBuffer thumbImage;
+		ClrThumbImageBuffer iconImage;
+		String^ processPath;
+		String^ sourceTitle;
+		bool primaryMonitor;
+
+		ClrScreenCaptureSourceInfo(const agora::rtc::ScreenCaptureSourceInfo& info) :
+			type(static_cast<EnumScreenCaptureSourceType>(info.type)),
+			sourceId(info.sourceId),
+			sourceName(gcnew String(info.sourceName)),
+			thumbImage(info.thumbImage),
+			iconImage(info.iconImage),
+			processPath(gcnew String(info.processPath)),
+			primaryMonitor(info.primaryMonitor)
+		{
+
+		}
+
+	};
+
+	public ref class ClrScreenCaptureSourceInfoList {
+	public:
+		List<ClrScreenCaptureSourceInfo^>^ infos;
+
+		ClrScreenCaptureSourceInfoList(agora::rtc::IScreenCaptureSourceList* list) : infos(gcnew List<ClrScreenCaptureSourceInfo^>())
+		{
+			this->list = list;
+			for (int i = 0; i < list->getCount(); i++) {
+				infos->Add(gcnew ClrScreenCaptureSourceInfo(list->getSourceInfo(i)));
+			}
+		}
+
+		~ClrScreenCaptureSourceInfoList() {
+			if (this->list) this->list->release();
+		}
+	private:
+		agora::rtc::IScreenCaptureSourceList* list = nullptr;
+	};
+
+	public ref class ClrSize {
+	public:
+		int width;
+		int height;
+
+		operator tagSIZE () {
+			return tagSIZE{ width, height };
+		}
+	};
+ }

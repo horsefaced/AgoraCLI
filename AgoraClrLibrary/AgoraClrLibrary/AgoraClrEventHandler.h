@@ -95,6 +95,7 @@ namespace AgoraClrLibrary {
 	using OnRtmpStreamingEvent = ET<const char*, RTMP_STREAMING_EVENT>;
 
 	using OnRequestAudioFileInfo = ET<const AudioFileInfo&, AUDIO_FILE_INFO_ERROR>;
+	using OnSnapshotTaken = ET<const char* , uid_t , const char* , int , int , int >;
 
 	//Native delegate	
 	delegate void NativeOnJoinChannelSuccessDelegate(const char* channel, uid_t uid, int elapsed);
@@ -263,6 +264,7 @@ namespace AgoraClrLibrary {
 		OnRtmpStreamingEvent::Pointer onRtmpStreamingEventEvent = nullptr;
 
 		OnRequestAudioFileInfo::Pointer onRequestAudioFileInfoEvent = nullptr;
+		OnSnapshotTaken::Pointer onSnapshotTakenEvent = nullptr;
 
 		void onJoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
 		void onRejoinChannelSuccess(const char* channel, uid_t uid, int elapsed) override;
@@ -347,6 +349,8 @@ namespace AgoraClrLibrary {
 		void onRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT eventCode) override;
 
 		void onRequestAudioFileInfo(const AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error) override;
+		void onSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode) override;
+
 	};
 
 }

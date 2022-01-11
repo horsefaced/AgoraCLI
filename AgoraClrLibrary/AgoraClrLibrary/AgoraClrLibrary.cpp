@@ -136,6 +136,17 @@ AgoraClrChannel^ AgoraClr::createChannel(String^ channelId)
 	return gcnew AgoraClrChannel(engine2->createChannel(MarshalString(channelId).c_str()));
 }
 
+ClrScreenCaptureSourceInfoList^ AgoraClrLibrary::AgoraClr::getScreenCaptureSources(ClrSize^ thumbSize, ClrSize^ iconSize, bool includeScreen)
+{
+	return gcnew ClrScreenCaptureSourceInfoList(
+		rtcEngine->getScreenCaptureSources(thumbSize, iconSize, includeScreen));
+}
+
+int AgoraClrLibrary::AgoraClr::startScreenCaptureByDisplayId(int displayId, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params)
+{
+	return rtcEngine->startScreenCaptureByDisplayId(displayId, regionRect, params);
+}
+
 int AgoraClr::startScreenCaptureByScreenRect(ClrRectangle^ screenRect, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params)
 {
 	return rtcEngine->startScreenCaptureByScreenRect(screenRect, regionRect, params);
@@ -209,6 +220,11 @@ int AgoraClr::addVideoWatermark(String^ url, ClrWatermarkOptions^ options)
 int AgoraClr::clearVideoWatermarks()
 {
 	return rtcEngine->clearVideoWatermarks();
+}
+
+int AgoraClrLibrary::AgoraClr::takeSnapshot(String^ channel, int uid, String^ path)
+{
+	return rtcEngine->takeSnapshot(MarshalString(channel).c_str(), uid, MarshalString(path).c_str());
 }
 
 int AgoraClr::setHightQualityAudioParameters(bool fullband, bool stereo, bool fullBitrate)
@@ -337,6 +353,11 @@ int AgoraClr::complain(String^ callid, String^ desc)
 int AgoraClr::startEchoTest(int intervalInSeconds)
 {
 	return rtcEngine->startEchoTest(intervalInSeconds);
+}
+
+int AgoraClrLibrary::AgoraClr::startEchoTest(ClrEchoTestConfiguration^ config)
+{
+	return rtcEngine->startEchoTest(config);
 }
 
 int AgoraClr::stopEchoTest()
@@ -1058,6 +1079,8 @@ void AgoraClr::initializeEventHandler()
 
 	agoraEventHandler->onRtmpStreamingEventEvent = static_cast<OnRtmpStreamingEvent::Pointer>(regEvent(gcnew OnRtmpStreamingEvent::Type(this, &AgoraClr::NativeOnRtmpStreamingEvent)));
 	agoraEventHandler->onRequestAudioFileInfoEvent = static_cast<OnRequestAudioFileInfo::Pointer>(regEvent(gcnew OnRequestAudioFileInfo::Type(this, &AgoraClr::NativeOnRequestAudioFileInfo)));
+
+	agoraEventHandler->onSnapshotTakenEvent = static_cast<OnSnapshotTaken::Pointer>(regEvent(gcnew OnSnapshotTaken::Type(this, &AgoraClr::NativeOnSnapshotTaken)));
 }
 
 void AgoraClr::initializePacketObserver()
@@ -1467,6 +1490,13 @@ void AgoraClrLibrary::AgoraClr::NativeOnRtmpStreamingEvent(const char* url, RTMP
 void AgoraClrLibrary::AgoraClr::NativeOnRequestAudioFileInfo(const AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error)
 {
 	if (onRequestAudioFileInfo) onRequestAudioFileInfo(gcnew ClrAudioFileInfo(info), static_cast<EnumAudioFileInfoError>(error));
+}
+
+void AgoraClrLibrary::AgoraClr::NativeOnSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode)
+{
+	if (onSnapshotTaken) onSnapshotTaken(
+		gcnew String(channel), uid,
+		gcnew String(filePath), width, height, errCode);
 }
 
 void AgoraClr::NativeOnUserMuteAudio(uid_t uid, bool muted)

@@ -515,6 +515,9 @@ namespace AgoraClrLibrary {
 		/** 11: The shared window is minimized when you call \ref IRtcEngine::startScreenCaptureByWindowId "startScreenCaptureByWindowId" to share a window.*/
 		LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_MINIMIZED = 11,
 		LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_CLOSED = 12,
+		LOCAL_VIDEO_STREAM_ERROR_DEVICE_INVALID_ID = 10,
+		LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_OCCLUDED = 13,
+		LOCAL_VIDEO_STREAM_ERROR_SCREEN_CAPTURE_WINDOW_NOT_SUPPORTED = 20,
 	};
 
 	public enum class EnumRemoteAudioState
@@ -604,7 +607,7 @@ namespace AgoraClrLibrary {
 		 */
 		 AUDIO_MIXING_ERROR_OK = 0,
 	};
-	
+
 	public enum class AudioMixingReasonType {
 		/** 701: The SDK cannot open the audio mixing file.
 		*/
@@ -1435,5 +1438,12 @@ namespace AgoraClrLibrary {
 	public enum class EnumAudioFileInfoError {
 		AUDIO_FILE_INFO_ERROR_OK = 0,
 		AUDIO_FILE_INFO_ERROR_FAILURE = 1,
+	};
+
+	public enum class EnumScreenCaptureSourceType {
+		ScreenCaptureSourceType_Unknown = -1,
+		ScreenCaptureSourceType_Window = 0,
+		ScreenCaptureSourceType_Screen = 1,
+		ScreenCaptureSourceType_Custom = 2,
 	};
 }

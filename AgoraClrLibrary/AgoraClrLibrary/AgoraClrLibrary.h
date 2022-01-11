@@ -139,7 +139,8 @@ namespace AgoraClrLibrary
 		AgoraClrChannel^ createChannel(String^ channelId);
 
 		//屏幕共享
-		//startScreenCaptureByDisplayId 只在macos上有效,所以不添加
+		ClrScreenCaptureSourceInfoList^ getScreenCaptureSources(ClrSize^ thumbSize, ClrSize^ iconSize, bool includeScreen);
+		int startScreenCaptureByDisplayId(int displayId, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params);
 		int startScreenCaptureByScreenRect(ClrRectangle^ screenRect, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params);
 		int startScreenCaptureByWindowId(IntPtr windowId, ClrRectangle^ regionRect, ClrScreenCaptureParameters^ params);
 		int setScreenCaptureContentHint(EnumVideoContentHint hint);
@@ -263,6 +264,7 @@ namespace AgoraClrLibrary
 
 		//通话前网络测试
 		int startEchoTest(int intervalInSeconds);
+		int startEchoTest(ClrEchoTestConfiguration^ config);
 		int stopEchoTest();
 		int enableLastmileTest();
 		int disableLastmileTest();
@@ -322,6 +324,10 @@ namespace AgoraClrLibrary
 		//直播水印
 		int addVideoWatermark(String^ url, ClrWatermarkOptions^ options);
 		int clearVideoWatermarks();
+
+		//视频截图
+		int takeSnapshot(String^ channel, int uid, String^ path);
+		AT<String^, int, String^, int, int, int>::Type^ onSnapshotTaken;
 
 		//加密
 		int enableEncryption(bool enabled, ClrEncryptionConfig^ config);
@@ -561,6 +567,8 @@ namespace AgoraClrLibrary
 
 		void NativeOnRtmpStreamingEvent(const char* url, RTMP_STREAMING_EVENT code);
 		void NativeOnRequestAudioFileInfo(const AudioFileInfo& info, AUDIO_FILE_INFO_ERROR error);
+
+		void NativeOnSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode);
 
 		void initializeEventHandler();
 		void initializePacketObserver();

@@ -333,3 +333,8 @@ void AgoraClrLibrary::AgoraClrEventHandler::onRequestAudioFileInfo(const AudioFi
 {
 	if (onRequestAudioFileInfoEvent) onRequestAudioFileInfoEvent(info, error);
 }
+
+void AgoraClrLibrary::AgoraClrEventHandler::onSnapshotTaken(const char* channel, uid_t uid, const char* filePath, int width, int height, int errCode)
+{
+	if (onSnapshotTakenEvent) onSnapshotTakenEvent(channel, uid, filePath, width, height, errCode);
+}
