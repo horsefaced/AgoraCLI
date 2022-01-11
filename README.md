@@ -1,8 +1,5 @@
 # AgoraCLI项目
 
-## THANK LIST
-wulaoh genMY
-
 ## 项目说明
 因为要用到Visual C++，所以在安装.net运行时后，还需要安装 **Visual C++ Redistributable for Visual Studio** 才可以运行。
 
