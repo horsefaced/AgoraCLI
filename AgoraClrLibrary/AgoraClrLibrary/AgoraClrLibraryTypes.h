@@ -292,7 +292,7 @@ namespace AgoraClrLibrary {
 			return raw;
 		}
 
-		void release()
+		~ClrAudioFrame()
 		{
 			if(raw)
 			{
@@ -408,7 +408,7 @@ namespace AgoraClrLibrary {
 			result->right = right;
 			return result;
 		}
-		void release()
+		~ClrRect()
 		{
 			if(result)
 			{
@@ -456,7 +456,7 @@ namespace AgoraClrLibrary {
 			return result;
 		}
 
-		void release()
+		~ClrTranscodingUser()
 		{
 			if(result)
 			{
@@ -476,7 +476,9 @@ namespace AgoraClrLibrary {
 			x(0),
 			y(0),
 			width(0),
-			height(0)
+			height(0),
+			zOrder(0),
+			alpha(0)
 		{
 		}
 		/** URL address of the image on the broadcasting video. */
@@ -489,6 +491,8 @@ namespace AgoraClrLibrary {
 		int width;
 		/** Height of the image on the broadcasting video. */
 		int height;
+		int zOrder;
+		double alpha;
 
 		operator RtcImage* ()
 		{
@@ -500,10 +504,24 @@ namespace AgoraClrLibrary {
 			raw->width = width;
 			raw->height = height;
 			raw->url = strcopy(MarshalString(url));
+			raw->zOrder = zOrder;
+			raw->alpha = alpha;
 			return raw;
 		}
 
-		void release()
+		RtcImage* getRaw() {
+			auto raw = new RtcImage();
+			raw->x = x;
+			raw->y = y;
+			raw->width = width;
+			raw->height = height;
+			raw->url = strcopy(MarshalString(url));
+			raw->zOrder = zOrder;
+			raw->alpha = alpha;
+			return raw;
+		}
+
+		~ClrRtcImage()
 		{
 			if(raw)
 			{
@@ -529,16 +547,23 @@ namespace AgoraClrLibrary {
 		unsigned int userCount;
 		ClrTranscodingUser^ transcodingUsers;
 		String^ transcodingExtraInfo;
-		String^ metadata;
-		ClrRtcImage^ watermark;
-		ClrRtcImage^ backgroundImage;
+		String^ metadata = nullptr;
+		List<ClrRtcImage^>^ watermark = nullptr;
+		List<ClrRtcImage^>^ backgroundImage = nullptr;
 		AudioSampleRateType audioSampleRate;
 		int audioBitrate;
 		int audioChannels;
 		AudioCodecProfileType audioCodecProfile;
 
 		ClrLiveTranscoding()
-			: width(360), height(640), videoBitrate(400), videoFramerate(15), lowLatency(false), backgroundColor(0x000000), videoGop(30), videoCodecProfile(VideoCodecProfileType::VIDEO_CODEC_PROFILE_HIGH), userCount(0), transcodingUsers(), transcodingExtraInfo(nullptr), audioSampleRate(AudioSampleRateType::AUDIO_SAMPLE_RATE_48000), audioBitrate(48), audioChannels(1)
+			: width(360), height(640), videoBitrate(400), 
+			videoFramerate(15), lowLatency(false), 
+			backgroundColor(0x000000), videoGop(30), 
+			videoCodecProfile(VideoCodecProfileType::VIDEO_CODEC_PROFILE_HIGH),
+			userCount(0), transcodingUsers(), 
+			transcodingExtraInfo(nullptr), 
+			audioSampleRate(AudioSampleRateType::AUDIO_SAMPLE_RATE_48000), 
+			audioBitrate(48), audioChannels(1)
 		{
 		}
 
@@ -556,14 +581,50 @@ namespace AgoraClrLibrary {
 			raw.transcodingUsers = transcodingUsers;
 			raw.transcodingExtraInfo = strcopy(MarshalString(transcodingExtraInfo));
 			raw.metadata = strcopy(MarshalString(metadata));
-			raw.watermark = watermark;
-			raw.backgroundImage = backgroundImage;
+			if (watermark != nullptr) {
+				delete[] this->watermarks;
+				this->watermarks = new RtcImage[watermark->Count];
+				for each (ClrRtcImage ^ image in watermark) {
+					this->watermarks = image->getRaw();
+					this->watermarks++;
+				}
+				raw.watermark = this->watermarks;
+				raw.watermarkCount = watermark->Count;
+			}
+			else {
+				raw.watermark = nullptr;
+				raw.watermarkCount = 0;
+			}
+
+			if (backgroundImage != nullptr) {
+				delete[] this->backgroundImages;
+				this->backgroundImages = new RtcImage[backgroundImage->Count];
+				for each (ClrRtcImage ^ image in backgroundImage) {
+					this->backgroundImages = image->getRaw();
+					this->backgroundImages++;
+				}
+				raw.backgroundImage = this->backgroundImages;
+				raw.backgroundImageCount = backgroundImage->Count;
+			}
+			else {
+				raw.backgroundImage = nullptr;
+				raw.backgroundImageCount = backgroundImage->Count;
+			}
+
 			raw.audioSampleRate = static_cast<AUDIO_SAMPLE_RATE_TYPE>(audioSampleRate);
 			raw.audioBitrate = audioBitrate;
 			raw.audioChannels = audioChannels;
 			raw.audioCodecProfile = static_cast<AUDIO_CODEC_PROFILE_TYPE>(audioCodecProfile);
 			return raw;
 		}
+
+		~ClrLiveTranscoding() {
+			delete[] watermarks;
+			delete[] backgroundImages;
+		}
+	private:
+		RtcImage* watermarks = nullptr;
+		RtcImage* backgroundImages = nullptr;
 	};
 
 
@@ -769,7 +830,7 @@ namespace AgoraClrLibrary {
 			return result;
 		}
 
-		void release()
+		~ClrExternalVideoFrame()
 		{
 			if(result)
 			{
@@ -877,7 +938,7 @@ namespace AgoraClrLibrary {
 			return info;
 		}
 
-		void release()
+		~ClrChannelMediaInfo()
 		{
 			if(info)
 			{

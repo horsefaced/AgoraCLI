@@ -222,7 +222,7 @@ int AgoraClr::clearVideoWatermarks()
 	return rtcEngine->clearVideoWatermarks();
 }
 
-int AgoraClrLibrary::AgoraClr::takeSnapshot(String^ channel, int uid, String^ path)
+int AgoraClrLibrary::AgoraClr::takeSnapshot(String^ channel, UINT uid, String^ path)
 {
 	return rtcEngine->takeSnapshot(MarshalString(channel).c_str(), uid, MarshalString(path).c_str());
 }
@@ -273,6 +273,11 @@ int AgoraClr::leaveChannel()
 	// 所以设置为离开频道时, 自动退出数据包观察器, 不管原来频道是否加密
 	rtcEngine->registerPacketObserver(nullptr);
 	return rtcEngine->leaveChannel();
+}
+
+int AgoraClrLibrary::AgoraClr::setAVSyncSource(String^ channelId, UINT uid)
+{
+	return rtcEngine->setAVSyncSource(MarshalString(channelId).c_str(), uid);
 }
 
 int AgoraClr::startScreenCapture(IntPtr windowId, int captureFreq, ClrRect^ rect, int bitrate)
@@ -760,6 +765,26 @@ int AgoraClr::addPublishStreamUrl(String^ url, bool transcodingEnabled)
 int AgoraClr::removePublishStreamUrl(String^ url)
 {
 	return rtcEngine->removePublishStreamUrl(MarshalString(url).c_str());
+}
+
+int AgoraClrLibrary::AgoraClr::startRtmpStreamWithoutTranscoding(String^ url)
+{
+	return rtcEngine->startRtmpStreamWithoutTranscoding(MarshalString(url).c_str());
+}
+
+int AgoraClrLibrary::AgoraClr::startRtmpStreamWithTranscoding(String^ url, ClrLiveTranscoding^ transcoding)
+{
+	return rtcEngine->startRtmpStreamWithTranscoding(MarshalString(url).c_str(), transcoding);
+}
+
+int AgoraClrLibrary::AgoraClr::updateRtmpTranscoding(ClrLiveTranscoding^ transcoding)
+{
+	return rtcEngine->updateRtmpTranscoding(transcoding);
+}
+
+int AgoraClrLibrary::AgoraClr::stopRtmpStream(String^ url)
+{
+	return rtcEngine->stopRtmpStream(MarshalString(url).c_str());
 }
 
 int AgoraClr::setLiveTranscoding(ClrLiveTranscoding^ transcoding)

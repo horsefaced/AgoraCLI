@@ -42,6 +42,16 @@ int ClrAudioDeviceCollection::setDevice(String ^ deviceId)
 	return raw->setDevice(MarshalString(deviceId).c_str());
 }
 
+int AgoraClrLibrary::ClrAudioDeviceCollection::getDefaultDevice(String^% deviceName, String^% deviceId)
+{
+	char deviceNameBuffer[MAX_DEVICE_ID_LENGTH] = { 0 };
+	char deviceIdBuffer[MAX_DEVICE_ID_LENGTH] = { 0 };
+	int result = raw->getDefaultDevice(deviceNameBuffer, deviceIdBuffer);
+	if (result != 0) return result;
+	deviceName = gcnew String(deviceNameBuffer), deviceId = gcnew String(deviceIdBuffer);
+	return result;
+}
+
 int ClrAudioDeviceCollection::setApplicationVolume(int volume)
 {
 	return raw->setApplicationVolume(volume);
@@ -100,6 +110,18 @@ int AgoraClrAudioDeviceManager::setRecordingDevice(String ^ deviceId)
 {
 	AAudioDeviceManager manager(engine);
 	return manager->setRecordingDevice(MarshalString(deviceId).c_str());
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::followSystemPlaybackDevice(bool enable)
+{
+	AAudioDeviceManager manager(engine);
+	return manager->followSystemPlaybackDevice(enable);
+}
+
+int AgoraClrLibrary::AgoraClrAudioDeviceManager::followSystemRecordingDevice(bool enable)
+{
+	AAudioDeviceManager manager(engine);
+	return manager->followSystemRecordingDevice(enable);
 }
 
 int AgoraClrAudioDeviceManager::setPlaybackDeviceVolume(int volume)

@@ -46,6 +46,7 @@ namespace AgoraClrLibrary
 		int switchChannel(String^ token, String^ channelId);
 		int switchChannel(String^ token, String^ channelId, ClrChannelMediaOptions^ options);
 		int leaveChannel();
+		int setAVSyncSource(String^ channelId, UINT uid);
 		int renewToken(String^ token);
 		int enableWebSdkInteroperability(bool enabled);
 		EnumConnectionStateType getConnectionState();
@@ -215,6 +216,10 @@ namespace AgoraClrLibrary
 		int setRemoteVoicePosition(uid_t uid, double pan, double gain);
 
 		//CDN推流
+		int startRtmpStreamWithoutTranscoding(String^ url);
+		int startRtmpStreamWithTranscoding(String^ url, ClrLiveTranscoding^ transcoding);
+		int updateRtmpTranscoding(ClrLiveTranscoding^ transcoding);
+		int stopRtmpStream(String^ url);
 		int setLiveTranscoding(ClrLiveTranscoding^ transcoding);
 		int addPublishStreamUrl(String^ url, bool transcodingEnabled);
 		int removePublishStreamUrl(String^ url);
@@ -326,8 +331,8 @@ namespace AgoraClrLibrary
 		int clearVideoWatermarks();
 
 		//视频截图
-		int takeSnapshot(String^ channel, int uid, String^ path);
-		AT<String^, int, String^, int, int, int>::Type^ onSnapshotTaken;
+		int takeSnapshot(String^ channel, UINT uid, String^ path);
+		AT<String^, UINT, String^, int, int, int>::Type^ onSnapshotTaken;
 
 		//加密
 		int enableEncryption(bool enabled, ClrEncryptionConfig^ config);

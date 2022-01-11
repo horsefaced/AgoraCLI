@@ -17,6 +17,7 @@ namespace AgoraClrLibrary {
 		int getCount();
 		int getDevice(int index, String^% deviceName, String^% deviceId);
 		int setDevice(String^ deviceId);
+		int getDefaultDevice(String^% deviceName, String^% deviceId);
 		int setApplicationVolume(int volume);
 		int getApplicationVolume(int% volume);
 		int setApplicationMute(bool mute);
@@ -37,6 +38,9 @@ namespace AgoraClrLibrary {
 
 		int setPlaybackDevice(String^ deviceId);
 		int setRecordingDevice(String^ deviceId);
+
+		int followSystemPlaybackDevice(bool enable);
+		int followSystemRecordingDevice(bool enable);
 
 		int startPlaybackDeviceTest(String^ path);
 		int stopPlaybackDeviceTest();
